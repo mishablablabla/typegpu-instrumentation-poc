@@ -7,7 +7,7 @@ Labels: **[measured]** = produced by a test or benchmark in this repo; **[derive
 
 ## 1. Recommendation (up front)
 
-**Proceed, with conditions.** The thin layer worked: the useful TypeGPU-specific data came from 10 files and about 180 touched lines in the existing core, two unrelated consumers read the same stream without any TypeGPU internals, and disabled-mode cost could not be told apart from measurement noise. Before a production implementation, two things must happen first: validate `uncapturederror` / `getCompilationInfo` / `lost` on a **real** WebGPU implementation (not done here, see §8), and re-measure in a real browser engine (§5 limits).
+**Proceed.** Update after the real-device milestone: the main condition of the first report is now met (see [REAL-DEVICE-VALIDATION.md](REAL-DEVICE-VALIDATION.md)): all 19 checks pass on an Apple M3 Pro through Chrome 156, and the run found and fixed a real gap (async pipeline failures were silent). Remaining conditions: other browsers/OSes, an in-browser overhead measurement, and the unmeasured bundle size. The first report's reasoning follows. The thin layer worked: the useful TypeGPU-specific data came from 10 files and about 250 touched lines in the existing core, two unrelated consumers read the same stream without any TypeGPU internals, and disabled-mode cost could not be told apart from measurement noise. Before a production implementation: re-measure overhead in a real browser engine (§5 limits) and repeat the real-device run on other browsers and GPUs.
 
 ## 2. What was implemented
 
@@ -15,14 +15,15 @@ Labels: **[measured]** = produced by a test or benchmark in this repo; **[derive
 |---|---|---|
 | Hub: per-root state, event emission, bounded history, weak registry, counters, device listeners | `overlay/src/hub.ts` | 591 lines |
 | Public unstable data model (events, snapshot, interface) | `overlay/src/types.ts` | 226 lines |
-| Hook patch into existing TypeGPU files | `patches/0001-instrumentation-hooks.patch` | 10 files, +158 / −21 |
-| Tests | `overlay/tests/` | 32 tests in 2 files |
+| Hook patch into existing TypeGPU files | `patches/0001-instrumentation-hooks.patch` | 10 files, +210 / −37 |
+| Tests | `overlay/tests/` | 44 tests in 3 files |
+| Real-device harness | `real-gpu/` | Chrome over CDP, 19 checks, see REAL-DEVICE-VALIDATION.md |
 | Two consumers | `consumers/textReport.ts`, `consumers/diagnosticsIndex.ts` | 77 + 128 lines |
 | Benchmark | `bench/overhead.test.ts`, `scripts/bench.sh`, `bench/summarize.mjs` | |
 
 Opt-in: `tgpu.init({ unstable_instrumentation: true | { historySize } })` or `initFromDevice(...)`; consumers use `root['~unstable'].instrumentation` (`undefined` when not opted in).
 
-**Missed target:** the design aimed at ≤ ~150 changed lines in existing files; the patch is 179 (158 added, 21 removed). Part of it is wrapping from the repo's formatter and the descriptor hoisting in `buffer.ts`/`texture.ts` (needed so the *observed* descriptor is what is reported).
+**Missed target:** the design aimed at ≤ ~150 changed lines in existing files; the patch is now 247 (210 added, 37 removed; it was 179 before the real-device milestone added the async-failure event, ~40 lines across the two pipeline files). Part of it is wrapping from the repo's formatter and the descriptor hoisting in `buffer.ts`/`texture.ts` (needed so the *observed* descriptor is what is reported). The two pipeline files now carry the same hook block twice (compute/render): a shared helper would shrink it.
 
 ## 3. The actual model
 
@@ -36,6 +37,7 @@ Delivered as `{ v: 1, seq, t, type, … }` (`t` = `performance.now()`), plain da
 | `pipeline-compiled` | observed: exact WGSL given to `createShaderModule`; derived: `trigger` (`lazy`/`initSync`/`initAsync`); `resolveMs`, `createMs` are **CPU** times and `createMs` is neither GPU time nor pure compile time |
 | `shader-diagnostics` | observed: `getCompilationInfo()` messages (positions refer to the generated WGSL); empty = asked, nothing reported |
 | `device-error`, `device-lost` | observed |
+| `pipeline-compile-failed` | observed: async creation rejected; carries the WGSL, the rejection's type and message (added after the first real-device run) |
 | `root-destroyed` | derived: live buffers/textures at that moment (leak indicator) |
 
 Snapshot (`getSnapshot()`): live resources / bind groups / pipelines with counters (dispatches, draws, per-buffer writes and bytes), `submits`, `collectedWithoutDestroy`, `droppedEvents`, `listenerErrors`, and a machine-readable `unavailable` list (`gpuExecutionTime`, `gpuMemoryUsage`, `wrappedResources`, `internalResources`, `rawWebGPUCalls`, `workgroupCounts`, `perDispatchBindings`, `textureMemory`). No estimates are produced anywhere.
@@ -57,8 +59,8 @@ Consumers: (1) text report; (2) a reducer that folds the same events into findin
 ## 5. Tests and benchmark
 
 ### Tests [measured]
-- New: 32 tests in 2 files, all passing (`scripts/test.sh`). Covers: off by default and nothing attached to the device; event content and ordering (`pipeline-compiled → resource-materialized → bind-group-created → shader-diagnostics`, `seq` contiguous); subscribe/unsubscribe, multiple consumers, throwing listener isolated and counted, unsubscribing from inside a listener; ring bound (`historySize: 3` keeps `[3,4,5]`, `droppedEvents = 2`; `historySize: 0` still delivers); enable/disable/dispose; errors and device loss (also ignored while disabled); teardown with a borrowed vs an owned device; `structuredClone` of snapshots; GC compatibility.
-- Existing TypeGPU suite with the patch applied (instrumentation off): **2955 → 2988 tests pass** (201 files; +32 are my tests, +1 is the benchmark file, which Vitest also runs as one test); `tsc` and the repo's `oxlint`/`oxfmt` are clean. A from-scratch `scripts/setup.sh` in a fresh copy reproduces the same state.
+- New: 44 tests in 3 files, all passing (`scripts/test.sh`); the third file unit-tests the real-device run classification. Covers: off by default and nothing attached to the device; event content and ordering (`pipeline-compiled → resource-materialized → bind-group-created → shader-diagnostics`, `seq` contiguous); subscribe/unsubscribe, multiple consumers, throwing listener isolated and counted, unsubscribing from inside a listener; ring bound (`historySize: 3` keeps `[3,4,5]`, `droppedEvents = 2`; `historySize: 0` still delivers); enable/disable/dispose; errors and device loss (also ignored while disabled); teardown with a borrowed vs an owned device; `structuredClone` of snapshots; GC compatibility.
+- Existing TypeGPU suite with the patch applied (instrumentation off): **2955 → 2999 tests pass** (201 files; +44 are my tests, +1 is the benchmark file, which Vitest also runs as one test); `tsc` and the repo's `oxlint`/`oxfmt` are clean. A from-scratch `scripts/setup.sh` in a fresh copy reproduces the same state.
 - Mock-device limits [not done on real GPU]: the shared mock has no event target, `lost` or shader diagnostics; the tests add exactly those. Event *shapes* follow the spec/MDN (see research doc), but no real implementation was exercised.
 
 ### Disabled-mode overhead [measured, with limits]
@@ -96,7 +98,7 @@ Buffers: `core/buffer/buffer.ts` (`materialize`, `write`, `patch`, `destroy`); t
 ## 8. What remains unavailable
 - Through ordinary WebGPU: GPU execution time except via opt-in `timestamp-query` (not used here), GPU memory, driver/ISA/occupancy, enumeration of live objects, resource contents without a readback. Cited from primary sources in the research doc.
 - Through this layer by design: wrapped `GPUBuffer`/`GPUTexture`, TypeGPU's internal helper resources (staging, mip generation), raw WebGPU calls and `encoder.finish()` submissions, per-dispatch bind groups and workgroup counts (the hook sees only an opaque closure), samplers/query sets, async pipeline-creation *failures* (they reject only to the caller). `submits` counts `TgpuCommandEncoder.submit()` only.
-- **[not done]** Real-implementation check. I tried to install the `webgpu` (Dawn) package for a smoke run; the environment denied that install and I did not work around it. So `uncapturederror` delivery, error-message text containing TypeGPU labels, `getCompilationInfo` messages, whether a listener changes the browser's console output, and `lost` with a real device are unverified. Evidence that would settle it: run the same scenario on a real device (browser or Dawn) with a deliberately invalid shader and binding.
+- Real implementation: now checked on one device (Apple M3 Pro, Chrome 156); results and the remaining unverified items (other browsers/OSes, a genuine device reset) are in [REAL-DEVICE-VALIDATION.md](REAL-DEVICE-VALIDATION.md). Async pipeline-creation failures, listed above as unreported in the first version, are now reported (`pipeline-compile-failed`).
 
 ## 9. Architectural and public-API risks
 | Risk | Status |
@@ -107,8 +109,8 @@ Buffers: `core/buffer/buffer.ts` (`materialize`, `write`, `patch`, `destroy`); t
 | Hooks are bypassed by raw WebGPU, `unwrap`, `adopt*`, helper submits | permanent; documented via `unavailable` |
 | Passes keep the hub they saw at creation | handled by the `enabled` re-check; adds a branch in enabled mode only |
 | `~unstable` label on a typed property of the root | fine for POC; stable API would need versioned events (`v: 1` exists) |
-| Error attribution/console behaviour with a listener present | **unverified** (§8) |
-| Patch size 179 lines for 6 event kinds | acceptable for POC; production should look for a smaller funnel |
+| Error attribution/console behaviour with a listener present | verified on one real device: a listener does not change console output; labels appear in messages but are unreliable for pipelines with identical WGSL (REAL-DEVICE-VALIDATION §4) |
+| Patch size 247 lines for 7 event kinds | acceptable for POC; production should look for a smaller funnel |
 | Browser/engine differences in inlining | **unmeasured** |
 
 ## 10. Keep, change, discard
@@ -119,4 +121,4 @@ Buffers: `core/buffer/buffer.ts` (`materialize`, `write`, `patch`, `destroy`); t
 **Discard:** workgroup counts, GPU timing, any memory estimate (as already cut), and the idea of a global hook for the POC (per-root was enough).
 
 ## 11. Final recommendation
-**Proceed** to a production-oriented design *after* one more cheap experiment: the same scenarios and the same three-way benchmark on a real device in a real browser. If real-device behaviour of the error and compilation events matches the spec-based assumptions and disabled overhead stays within noise there, the architecture is worth building. If listener presence changes browser error reporting or attribution is poor, revise the error part (the rest stands on its own).
+**Proceed.** The real-device experiment recommended in the first report has been done on one device: error and compilation events behave as assumed, a listener does not change browser error reporting, and one real gap was found and fixed. The overhead three-way benchmark was re-run on the final patch (`bench/results/20261027-160102.jsonl`): disabled stays within the A/A noise. What still stands between this and production is breadth (other browsers/GPUs), an in-browser overhead measurement, and bundle-size measurement.

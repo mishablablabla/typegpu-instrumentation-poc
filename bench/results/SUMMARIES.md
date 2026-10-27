@@ -149,3 +149,34 @@ node v24.21.0, darwin-arm64, 40 samples x 20000 calls per process, 9 processes p
 Events during the whole enabled run (all hot-path work included): {"historyLength":6,"eventsEmitted":6,"droppedEvents":0,"dispatchesCounted":2010000,"drawsCounted":1005000}
 ```
 
+## 20261027-160102
+
+```
+node v24.21.0, darwin-arm64, 40 samples x 20000 calls per process, 9 processes per configuration
+
+| operation | config | median of process medians (ns/op) | process-median range (ns/op) | vs pristine | minor GCs / 200k ops (median) |
+|---|---|---|---|---|---|
+| dispatch (own encoder) | pristine | 333.7 | 317.9 - 369.5 | - | 24 |
+| dispatch (own encoder) | pristine-b | 335.9 | 318.6 - 342.9 | 0.7 % | 24 |
+| dispatch (own encoder) | disabled | 338.8 | 322.6 - 384.1 | 1.5 % | 24 |
+| dispatch (own encoder) | enabled | 342.0 | 322.4 - 356.4 | 2.5 % | 24 |
+| dispatch (own encoder) | (pristine run-to-run spread) | | | 15.5 % | |
+| dispatch (open pass) | pristine | 37.1 | 35.3 - 46.0 | - | 1 |
+| dispatch (open pass) | pristine-b | 37.3 | 36.3 - 38.6 | 0.4 % | 1 |
+| dispatch (open pass) | disabled | 34.7 | 34.0 - 37.6 | -6.6 % | 1 |
+| dispatch (open pass) | enabled | 40.8 | 38.1 - 48.7 | 10.0 % | 1 |
+| dispatch (open pass) | (pristine run-to-run spread) | | | 28.9 % | |
+| draw (own encoder) | pristine | 438.8 | 414.3 - 490.5 | - | 35 |
+| draw (own encoder) | pristine-b | 431.1 | 413.8 - 459.4 | -1.7 % | 35 |
+| draw (own encoder) | disabled | 444.8 | 421.9 - 464.2 | 1.4 % | 35 |
+| draw (own encoder) | enabled | 441.5 | 424.2 - 464.7 | 0.6 % | 35 |
+| draw (own encoder) | (pristine run-to-run spread) | | | 17.4 % | |
+| buffer.write | pristine | 340.3 | 324.1 - 349.6 | - | 2 |
+| buffer.write | pristine-b | 324.4 | 320.4 - 349.6 | -4.7 % | 2 |
+| buffer.write | disabled | 347.0 | 334.0 - 362.7 | 2.0 % | 2 |
+| buffer.write | enabled | 362.9 | 338.7 - 390.5 | 6.6 % | 2 |
+| buffer.write | (pristine run-to-run spread) | | | 7.5 % | |
+
+Events during the whole enabled run (all hot-path work included): {"historyLength":6,"eventsEmitted":6,"droppedEvents":0,"dispatchesCounted":2010000,"drawsCounted":1005000}
+```
+
