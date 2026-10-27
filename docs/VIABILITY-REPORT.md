@@ -1,5 +1,8 @@
 # Viability report: is this a usable diagnostic tool?
 
+> **Superseded in parts.** This is the viability gate as written on 2026-10-27, before the production-readiness work. Its measurements are kept as history. Corrected or replaced since: §6 (the A/A control was byte-identical code and "disabled is indistinguishable from pristine" does not hold for the open-pass dispatch; see [PERFORMANCE.md](PERFORMANCE.md) §Corrections), §7 (the hub is no longer shipped to non-users), and the event names `pipeline-compiled` / `pipeline-compile-failed` (now `pipeline-created` / `pipeline-creation-failed`, [EVENT-CONTRACT.md](EVENT-CONTRACT.md)). Current verdict: [PRODUCTION-READINESS.md](PRODUCTION-READINESS.md).
+
+
 Date: 2026-10-27. Evidence labels: **[measured]** = a command in this repo produced it (raw data in `real-gpu/results/`); **[derived]** = follows from reading code, not run; **[not tested]** = nothing exercised it.
 
 ## 1. Conclusion (up front)

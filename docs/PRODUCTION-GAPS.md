@@ -1,5 +1,7 @@
 # Remaining production-readiness gaps
 
+> **Historical.** Written at the end of the usable-output milestone. Gap 4 (CI) and 5 (bundle) and parts of 2, 7, 8 have been addressed since; the current state of every requirement is in [PRODUCTION-READINESS.md](PRODUCTION-READINESS.md).
+
 Ranked by how much each one blocks a production release. Evidence is from this repo's own runs; **[measured]** = a command was run and its result is quoted, **[derived]** = follows from reading the code, **[not done]** = no check exists yet.
 
 ## Audit: what exists today (verified against the code and runs)
