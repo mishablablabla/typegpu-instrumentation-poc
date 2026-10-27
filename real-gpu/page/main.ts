@@ -400,6 +400,73 @@ export async function runRealDeviceScenario() {
     rootYDestroyed,
   );
 
+  // 9. Garbage collection with a real device. The device (kept alive here) holds the hub through its event
+  // listener and its `lost` promise, which is the path that once kept the whole root alive.
+  const collectGarbage = (globalThis as { gc?: () => void }).gc;
+  if (collectGarbage === undefined) {
+    observe('gc.real', 'skipped: gc() is not exposed (Chrome needs --js-flags=--expose-gc)');
+  } else {
+    const deviceZ = await newDevice();
+    const make = () => {
+      const rootZ = tgpu.initFromDevice({ device: deviceZ, unstable_instrumentation: true });
+      const buffer = rootZ.createBuffer(d.f32).$usage('uniform');
+      rootZ.unwrap(buffer);
+      const pipelineZ = rootZ.createComputePipeline({ compute: scale });
+      pipelineZ.initSync();
+      return {
+        instZ: rootZ['~unstable'].instrumentation!,
+        refs: {
+          root: new WeakRef(rootZ),
+          buffer: new WeakRef(buffer),
+          pipeline: new WeakRef(pipelineZ),
+        },
+      };
+    };
+    const { instZ, refs } = make();
+    const liveBefore = instZ.getSnapshot();
+    let collected = false;
+    for (let i = 0; i < 50 && !collected; i++) {
+      await sleep(20);
+      collectGarbage();
+      collected = Object.values(refs).every((r) => r.deref() === undefined);
+    }
+    for (let i = 0; i < 50 && instZ.getSnapshot().counters.collectedWithoutDestroy < 1; i++) {
+      await sleep(20);
+      collectGarbage();
+    }
+    const liveAfter = instZ.getSnapshot();
+    check(
+      'gc-real-device',
+      'with a live real device, the root, buffer and pipeline are garbage-collected and the registry forgets them',
+      liveBefore.resources.length === 1 &&
+        collected &&
+        liveAfter.resources.length === 0 &&
+        liveAfter.pipelines.length === 0 &&
+        liveAfter.counters.collectedWithoutDestroy === 1,
+      {
+        collected,
+        before: { resources: liveBefore.resources.length, pipelines: liveBefore.pipelines.length },
+        after: {
+          resources: liveAfter.resources.length,
+          pipelines: liveAfter.pipelines.length,
+          collectedWithoutDestroy: liveAfter.counters.collectedWithoutDestroy,
+        },
+      },
+    );
+    deviceZ.destroy();
+  }
+
+  // 10. How coarse are the CPU timings the events carry?
+  const deltas = new Set<number>();
+  for (let last = performance.now(), i = 0; i < 5_000_000 && deltas.size < 5; i++) {
+    const now = performance.now();
+    if (now !== last) {
+      deltas.add(now - last);
+      last = now;
+    }
+  }
+  observe('performance.now.smallestStepMs', Math.min(...deltas));
+
   return {
     provenance: prov,
     checks,

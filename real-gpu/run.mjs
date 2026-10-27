@@ -73,6 +73,8 @@ const chromeArgs = [
   '--no-first-run',
   '--no-default-browser-check',
   '--disable-extensions',
+  // lets the page call gc(), needed by the garbage-collection check
+  '--js-flags=--expose-gc',
   ...(flag('--headed') ? [] : ['--headless=new']),
   ...args.filter((a) => a.startsWith('--chrome-arg=')).map((a) => a.slice('--chrome-arg='.length)),
   'about:blank',

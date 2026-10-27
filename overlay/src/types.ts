@@ -15,7 +15,10 @@ type EventBase = {
   readonly v: 1;
   /** Monotonic per root, starts at 1. A gap between consecutive `seq` values never happens; drops only truncate history. */
   readonly seq: number;
-  /** `performance.now()` at emission. CPU clock, milliseconds. */
+  /**
+   * `performance.now()` at emission. CPU clock, milliseconds, with the browser's timer granularity
+   * (0.1 ms in a normal Chrome page, observed on a real run) and the same quantisation in `resolveMs`/`createMs`.
+   */
   readonly t: number;
 };
 
@@ -69,6 +72,13 @@ export type TgpuBindGroupCreated = EventBase & {
 
 export type TgpuPipelineTrigger = 'lazy' | 'initSync' | 'initAsync';
 
+/**
+ * TypeGPU handed the generated shader and the pipeline descriptor to WebGPU, either synchronously or
+ * because the async creation resolved. A synchronous creation cannot report whether the pipeline is valid:
+ * an invalid one still produces this event, followed by `shader-diagnostics` with errors and a `device-error`
+ * (observed on a real device). Only the async path distinguishes success (this event) from failure
+ * (`pipeline-compile-failed`).
+ */
 export type TgpuPipelineCompiled = EventBase & {
   readonly type: 'pipeline-compiled';
   /** Identity of the pipeline *core*; every `pipeline.with(...)` handle shares it. */
