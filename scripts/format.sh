@@ -9,10 +9,11 @@ FILES="packages/typegpu/src/core/instrumentation packages/typegpu/tests/instrume
 pnpm exec oxfmt $FILES
 pnpm exec oxlint -c oxlint.config.ts --max-warnings=0 --type-aware $FILES
 for pair in "src:src/core/instrumentation" "tests:tests/instrumentation"; do
-  rsync -a --exclude consumers --exclude bench --exclude real-gpu-page --exclude classify.ts --exclude examples "$PKG/${pair#*:}/" "$ROOT/overlay/${pair%%:*}/" 2>/dev/null || true
+  rsync -a --exclude consumers --exclude bench --exclude real-gpu-page --exclude real-gpu-bench --exclude classify.ts --exclude examples "$PKG/${pair#*:}/" "$ROOT/overlay/${pair%%:*}/" 2>/dev/null || true
 done
 [ -d "$PKG/tests/instrumentation/consumers" ] && rsync -a "$PKG/tests/instrumentation/consumers/" "$ROOT/consumers/" || true
 [ -d "$PKG/tests/instrumentation/bench" ] && rsync -a "$PKG/tests/instrumentation/bench/" "$ROOT/bench/" || true
 [ -d "$PKG/tests/instrumentation/examples" ] && rsync -a "$PKG/tests/instrumentation/examples/" "$ROOT/examples/" || true
+[ -d "$PKG/tests/instrumentation/real-gpu-bench" ] && rsync -a --exclude provenance.ts "$PKG/tests/instrumentation/real-gpu-bench/" "$ROOT/real-gpu/bench-page/" || true
 [ -f "$PKG/tests/instrumentation/classify.ts" ] && cp "$PKG/tests/instrumentation/classify.ts" "$ROOT/real-gpu/classify.ts" || true
 [ -d "$PKG/tests/instrumentation/real-gpu-page" ] && rsync -a "$PKG/tests/instrumentation/real-gpu-page/" "$ROOT/real-gpu/page/" || true

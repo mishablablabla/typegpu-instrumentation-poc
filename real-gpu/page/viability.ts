@@ -725,6 +725,47 @@ async function lifecycle() {
   );
 }
 
+/**
+ * Hot-reload shape: many roots on one long-lived device, dropped without destroy(). The device keeps the
+ * instrumentation alive through its event listener, so each abandoned root can leave a hub (with its event
+ * history, including WGSL strings) behind.
+ */
+async function abandonedRoots() {
+  current = 'abandoned-roots';
+  const collectGarbage = (globalThis as { gc?: () => void }).gc;
+  if (collectGarbage === undefined) {
+    check('gc() is available (Chrome needs --js-flags=--expose-gc)', false);
+    return;
+  }
+  const device = await (await navigator.gpu.requestAdapter())!.requestDevice();
+  const hubs: WeakRef<object>[] = [];
+  const roots: WeakRef<object>[] = [];
+  const spawn = () => {
+    for (let i = 0; i < 30; i++) {
+      const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+      const inst = root['~unstable'].instrumentation!;
+      hubs.push(new WeakRef(inst));
+      roots.push(new WeakRef(root));
+      root.createComputePipeline({ compute: noop }).initSync();
+    }
+  };
+  spawn();
+  for (let i = 0; i < 30; i++) {
+    await sleep(20);
+    collectGarbage();
+  }
+  const aliveRoots = roots.filter((r) => r.deref() !== undefined).length;
+  const aliveHubs = hubs.filter((h) => h.deref() !== undefined).length;
+  evidence[current] = { roots: roots.length, aliveRoots, aliveHubs };
+  check('abandoned roots are garbage-collected', aliveRoots === 0, { aliveRoots });
+  check(
+    'abandoned instrumentation (hubs with their history) is garbage-collected too',
+    aliveHubs === 0,
+    { created: hubs.length, aliveHubs },
+  );
+  device.destroy();
+}
+
 async function neverOptedIn() {
   current = 'never-opted-in';
   const root = await tgpu.init();
@@ -762,6 +803,7 @@ export async function runViability() {
     ['sync-failures', syncFailures],
     ['async-failures', asyncFailures],
     ['lifecycle', lifecycle],
+    ['abandoned-roots', abandonedRoots],
     ['never-opted-in', neverOptedIn],
   ];
   for (const [name, fn] of all) {

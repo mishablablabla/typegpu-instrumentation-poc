@@ -1,5 +1,6 @@
 import { getName } from '../../shared/meta.ts';
 import { $soul } from '../../shared/symbols.ts';
+import { type DeviceEventSink, type DeviceWatch, watchDevice } from './deviceEvents.ts';
 import type {
   TgpuBindGroupCreated,
   TgpuBindGroupEntryInfo,
@@ -90,8 +91,8 @@ type BindGroupLike = {
  *
  * Holds no strong reference to the root, to any tracked object or to any GPU object other than the device.
  */
-export class InstrumentationHub implements TgpuInstrumentation {
-  readonly #device: GPUDevice;
+export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink {
+  readonly #watch: DeviceWatch;
   readonly #holder: InstrumentationHolder;
 
   #active = false;
@@ -113,8 +114,6 @@ export class InstrumentationHub implements TgpuInstrumentation {
   #droppedEvents = 0;
   #listenerErrors = 0;
 
-  #errorListener: ((event: Event) => void) | undefined;
-
   /**
    * @param holder Where hook sites read the hub from; the hub publishes (or clears) itself there.
    * It must be a plain object that does not lead back to the root. A callback created inside the
@@ -126,32 +125,12 @@ export class InstrumentationHub implements TgpuInstrumentation {
     options: TgpuInstrumentationOptions,
     holder: InstrumentationHolder,
   ) {
-    this.#device = device;
     this.#holder = holder;
     const historySize = Math.max(0, Math.floor(options.historySize ?? DEFAULT_HISTORY_SIZE));
     this.#ring = Array.from({ length: historySize }, () => undefined);
 
-    if (typeof device.addEventListener === 'function') {
-      this.#errorListener = (event) => {
-        if (!this.#active) {
-          return;
-        }
-        const error = (event as Partial<GPUUncapturedErrorEvent>).error;
-        this.#emit({
-          type: 'device-error',
-          errorType: error?.constructor?.name ?? 'unknown',
-          message: String(error?.message ?? ''),
-        });
-      };
-      device.addEventListener('uncapturederror', this.#errorListener);
-    }
-
-    // `lost` never rejects. It cannot be unsubscribed from, hence the flag checks.
-    void device.lost?.then((info) => {
-      if (this.#active) {
-        this.#emit({ type: 'device-lost', reason: String(info.reason), message: info.message });
-      }
-    });
+    // One shared, weakly-referencing listener per device; see deviceEvents.ts.
+    this.#watch = watchDevice(device, this);
 
     this.enable();
   }
@@ -264,10 +243,28 @@ export class InstrumentationHub implements TgpuInstrumentation {
     this.#disposed = true;
     this.#holder.instrumentation = undefined;
     this.#listeners = [];
-    this.#removeErrorListener();
+    this.#watch.stopAll();
   }
 
-  // --- internal: called by hook sites ---
+  // --- internal: called by hook sites and by deviceEvents.ts ---
+
+  handleDeviceError(event: Event): void {
+    if (!this.#active) {
+      return;
+    }
+    const error = (event as Partial<GPUUncapturedErrorEvent>).error;
+    this.#emit({
+      type: 'device-error',
+      errorType: error?.constructor?.name ?? 'unknown',
+      message: String(error?.message ?? ''),
+    });
+  }
+
+  handleDeviceLost(info: GPUDeviceLostInfo): void {
+    if (this.#active) {
+      this.#emit({ type: 'device-lost', reason: String(info.reason), message: info.message });
+    }
+  }
 
   now(): number {
     return performance.now();
@@ -529,7 +526,7 @@ export class InstrumentationHub implements TgpuInstrumentation {
     }
 
     if (ownDevice) {
-      this.#removeErrorListener();
+      this.#watch.stopErrors();
     } else {
       this.dispose();
     }
@@ -567,13 +564,6 @@ export class InstrumentationHub implements TgpuInstrumentation {
     this.#live.delete(id);
     if (rec.kind === 'buffer' || rec.kind === 'texture') {
       this.#collectedWithoutDestroy++;
-    }
-  }
-
-  #removeErrorListener(): void {
-    if (this.#errorListener !== undefined) {
-      this.#device.removeEventListener('uncapturederror', this.#errorListener);
-      this.#errorListener = undefined;
     }
   }
 

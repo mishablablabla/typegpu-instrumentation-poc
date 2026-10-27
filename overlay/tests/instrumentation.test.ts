@@ -588,6 +588,65 @@ describe('garbage collection compatibility', () => {
     expect(after.counters.collectedWithoutDestroy).toBe(2);
   });
 
+  // Regression, found by the viability gate on a real device: a device keeps its listeners and its `lost`
+  // reactions for as long as it lives, so a per-root listener kept every abandoned root's instrumentation
+  // (with its event history) alive: 30 of 30 hubs survived. Hot reloading creates roots like this.
+  it('does not keep instrumentation of abandoned roots alive through a long-lived device', async ({
+    device,
+  }) => {
+    // plain functions, not vi.fn (which records its arguments): behave like a real device and nothing more
+    const listeners = new Set<unknown>();
+    const mock = (device as unknown as { mock: Record<string, unknown> }).mock;
+    mock.addEventListener = (_type: string, listener: unknown) => listeners.add(listener);
+    mock.removeEventListener = (_type: string, listener: unknown) => listeners.delete(listener);
+    mock.lost = new Promise(() => {}); // never settles: the device lives on
+
+    const hubs: WeakRef<object>[] = [];
+    (() => {
+      for (let i = 0; i < 30; i++) {
+        const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+        hubs.push(new WeakRef(root['~unstable'].instrumentation as object));
+        root.createComputePipeline({ compute: computeMain }).initSync();
+      }
+    })();
+    expect(listeners.size).toBe(1); // one shared listener, not one per root
+
+    for (let i = 0; i < 20; i++) {
+      await flush();
+      gc();
+    }
+
+    expect(hubs.filter((h) => h.deref() !== undefined)).toHaveLength(0);
+    for (let i = 0; i < 20 && listeners.size > 0; i++) {
+      await flush();
+      gc();
+    }
+    expect(listeners.size).toBe(0); // the shared listener is removed once the last hub is gone
+  });
+
+  it('delivers one device error to every live instrumented root on the same device', ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const a = enabledRoot(device);
+    const b = enabledRoot(device);
+
+    observable.fireError('shared');
+
+    expect(ofType(a.events, 'device-error')).toHaveLength(1);
+    expect(ofType(b.events, 'device-error')).toHaveLength(1);
+    expect(observable.errorListenerCount).toBe(1);
+
+    a.inst.dispose();
+    observable.fireError('second');
+    expect(ofType(a.events, 'device-error')).toHaveLength(1);
+    expect(ofType(b.events, 'device-error')).toHaveLength(2);
+    expect(observable.errorListenerCount).toBe(1);
+
+    b.inst.dispose();
+    expect(observable.errorListenerCount).toBe(0);
+  });
+
   it('keeps event history bounded while resources churn and get collected', async ({ device }) => {
     makeObservableDevice(device);
     const root = tgpu.initFromDevice({ device, unstable_instrumentation: { historySize: 8 } });
