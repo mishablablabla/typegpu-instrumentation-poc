@@ -4,6 +4,7 @@ set -euo pipefail
 source "$(dirname "$0")/env.sh"
 
 sync_dir() {
+  [ -d "$1" ] || return 0
   mkdir -p "$2"
   rsync -a --delete "$1/" "$2/"
 }
