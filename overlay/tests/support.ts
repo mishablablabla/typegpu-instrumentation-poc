@@ -101,6 +101,7 @@ type Mock = ReturnType<typeof vi.fn>;
 type DeviceMock = Record<
   | 'createBuffer'
   | 'createBindGroup'
+  | 'createBindGroupLayout'
   | 'createShaderModule'
   | 'createComputePipeline'
   | 'createComputePipelineAsync'
