@@ -173,3 +173,19 @@ export function makePlainDevice(): GPUDevice {
     destroy: noop,
   } as unknown as GPUDevice;
 }
+
+/**
+ * The root's `$internal` symbol, found on the root itself. Importing it from `src/shared/symbols.ts` would give a
+ * different symbol than the one the built package uses (`TEST_BUILT=1` runs these tests against `dist`).
+ */
+export function internalsOf(root: object): {
+  instrumentation: Record<string, (...a: unknown[]) => void>;
+} {
+  const symbol = Object.getOwnPropertySymbols(root).find((s) =>
+    s.description?.endsWith('$internal'),
+  );
+  if (symbol === undefined) {
+    throw new Error('the root has no $internal symbol');
+  }
+  return (root as Record<symbol, unknown>)[symbol] as ReturnType<typeof internalsOf>;
+}

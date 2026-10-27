@@ -1,31 +1,13 @@
 $ TEST_BUILT=1 pnpm vitest run tests/instrumentation --exclude '**/bench/**'  (cwd packages/typegpu)
-exit 1
+exit 0
 
  RUN  v4.1.11 /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/.work/typegpu/packages/typegpu
 
- ❯ tests/instrumentation/defects.test.ts (25 tests | 1 failed) 100ms
-     × R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once 10ms
 
- Test Files  1 failed | 6 passed (7)
-      Tests  1 failed | 166 passed (167)
-   Start at  21:31:28
-   Duration  7.34s (transform 7.63s, setup 0ms, import 9.26s, tests 7.61s, environment 1ms)
-
-
-⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
-
- FAIL  tests/instrumentation/defects.test.ts > the layer never disturbs the application > R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once
-TypeError: Cannot read properties of undefined (reading 'instrumentation')
- ❯ sinkOf tests/instrumentation/defects.test.ts:40:17
-     38|       { instrumentation: Record<string, (...a: unknown[]) => void> }
-     39|     >
-     40|   )[$internal]!.instrumentation;
-       |                 ^
-     41|
-     42| describe('counters and ids', () => {
- ❯ tests/instrumentation/defects.test.ts:378:18
-
-⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+ Test Files  8 passed (8)
+      Tests  206 passed (206)
+   Start at  22:15:08
+   Duration  4.16s (transform 4.87s, setup 0ms, import 6.28s, tests 5.05s, environment 0ms)
 
 
 

@@ -10,7 +10,6 @@ import * as vm from 'node:vm';
 import { afterEach, describe, expect, vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
-import { $internal } from '../../src/shared/symbols.ts';
 import type {
   TgpuInstrumentationEvent,
   TgpuInstrumentationOptions,
@@ -25,6 +24,7 @@ import {
   fragmentMain,
   layout,
   makeObservableDevice,
+  internalsOf,
   mockOf,
   ofType,
   vertexMain,
@@ -52,7 +52,7 @@ const brokenFragment = tgpu.fragmentFn({ out: d.vec4f })(() => {
   return d.vec4f(slot.$, 0, 0, 1);
 });
 
-function renderPipelineOf(root: Root, fragment: typeof fragmentMain | typeof brokenFragment = fragmentMain) {
+function renderPipelineOf(root: Root, fragment: typeof fragmentMain = fragmentMain) {
   return root.createRenderPipeline({
     vertex: vertexMain,
     fragment,
@@ -243,7 +243,9 @@ describe('delivery and failure reporting', () => {
   });
 
   // N26
-  it('cuts a subscriber that keeps causing events off after exactly 10 000 events', ({ device }) => {
+  it('cuts a subscriber that keeps causing events off after exactly 10 000 events', ({
+    device,
+  }) => {
     vi.stubGlobal('reportError', vi.fn());
     makeObservableDevice(device);
     const { root, inst } = enabledRoot(device, { historySize: 0 });
@@ -370,9 +372,7 @@ describe('failures are only reported while recording', () => {
   }) => {
     makeObservableDevice(device);
     const { root, inst, events } = enabledRoot(device);
-    const sink = (
-      root as unknown as Record<symbol, { instrumentation: Record<string, (...a: unknown[]) => void> }>
-    )[$internal]!.instrumentation;
+    const sink = internalsOf(root).instrumentation;
 
     inst.disable();
     sink.pipelineResolutionFailed!({}, 'compute', 'lazy', new Error('late'));
@@ -440,7 +440,9 @@ describe('pipeline failures', () => {
         initSync: () => pipeline.initSync(),
         initAsync: () => void pipeline.initAsync(),
         lazy: () =>
-          pipeline.withColorAttachment({ view: texture, loadOp: 'clear', storeOp: 'store' }).draw(3),
+          pipeline
+            .withColorAttachment({ view: texture, loadOp: 'clear', storeOp: 'store' })
+            .draw(3),
       }[trigger];
 
       let thrown: unknown;
@@ -476,7 +478,9 @@ describe('pipeline failures', () => {
       return d.vec4f(paramsLayout.$.params, 0, 0, 1);
     });
     root.unwrap(
-      root.createBindGroup(layout, { values: root.createBuffer(d.arrayOf(d.f32, 4)).$usage('storage') }),
+      root.createBindGroup(layout, {
+        values: root.createBuffer(d.arrayOf(d.f32, 4)).$usage('storage'),
+      }),
     );
     root.unwrap(
       root.createBindGroup(paramsLayout, { params: root.createBuffer(d.f32).$usage('uniform') }),
@@ -486,7 +490,9 @@ describe('pipeline failures', () => {
     await root.createComputePipeline({ compute: computeMain }).initAsync();
     await renderPipelineOf(root, fragment).initAsync();
     mockOf(device).createRenderPipelineAsync.mockRejectedValueOnce(new Error('invalid'));
-    await renderPipelineOf(root, fragment).initAsync().catch(() => {});
+    await renderPipelineOf(root, fragment)
+      .initAsync()
+      .catch(() => {});
     await flush();
 
     const [compute, render] = ofType(events, 'pipeline-created');
@@ -504,7 +510,9 @@ describe('hooks run after the effect they report', () => {
     makeObservableDevice(device);
     const { root, inst } = enabledRoot(device);
     const texture = root.createTexture({ size: [4, 4], format: 'rgba8unorm' }).$usage('render');
-    (renderPassEncoder.draw as unknown as { mockImplementationOnce: (fn: () => void) => void }).mockImplementationOnce(() => {
+    (
+      renderPassEncoder.draw as unknown as { mockImplementationOnce: (fn: () => void) => void }
+    ).mockImplementationOnce(() => {
       throw new Error('draw failed');
     });
     const pipeline = renderPipelineOf(root);
@@ -523,7 +531,11 @@ describe('hooks run after the effect they report', () => {
     const group = root.createBindGroup(layout, {
       values: root.createBuffer(d.arrayOf(d.f32, 4)).$usage('storage'),
     });
-    (computePassEncoder.dispatchWorkgroups as unknown as { mockImplementationOnce: (fn: () => void) => void }).mockImplementationOnce(() => {
+    (
+      computePassEncoder.dispatchWorkgroups as unknown as {
+        mockImplementationOnce: (fn: () => void) => void;
+      }
+    ).mockImplementationOnce(() => {
       throw new Error('dispatch failed');
     });
 
@@ -629,10 +641,11 @@ describe('async CPU timing', () => {
     const mock = mockOf(device);
     const { clock, restore } = withClock(1000);
     try {
-      const slowly = (original: (descriptor: unknown) => Promise<unknown>) => async (d: unknown) => {
-        clock.now += 9;
-        return original(d);
-      };
+      const slowly =
+        (original: (descriptor: unknown) => Promise<unknown>) => async (d: unknown) => {
+          clock.now += 9;
+          return original(d);
+        };
       mock.createComputePipelineAsync.mockImplementation(
         slowly(
           mock.createComputePipelineAsync.getMockImplementation() as (
@@ -659,8 +672,13 @@ describe('async CPU timing', () => {
         clock.now += 9;
         throw new Error('invalid');
       });
-      await root.createComputePipeline({ compute: computeMain }).initAsync().catch(() => {});
-      await renderPipelineOf(root).initAsync().catch(() => {});
+      await root
+        .createComputePipeline({ compute: computeMain })
+        .initAsync()
+        .catch(() => {});
+      await renderPipelineOf(root)
+        .initAsync()
+        .catch(() => {});
 
       const timed = events.filter(
         (e) => e.type === 'pipeline-created' || e.type === 'pipeline-creation-failed',
@@ -687,7 +705,10 @@ describe('async CPU timing', () => {
       await root.createComputePipeline({ compute: computeMain }).initAsync();
       await renderPipelineOf(root).initAsync();
       mockOf(device).createComputePipelineAsync.mockRejectedValueOnce(new Error('invalid'));
-      await root.createComputePipeline({ compute: computeMain }).initAsync().catch(() => {});
+      await root
+        .createComputePipeline({ compute: computeMain })
+        .initAsync()
+        .catch(() => {});
 
       const timed = events.filter(
         (e) => e.type === 'pipeline-created' || e.type === 'pipeline-creation-failed',
@@ -810,12 +831,18 @@ describe('JSONL reader', () => {
     const records = validExport(device);
     expect(parseJsonl(text(records)).events).toHaveLength(1);
 
-    const withHeader = (patch: Record<string, unknown>) => [{ ...records[0], ...patch }, ...records.slice(1)];
+    const withHeader = (patch: Record<string, unknown>) => [
+      { ...records[0], ...patch },
+      ...records.slice(1),
+    ];
     expect(() => parseJsonl(text(withHeader({ version: 2 })))).toThrow(JsonlFormatError);
     expect(() => parseJsonl(text(withHeader({ version: 2 })))).toThrow(/format version/);
     expect(() => parseJsonl(text(withHeader({ eventSchema: 1 })))).toThrow(/event schema/);
 
-    const oldEvent = [records[0], { record: 'event', event: { ...(records[1]?.event as object), v: 1 } }];
+    const oldEvent = [
+      records[0],
+      { record: 'event', event: { ...(records[1]?.event as object), v: 1 } },
+    ];
     expect(() => parseJsonl(text(oldEvent))).toThrow(/unsupported schema version 1/);
   });
 });

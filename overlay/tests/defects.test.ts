@@ -7,13 +7,13 @@ import { afterEach, describe, expect, vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { snapshotResource } from 'typegpu/~internal';
 import { it } from 'typegpu-testing-utility';
-import { $internal } from '../../src/shared/symbols.ts';
 import {
   computeMain,
   enabledRoot,
   flush,
   layout,
   makeObservableDevice,
+  internalsOf,
   mockOf,
   ofType,
   typesOf,
@@ -31,13 +31,7 @@ function bindGroupFor(root: ReturnType<typeof enabledRoot>['root']) {
 }
 
 /** What hook sites call. Reached through the root's internals, which is exactly what TypeGPU's code does. */
-const sinkOf = (root: ReturnType<typeof enabledRoot>['root']) =>
-  (
-    root as unknown as Record<
-      symbol,
-      { instrumentation: Record<string, (...a: unknown[]) => void> }
-    >
-  )[$internal]!.instrumentation;
+const sinkOf = (root: ReturnType<typeof enabledRoot>['root']) => internalsOf(root).instrumentation;
 
 describe('counters and ids', () => {
   it('D1 does not count a dispatch that threw before anything was recorded', ({

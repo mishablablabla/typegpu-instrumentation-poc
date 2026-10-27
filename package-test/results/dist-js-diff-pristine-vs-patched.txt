@@ -1,6 +1,6 @@
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/buffer/buffer.js work/patched/node_modules/typegpu/core/buffer/buffer.js
---- work/pristine/node_modules/typegpu/core/buffer/buffer.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/buffer/buffer.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/buffer/buffer.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/buffer/buffer.js	2026-10-27 22:14:56
 @@ -84,12 +84,14 @@
                  }
                  const soul = this[$soul];
@@ -43,8 +43,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
      toString() {
          return `buffer:${getName(this) ?? '<unnamed>'}`;
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/commandEncoder/commandEncoder.js work/patched/node_modules/typegpu/core/commandEncoder/commandEncoder.js
---- work/pristine/node_modules/typegpu/core/commandEncoder/commandEncoder.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/commandEncoder/commandEncoder.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/commandEncoder/commandEncoder.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/commandEncoder/commandEncoder.js	2026-10-27 22:14:56
 @@ -40,6 +40,7 @@
          const { rawEncoder, root, afterSubmit } = this[$internal];
          this.#recordPendingCommands();
@@ -54,8 +54,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
              hook();
          }
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/commandEncoder/computePass.js work/patched/node_modules/typegpu/core/commandEncoder/computePass.js
---- work/pristine/node_modules/typegpu/core/commandEncoder/computePass.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/commandEncoder/computePass.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/commandEncoder/computePass.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/commandEncoder/computePass.js	2026-10-27 22:14:56
 @@ -33,6 +33,7 @@
              state: new ComputeDrawState(),
              owner,
@@ -65,8 +65,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
      }
      #emit(emit) {
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.js work/patched/node_modules/typegpu/core/commandEncoder/renderPass.js
---- work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/commandEncoder/renderPass.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/commandEncoder/renderPass.js	2026-10-27 22:14:56
 @@ -114,6 +114,7 @@
              state: new RenderDrawState(),
              owner,
@@ -76,8 +76,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
      }
      #emit(usesIndexBuffer, emit) {
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/pipeline/computePipeline.js work/patched/node_modules/typegpu/core/pipeline/computePipeline.js
---- work/pristine/node_modules/typegpu/core/pipeline/computePipeline.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/pipeline/computePipeline.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/pipeline/computePipeline.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/pipeline/computePipeline.js	2026-10-27 22:14:56
 @@ -230,8 +230,10 @@
          if (this.#initAsyncPromise === undefined) {
              // the pipeline did not start resolution & compilation
@@ -198,8 +198,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
      }
  }
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/pipeline/drawState.js work/patched/node_modules/typegpu/core/pipeline/drawState.js
---- work/pristine/node_modules/typegpu/core/pipeline/drawState.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/pipeline/drawState.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/pipeline/drawState.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/pipeline/drawState.js	2026-10-27 22:14:56
 @@ -195,6 +195,7 @@
          state.immediates.write(rawPass, memo.usedImmediate, priors.immediatesMap, !state.rawAccessed);
      }
@@ -215,8 +215,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
 +    passInternals.instrumentation?.dispatched(core);
  }
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.js work/patched/node_modules/typegpu/core/pipeline/renderPipeline.js
---- work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/pipeline/renderPipeline.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/pipeline/renderPipeline.js	2026-10-27 22:14:56
 @@ -343,8 +343,10 @@
          if (this.#initAsyncPromise === undefined) {
              // the pipeline did not start resolution & compilation
@@ -341,8 +341,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
  }
  /**
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/root/init.js work/patched/node_modules/typegpu/core/root/init.js
---- work/pristine/node_modules/typegpu/core/root/init.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/root/init.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/root/init.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/root/init.js	2026-10-27 22:14:56
 @@ -173,10 +173,13 @@
      nameRegistrySetting;
      shaderGeneratorClass;
@@ -418,8 +418,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
 +    return new TgpuRootImpl(device, names, minify, false, logOptions ?? {}, shaderGeneratorClass, instrumentation);
  }
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/texture/texture.js work/patched/node_modules/typegpu/core/texture/texture.js
---- work/pristine/node_modules/typegpu/core/texture/texture.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/core/texture/texture.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/core/texture/texture.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/core/texture/texture.js	2026-10-27 22:14:56
 @@ -61,7 +61,7 @@
                  const soul = this[$soul];
                  if (!soul.raw) {
@@ -449,8 +449,8 @@ diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules
  }
  class TgpuFixedTextureViewImpl {
 diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/memo.js work/patched/node_modules/typegpu/memo.js
---- work/pristine/node_modules/typegpu/memo.js	2026-10-27 21:31:10
-+++ work/patched/node_modules/typegpu/memo.js	2026-10-27 21:31:14
+--- work/pristine/node_modules/typegpu/memo.js	2026-10-27 22:14:52
++++ work/patched/node_modules/typegpu/memo.js	2026-10-27 22:14:56
 @@ -7,8 +7,11 @@
  export class WeakMemo {
      #map = new WeakMap();

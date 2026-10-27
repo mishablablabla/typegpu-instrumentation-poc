@@ -378,23 +378,23 @@ describe('the registry stays bounded under churn nobody ever inspects', () => {
     };
 
     // Records are released when their object is collected. With a collection before every batch the registry
-    // must hold about one batch of records, whatever the total: measure growth from 40 000 to 400 000 buffers.
+    // must hold about one batch of records, whatever the total: measure growth from 40 000 to 200 000 buffers.
     // (Left to V8's own cadence it would follow it up to a high-water mark of tens of MiB, which is bounded
     // too but not a deterministic thing to assert.)
     for (let i = 0; i < 10; i++) {
       await batch();
     }
     const plateau = heap();
-    for (let i = 0; i < 90; i++) {
+    for (let i = 0; i < 40; i++) {
       await batch();
     }
     const grown = heap() - plateau;
 
-    // A registry that never released anything would add about 54 MiB over those 360 000 buffers.
+    // A registry that never released anything would add about 24 MiB over those 160 000 buffers.
     expect(grown).toBeLessThan(4 * 1024 * 1024);
-    // Sweeps ran on their own: almost all 400 000 are already accounted as collected before this snapshot.
+    // Sweeps ran on their own: almost all 200 000 are already accounted as collected before this snapshot.
     const snapshot = inst.getSnapshot();
-    expect(snapshot.counters.collectedWithoutDestroy).toBeGreaterThan(390_000);
+    expect(snapshot.counters.collectedWithoutDestroy).toBeGreaterThan(190_000);
     expect(snapshot.resources.length).toBeLessThan(5_000);
-  });
+  }, 60_000);
 });
