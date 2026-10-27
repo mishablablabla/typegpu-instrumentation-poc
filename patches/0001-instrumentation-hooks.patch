@@ -114,7 +114,7 @@ index a3e82175..c719b7aa 100644
    }
  
 diff --git a/packages/typegpu/src/core/pipeline/computePipeline.ts b/packages/typegpu/src/core/pipeline/computePipeline.ts
-index 44be7196..9f6dfb25 100644
+index 44be7196..ce2298e6 100644
 --- a/packages/typegpu/src/core/pipeline/computePipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/computePipeline.ts
 @@ -70,6 +70,7 @@ import {
@@ -138,23 +138,49 @@ index 44be7196..9f6dfb25 100644
  
        this.#initAsyncPromise = device
          .createComputePipelineAsync({
-@@ -522,6 +526,15 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -520,10 +524,37 @@ class ComputePipelineCore implements SelfResolvable {
+           }),
+           compute: { module },
          })
-         .then((pipeline) => {
-           this.#memo = { pipeline, usedBindGroupLayouts, catchall, logResources, usedImmediate };
-+          instrumentation?.pipelineCompiled(this, {
-+            pipeline: 'compute',
-+            trigger: 'initAsync',
-+            resolveMs,
-+            createMs: instrumentation.now() - createStart,
-+            wgsl: resolutionResult.code,
-+            layouts: usedBindGroupLayouts,
-+            module,
-+          });
-           this.#performanceTracker.measureCompile(device);
-         })
+-        .then((pipeline) => {
+-          this.#memo = { pipeline, usedBindGroupLayouts, catchall, logResources, usedImmediate };
+-          this.#performanceTracker.measureCompile(device);
+-        })
++        .then(
++          (pipeline) => {
++            this.#memo = { pipeline, usedBindGroupLayouts, catchall, logResources, usedImmediate };
++            instrumentation?.pipelineCompiled(this, {
++              pipeline: 'compute',
++              trigger: 'initAsync',
++              resolveMs,
++              createMs: instrumentation.now() - createStart,
++              wgsl: resolutionResult.code,
++              layouts: usedBindGroupLayouts,
++              module,
++            });
++            this.#performanceTracker.measureCompile(device);
++          },
++          (error: unknown) => {
++            instrumentation?.pipelineFailed(
++              this,
++              {
++                pipeline: 'compute',
++                trigger: 'initAsync',
++                resolveMs,
++                createMs: instrumentation.now() - createStart,
++                wgsl: resolutionResult.code,
++                layouts: usedBindGroupLayouts,
++                module,
++              },
++              error,
++            );
++            throw error;
++          },
++        )
          .finally(() => {
-@@ -531,7 +544,7 @@ class ComputePipelineCore implements SelfResolvable {
+           this.#initAsyncPromise = undefined;
+         });
+@@ -531,7 +562,7 @@ class ComputePipelineCore implements SelfResolvable {
      return this.#initAsyncPromise;
    }
  
@@ -163,7 +189,7 @@ index 44be7196..9f6dfb25 100644
      if (this.#memo !== undefined) {
        return;
      }
-@@ -541,8 +554,11 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -541,8 +572,11 @@ class ComputePipelineCore implements SelfResolvable {
      }
  
      const device = this.root.device;
@@ -176,7 +202,7 @@ index 44be7196..9f6dfb25 100644
  
      this.#memo = {
        pipeline: device.createComputePipeline({
-@@ -560,11 +576,23 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -560,11 +594,23 @@ class ComputePipelineCore implements SelfResolvable {
        usedImmediate,
      };
  
@@ -201,7 +227,7 @@ index 44be7196..9f6dfb25 100644
      return this.#memo as Memo;
    }
  
-@@ -575,6 +603,8 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -575,6 +621,8 @@ class ComputePipelineCore implements SelfResolvable {
      );
  
      // Resolving code
@@ -210,7 +236,7 @@ index 44be7196..9f6dfb25 100644
      const ns = namespace({ names: this.root.nameRegistrySetting });
      const resolutionResult = this.#performanceTracker.measureResolve(() =>
        resolve(this, {
-@@ -587,6 +617,7 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -587,6 +635,7 @@ class ComputePipelineCore implements SelfResolvable {
          root: this.root,
        }),
      );
@@ -218,7 +244,7 @@ index 44be7196..9f6dfb25 100644
      const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
  
      if (catchall !== undefined) {
-@@ -604,6 +635,6 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -604,6 +653,6 @@ class ComputePipelineCore implements SelfResolvable {
        code,
      });
  
@@ -247,7 +273,7 @@ index 7664e930..b540b6e7 100644
      reportIgnoredPriors(
        core,
 diff --git a/packages/typegpu/src/core/pipeline/renderPipeline.ts b/packages/typegpu/src/core/pipeline/renderPipeline.ts
-index 91983963..b435478f 100644
+index 91983963..95b33603 100644
 --- a/packages/typegpu/src/core/pipeline/renderPipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/renderPipeline.ts
 @@ -104,6 +104,7 @@ import {
@@ -258,7 +284,7 @@ index 91983963..b435478f 100644
  import type { RestoreContext } from '../../serial/types.ts';
  
  export interface RenderPipelineInternals {
-@@ -907,9 +908,17 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -907,24 +908,59 @@ class RenderPipelineCore implements SelfResolvable {
      if (this.#initAsyncPromise === undefined) {
        // the pipeline did not start resolution & compilation
        const device = this.options.root.device;
@@ -278,23 +304,61 @@ index 91983963..b435478f 100644
  
        this.#initAsyncPromise = device
          .createRenderPipelineAsync(descriptor)
-@@ -923,6 +932,15 @@ class RenderPipelineCore implements SelfResolvable {
-             connectedTargets,
-             usedImmediate: resolutionResult.usedImmediate,
-           };
-+          instrumentation?.pipelineCompiled(this, {
-+            pipeline: 'render',
-+            trigger: 'initAsync',
-+            resolveMs,
-+            createMs: instrumentation.now() - createStart,
-+            wgsl: resolutionResult.code,
-+            layouts: usedBindGroupLayouts,
-+            module,
-+          });
-           this.#performanceTracker.measureCompile(device);
-         })
+-        .then((pipeline) => {
+-          this.#memo = {
+-            pipeline,
+-            usedBindGroupLayouts,
+-            catchall,
+-            logResources,
+-            usedVertexLayouts: connectedAttribs.usedVertexLayouts,
+-            connectedTargets,
+-            usedImmediate: resolutionResult.usedImmediate,
+-          };
+-          this.#performanceTracker.measureCompile(device);
+-        })
++        .then(
++          (pipeline) => {
++            this.#memo = {
++              pipeline,
++              usedBindGroupLayouts,
++              catchall,
++              logResources,
++              usedVertexLayouts: connectedAttribs.usedVertexLayouts,
++              connectedTargets,
++              usedImmediate: resolutionResult.usedImmediate,
++            };
++            instrumentation?.pipelineCompiled(this, {
++              pipeline: 'render',
++              trigger: 'initAsync',
++              resolveMs,
++              createMs: instrumentation.now() - createStart,
++              wgsl: resolutionResult.code,
++              layouts: usedBindGroupLayouts,
++              module,
++            });
++            this.#performanceTracker.measureCompile(device);
++          },
++          (error: unknown) => {
++            instrumentation?.pipelineFailed(
++              this,
++              {
++                pipeline: 'render',
++                trigger: 'initAsync',
++                resolveMs,
++                createMs: instrumentation.now() - createStart,
++                wgsl: resolutionResult.code,
++                layouts: usedBindGroupLayouts,
++                module,
++              },
++              error,
++            );
++            throw error;
++          },
++        )
          .finally(() => {
-@@ -932,7 +950,7 @@ class RenderPipelineCore implements SelfResolvable {
+           this.#initAsyncPromise = undefined;
+         });
+@@ -932,7 +968,7 @@ class RenderPipelineCore implements SelfResolvable {
      return this.#initAsyncPromise;
    }
  
@@ -303,7 +367,7 @@ index 91983963..b435478f 100644
      if (this.#memo !== undefined) {
        return;
      }
-@@ -942,9 +960,11 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -942,9 +978,11 @@ class RenderPipelineCore implements SelfResolvable {
      }
  
      const device = this.options.root.device;
@@ -316,7 +380,7 @@ index 91983963..b435478f 100644
  
      this.#memo = {
        pipeline: device.createRenderPipeline(descriptor),
-@@ -956,11 +976,23 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -956,11 +994,23 @@ class RenderPipelineCore implements SelfResolvable {
        usedImmediate: resolutionResult.usedImmediate,
      };
  
@@ -341,7 +405,7 @@ index 91983963..b435478f 100644
      return this.#memo as Memo;
    }
  
-@@ -975,6 +1007,8 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -975,6 +1025,8 @@ class RenderPipelineCore implements SelfResolvable {
      );
  
      // Resolving code
@@ -350,7 +414,7 @@ index 91983963..b435478f 100644
      const ns = namespace({ names: root.nameRegistrySetting });
      const resolutionResult = this.#performanceTracker.measureResolve(() =>
        resolve(this, {
-@@ -986,6 +1020,7 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -986,6 +1038,7 @@ class RenderPipelineCore implements SelfResolvable {
        }),
      );
  
@@ -358,7 +422,7 @@ index 91983963..b435478f 100644
      const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
  
      if (catchall !== undefined) {
-@@ -1063,7 +1098,7 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -1063,7 +1116,7 @@ class RenderPipelineCore implements SelfResolvable {
        descriptor.multisample = tgpuDescriptor.multisample;
      }
  

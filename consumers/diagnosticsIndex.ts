@@ -13,6 +13,14 @@ type Source = Pick<TgpuInstrumentation, 'subscribe' | 'history'>;
 export type DiagnosticsIndex = {
   /** "Why does my first frame hitch?" Pipelines compiled synchronously on first use. */
   readonly lazyCompiles: readonly { id: number; label: string | null; cpuMs: number }[];
+  /** "My async pipeline rejected, why?" The error plus the generated WGSL that was rejected. */
+  readonly failedCompiles: readonly {
+    id: number;
+    label: string | null;
+    errorType: string;
+    message: string;
+    wgsl: string;
+  }[];
   /** "What did the compiler say?" With the offending line of the generated WGSL attached. */
   readonly shaderProblems: readonly {
     pipelineId: number;
@@ -34,6 +42,7 @@ export type DiagnosticsIndex = {
 
 type State = {
   lazy: DiagnosticsIndex['lazyCompiles'][number][];
+  failed: DiagnosticsIndex['failedCompiles'][number][];
   wgslByPipeline: Map<number, { label: string | null; wgsl: string }>;
   problems: DiagnosticsIndex['shaderProblems'][number][];
   errors: DiagnosticsIndex['deviceErrors'][number][];
@@ -46,6 +55,7 @@ type State = {
 export function emptyState(): State {
   return {
     lazy: [],
+    failed: [],
     wgslByPipeline: new Map(),
     problems: [],
     errors: [],
@@ -69,6 +79,16 @@ export function reduce(state: State, e: TgpuInstrumentationEvent): void {
       if (e.trigger === 'lazy') {
         state.lazy.push({ id: e.id, label: e.label, cpuMs: e.resolveMs + e.createMs });
       }
+      break;
+    case 'pipeline-compile-failed':
+      state.wgslByPipeline.set(e.id, { label: e.label, wgsl: e.wgsl });
+      state.failed.push({
+        id: e.id,
+        label: e.label,
+        errorType: e.errorType,
+        message: e.message,
+        wgsl: e.wgsl,
+      });
       break;
     case 'shader-diagnostics': {
       if (e.messages.length === 0) {
@@ -109,6 +129,7 @@ export function reduce(state: State, e: TgpuInstrumentationEvent): void {
 export function toIndex(state: State): DiagnosticsIndex {
   return {
     lazyCompiles: state.lazy,
+    failedCompiles: state.failed,
     shaderProblems: state.problems,
     deviceErrors: state.errors,
     bindGroupsWithUnknownResources: state.unknownBindings,

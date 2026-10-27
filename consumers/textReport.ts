@@ -33,6 +33,11 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
         `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} compiled [${e.trigger}] ` +
         `resolve ${e.resolveMs.toFixed(2)} ms (CPU), create ${e.createMs.toFixed(2)} ms (CPU), ${e.wgsl.length} chars of WGSL`
       );
+    case 'pipeline-compile-failed':
+      return (
+        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} FAILED to compile [${e.trigger}] ` +
+        `${e.errorType}: ${e.message.split('\n')[0]} (${e.wgsl.length} chars of WGSL kept)`
+      );
     case 'shader-diagnostics':
       return e.messages.length === 0
         ? `${head} pipeline #${e.pipelineId} shader: no compiler messages`

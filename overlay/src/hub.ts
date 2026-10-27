@@ -60,10 +60,10 @@ type PipelineRec = {
   draws: number;
 };
 
-/** Identity only; layouts are referenced by pipelines and bind groups but never listed. */
-type LayoutRec = { readonly kind: 'layout'; readonly id: number };
+/** Identity only: layouts and failed pipelines are referenced by events but never listed. */
+type IdentityRec = { readonly kind: 'identity'; readonly id: number };
 
-type Rec = ResourceRec | BindGroupRec | PipelineRec | LayoutRec;
+type Rec = ResourceRec | BindGroupRec | PipelineRec | IdentityRec;
 type LiveRec = ResourceRec | BindGroupRec | PipelineRec;
 
 export type InstrumentationHolder = { instrumentation: InstrumentationHub | undefined };
@@ -373,7 +373,7 @@ export class InstrumentationHub implements TgpuInstrumentation {
       entries.push({ name, kind, resourceId: this.#trackedId(target) });
     }
 
-    const layoutId = this.#layoutId(bindGroup.layout);
+    const layoutId = this.#identityId(bindGroup.layout);
     const rec: BindGroupRec = {
       kind: 'bind-group',
       id: this.#nextId++,
@@ -398,7 +398,7 @@ export class InstrumentationHub implements TgpuInstrumentation {
     if (!this.#active) {
       return;
     }
-    const layoutIds = info.layouts.map((layout) => this.#layoutId(layout));
+    const layoutIds = info.layouts.map((layout) => this.#identityId(layout));
     const rec: PipelineRec = {
       kind: 'pipeline',
       id: this.#nextId++,
@@ -426,29 +426,60 @@ export class InstrumentationHub implements TgpuInstrumentation {
       layoutLabels: info.layouts.map((layout) => getName(layout) ?? null),
     });
 
-    const module = info.module as Partial<GPUShaderModule> | undefined;
-    if (typeof module?.getCompilationInfo === 'function') {
-      module.getCompilationInfo().then(
-        (compilation) => {
-          if (!this.#active) {
-            return;
-          }
-          this.#emit({
-            type: 'shader-diagnostics',
-            pipelineId: rec.id,
-            messages: compilation.messages.map((m) => ({
-              type: m.type,
-              message: m.message,
-              lineNum: m.lineNum,
-              linePos: m.linePos,
-            })),
-          });
-        },
-        () => {
-          // A lost device can reject this; the loss itself is reported separately.
-        },
-      );
+    this.#requestDiagnostics(rec.id, info.module);
+  }
+
+  /**
+   * The async entry point rejects for an invalid pipeline, and then no pipeline exists to list.
+   * The generated WGSL and the compiler messages are what the developer needs most at that point.
+   */
+  pipelineFailed(core: object, info: PipelineCompiledInfo, error: unknown): void {
+    if (!this.#active) {
+      return;
     }
+    const id = this.#identityId(core);
+    this.#emit({
+      type: 'pipeline-compile-failed',
+      id,
+      pipeline: info.pipeline,
+      label: getName(core) ?? null,
+      trigger: 'initAsync',
+      resolveMs: info.resolveMs,
+      createMs: info.createMs,
+      wgsl: info.wgsl,
+      layoutIds: info.layouts.map((layout) => this.#identityId(layout)),
+      layoutLabels: info.layouts.map((layout) => getName(layout) ?? null),
+      errorType: (error as Error | undefined)?.constructor?.name ?? 'unknown',
+      message: String((error as Error | undefined)?.message ?? error),
+    });
+    this.#requestDiagnostics(id, info.module);
+  }
+
+  #requestDiagnostics(pipelineId: number, shaderModule: unknown): void {
+    const module = shaderModule as Partial<GPUShaderModule> | undefined;
+    if (typeof module?.getCompilationInfo !== 'function') {
+      return;
+    }
+    module.getCompilationInfo().then(
+      (compilation) => {
+        if (!this.#active) {
+          return;
+        }
+        this.#emit({
+          type: 'shader-diagnostics',
+          pipelineId,
+          messages: compilation.messages.map((m) => ({
+            type: m.type,
+            message: m.message,
+            lineNum: m.lineNum,
+            linePos: m.linePos,
+          })),
+        });
+      },
+      () => {
+        // A lost device can reject this; the loss itself is reported separately.
+      },
+    );
   }
 
   dispatched(core: object): void {
@@ -512,10 +543,10 @@ export class InstrumentationHub implements TgpuInstrumentation {
     this.#finalizer.register(object, rec.id);
   }
 
-  #layoutId(layout: object): number {
+  #identityId(layout: object): number {
     let rec = this.#byObject.get(layout);
     if (rec === undefined) {
-      rec = { kind: 'layout', id: this.#nextId++ };
+      rec = { kind: 'identity', id: this.#nextId++ };
       this.#byObject.set(layout, rec);
     }
     return rec.id;

@@ -93,6 +93,26 @@ export type TgpuPipelineCompiled = EventBase & {
   readonly layoutLabels: readonly (string | null)[];
 };
 
+export type TgpuPipelineCompileFailed = EventBase & {
+  readonly type: 'pipeline-compile-failed';
+  /** Identity of the pipeline core. Stable across repeated failures of the same pipeline; never listed in snapshots. */
+  readonly id: number;
+  readonly pipeline: 'compute' | 'render';
+  readonly label: string | null;
+  /** Only the async entry point rejects; a synchronous `createXPipeline` reports through `device-error` instead. */
+  readonly trigger: 'initAsync';
+  readonly resolveMs: number;
+  /** Wall time until the creation promise rejected. */
+  readonly createMs: number;
+  /** Observed: the exact source given to `device.createShaderModule`. */
+  readonly wgsl: string;
+  readonly layoutIds: readonly number[];
+  readonly layoutLabels: readonly (string | null)[];
+  /** Constructor name of the rejection (`GPUPipelineError` for validation or internal failures). */
+  readonly errorType: string;
+  readonly message: string;
+};
+
 export type TgpuShaderDiagnosticMessage = {
   readonly type: string;
   readonly message: string;
@@ -103,6 +123,7 @@ export type TgpuShaderDiagnosticMessage = {
 
 export type TgpuShaderDiagnostics = EventBase & {
   readonly type: 'shader-diagnostics';
+  /** Id of the `pipeline-compiled` or `pipeline-compile-failed` event this belongs to. */
   readonly pipelineId: number;
   /** Empty means the compiler was asked and reported nothing. */
   readonly messages: readonly TgpuShaderDiagnosticMessage[];
@@ -135,6 +156,7 @@ export type TgpuInstrumentationEvent =
   | TgpuResourceDestroyed
   | TgpuBindGroupCreated
   | TgpuPipelineCompiled
+  | TgpuPipelineCompileFailed
   | TgpuShaderDiagnostics
   | TgpuDeviceError
   | TgpuDeviceLost

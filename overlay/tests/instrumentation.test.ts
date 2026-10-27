@@ -51,6 +51,18 @@ describe('instrumentation is opt-in', () => {
     root.destroy();
   });
 
+  it('lets an async compile failure through untouched', async ({ device }) => {
+    const failure = new Error('invalid');
+    (
+      device as unknown as { mock: { createComputePipelineAsync: ReturnType<typeof vi.fn> } }
+    ).mock.createComputePipelineAsync.mockRejectedValueOnce(failure);
+    const root = tgpu.initFromDevice({ device });
+
+    await expect(root.createComputePipeline({ compute: computeMain }).initAsync()).rejects.toBe(
+      failure,
+    );
+  });
+
   it('is absent for `false`', ({ device }) => {
     const root = tgpu.initFromDevice({ device, unstable_instrumentation: false });
     expect(root['~unstable'].instrumentation).toBeUndefined();
@@ -136,6 +148,66 @@ describe('events', () => {
     const [diagnostics] = ofType(events, 'shader-diagnostics');
     expect(diagnostics?.messages).toEqual([
       { type: 'error', message: 'unknown identifier', lineNum: 1, linePos: 3 },
+    ]);
+  });
+
+  // Regression for a gap found on a real device: an invalid shader created with initAsync() rejects, and
+  // before this event existed nothing at all was reported (no WGSL, no compiler messages).
+  it('reports an async compute failure with the WGSL, then the compiler messages, and recovers on retry', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    observable.setCompilationMessages([
+      { type: 'error', message: 'unresolved call target', lineNum: 1, linePos: 3 },
+    ]);
+    class GPUPipelineError extends Error {}
+    const failure = new GPUPipelineError('[Invalid ShaderModule] is invalid');
+    (
+      device as unknown as { mock: { createComputePipelineAsync: ReturnType<typeof vi.fn> } }
+    ).mock.createComputePipelineAsync.mockRejectedValueOnce(failure);
+    const { root, events, inst } = enabledRoot(device);
+    const pipeline = root.createComputePipeline({ compute: computeMain });
+
+    await expect(pipeline.initAsync()).rejects.toBe(failure);
+    await flush();
+
+    expect(typesOf(events)).toEqual(['pipeline-compile-failed', 'shader-diagnostics']);
+    const [failed] = ofType(events, 'pipeline-compile-failed');
+    expect(failed).toMatchObject({
+      pipeline: 'compute',
+      trigger: 'initAsync',
+      errorType: 'GPUPipelineError',
+      message: '[Invalid ShaderModule] is invalid',
+    });
+    expect(failed?.wgsl).toContain('fn computeMain');
+    expect(ofType(events, 'shader-diagnostics')[0]).toMatchObject({
+      pipelineId: failed?.id,
+      messages: [{ type: 'error', message: 'unresolved call target' }],
+    });
+    expect(inst.getSnapshot().pipelines).toEqual([]);
+
+    await pipeline.initAsync();
+    expect(ofType(events, 'pipeline-compiled')).toHaveLength(1);
+    expect(inst.getSnapshot().pipelines).toHaveLength(1);
+  });
+
+  it('reports an async render failure too', async ({ device }) => {
+    makeObservableDevice(device);
+    const failure = new Error('render pipeline is invalid');
+    (
+      device as unknown as { mock: { createRenderPipelineAsync: ReturnType<typeof vi.fn> } }
+    ).mock.createRenderPipelineAsync.mockRejectedValueOnce(failure);
+    const { root, events } = enabledRoot(device);
+    const pipeline = root.createRenderPipeline({
+      vertex: vertexMain,
+      fragment: fragmentMain,
+      targets: { format: 'rgba8unorm' },
+    });
+
+    await expect(pipeline.initAsync()).rejects.toBe(failure);
+
+    expect(ofType(events, 'pipeline-compile-failed')).toEqual([
+      expect.objectContaining({ pipeline: 'render', errorType: 'Error', message: failure.message }),
     ]);
   });
 

@@ -1,6 +1,6 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect } from 'vitest';
+import { describe, expect, vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
 import { createDiagnosticsIndex } from './consumers/diagnosticsIndex.ts';
@@ -83,6 +83,36 @@ describe('two independent consumers of one stream', () => {
     ]);
     expect(result.liveResources.map((r) => r.label)).toEqual(['kept']);
     expect(result.leakedAtRootDestroy).toEqual({ buffers: 1, textures: 0 });
+  });
+
+  it('both consumers explain an async compile failure from the stream alone', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    observable.setCompilationMessages([
+      { type: 'error', message: 'unresolved call target', lineNum: 1, linePos: 3 },
+    ]);
+    class GPUPipelineError extends Error {}
+    (
+      device as unknown as { mock: { createComputePipelineAsync: ReturnType<typeof vi.fn> } }
+    ).mock.createComputePipelineAsync.mockRejectedValueOnce(new GPUPipelineError('invalid module'));
+    const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+    const inst = root['~unstable'].instrumentation!;
+    const report = createTextReport(inst);
+    const index = createDiagnosticsIndex(inst);
+
+    await expect(
+      root.createComputePipeline({ compute: computeMain }).$name('doomed').initAsync(),
+    ).rejects.toThrow('invalid module');
+    await flush();
+
+    expect(report.lines().join('\n')).toContain('FAILED to compile [initAsync] GPUPipelineError');
+    const result = index.index();
+    expect(result.failedCompiles).toEqual([
+      expect.objectContaining({ label: 'doomed', errorType: 'GPUPipelineError' }),
+    ]);
+    expect(result.failedCompiles[0]?.wgsl).toContain('fn computeMain');
+    expect(result.shaderProblems[0]?.messages[0]?.wgslLine).toContain('var<storage');
   });
 
   it('a consumer attached late reconstructs the same state from history', async ({ device }) => {
