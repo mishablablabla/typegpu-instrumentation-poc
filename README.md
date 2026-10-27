@@ -6,7 +6,7 @@ Status: experiment. Nothing here is published, released, or proposed as a stable
 
 - Design: [docs/POC-DESIGN.md](docs/POC-DESIGN.md)
 - Background research (written against TypeGPU `bec5d554`): [docs/DEVTOOLS-INSTRUMENTATION-RESEARCH.md](docs/DEVTOOLS-INSTRUMENTATION-RESEARCH.md)
-- Results: `docs/POC-RESULTS.md` (written at the end of the POC)
+- Results: [docs/POC-RESULTS.md](docs/POC-RESULTS.md)
 
 ## How this repo relates to TypeGPU
 
@@ -28,6 +28,9 @@ The hooks have to live inside TypeGPU's core (that is the point of the experimen
 scripts/setup.sh            # once (needs pnpm 11, Node >= 24, network; or TYPEGPU_UPSTREAM=<local clone>)
 scripts/test.sh             # sync overlay + run the instrumentation tests
 scripts/save-patch.sh       # after editing existing files inside .work/typegpu
+scripts/format.sh           # TypeGPU's own oxfmt + oxlint on everything this repo adds or patches
+scripts/setup-pristine.sh   # two untouched upstream trees (baseline + A/A control) for the benchmark
+REPS=9 scripts/bench.sh     # pristine vs patched-disabled vs patched-enabled; then: node bench/summarize.mjs <file>
 ```
 
 Edit overlay files in this repo (the source of truth); edit existing TypeGPU files in `.work/typegpu`, then run `scripts/save-patch.sh`.

@@ -4,4 +4,4 @@ set -euo pipefail
 source "$(dirname "$0")/env.sh"
 "$ROOT/scripts/sync.sh"
 cd "$PKG"
-pnpm vitest run tests/instrumentation "$@"
+pnpm vitest run tests/instrumentation --exclude '**/bench/**' "$@"
