@@ -102,7 +102,7 @@ Rows and thresholds are from [ACCEPTANCE-MATRIX.md](ACCEPTANCE-MATRIX.md), writt
 - The registry's memory is bounded by V8's collection cadence (an uncollected object keeps its record): in a no-GC-pressure loop it plateaus at tens of MiB (measured 35–42 MiB at 200 k+ dropped buffers) — comparable to the objects it tracks, bounded, but not small.
 - Performance numbers: one machine, one browser, synthetic workloads, 60 s sustained runs; whole-operation overhead is derived, not directly measurable below ±1.4 %. Safari timing was not measured.
 - Not exercised on any real device: GPU reset (`device-lost` with a reason other than `destroyed` is simulated only), memory-pressure loss, multi-GPU systems.
-- CI workflows (`checks`, `upstream-drift`, `packaging`) are written but have never run on GitHub; the real-GPU suites are manual by design (hosted runners have no GPU).
+- CI workflows (`checks`, `upstream-drift`, `packaging`) ran on GitHub Actions (ubuntu-latest, Node 24) on 2026-10-27, run 40596740393: all three green. The first two runs of `packaging` failed because the bundle matrix needs bundlers that the filtered upstream install does not provide (webpack, rollup plugin, terser); the install step was added. The real-GPU suites stay manual by design (hosted runners have no GPU).
 - Everything is `unstable_`: names, the entry point name, option shapes and event schema may change (policy in the contract).
 
 ## What this document does not claim
