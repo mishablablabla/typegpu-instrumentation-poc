@@ -1,5 +1,7 @@
 # Real-device validation
 
+> **Update.** The final multi-environment results (Chrome headless and headed, a SwiftShader software adapter, Safari 26.3) and the support matrix are in [PRODUCTION-READINESS.md](PRODUCTION-READINESS.md). Event names in this older document predate the v2 rename (`pipeline-compiled` is now `pipeline-created`).
+
 What was run on an actual GPU, what it showed, and what it did not. Everything here is **[verified]** (produced by `real-gpu/run.mjs`, raw output in `real-gpu/results/`) unless marked otherwise. Mocked tests are listed separately in §5 and are never counted as real-GPU evidence.
 
 ## 1. Environment
