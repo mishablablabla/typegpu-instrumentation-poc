@@ -28,7 +28,19 @@ type Run = {
   notes: Record<string, unknown>;
 };
 
-const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
+// Not setTimeout: a page the browser considers hidden (Safari opened from a script) throttles timers to 1 Hz,
+// which would turn the waits below into minutes. Yielding through a MessageChannel is not throttled.
+async function sleep(ms: number): Promise<void> {
+  const end = performance.now() + ms;
+  const channel = new MessageChannel();
+  while (performance.now() < end) {
+    await new Promise<void>((resolve) => {
+      channel.port1.onmessage = () => resolve();
+      channel.port2.postMessage(null);
+    });
+  }
+  channel.port1.close();
+}
 const ofType = <T extends Ev['type']>(events: readonly Ev[], type: T) =>
   events.filter((e): e is Extract<Ev, { type: T }> => e.type === type);
 const types = (events: readonly Ev[]) => events.map((e) => e.type);
@@ -36,6 +48,9 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
 const findings: Finding[] = [];
 const evidence: Record<string, unknown> = {};
+const skipped: string[] = [];
+/** Objects a scenario wants to stay alive until the checks have run. */
+const retained: unknown[] = [];
 let current = '';
 const check = (name: string, pass: boolean, detail?: unknown) =>
   findings.push({ scenario: current, check: name, pass, detail });
@@ -235,6 +250,9 @@ async function resources() {
     root.unwrap(tex);
     const keep = root.createBuffer(d.f32).$usage('uniform').$name('keep');
     root.unwrap(keep);
+    // The survivor must stay reachable: the layer tracks objects weakly, so an unreferenced buffer is
+    // legitimately collectable (Safari collects it before the checks run; Chrome happened not to).
+    retained.push(keep);
     buf.destroy();
     buf.destroy(); // idempotent: must not produce a second event
     tex.destroy();
@@ -540,10 +558,12 @@ async function syncFailures() {
     'no pipeline-creation-failed on the sync path',
     ofType(run.events, 'pipeline-creation-failed').length === 0,
   );
-  check(
-    'device errors name the bad identifier',
-    errors.length >= 2 && errors.some((e) => e.message.includes('definitelyUndeclared')),
-    errors.map((e) => e.message.split('\n')[0]),
+  // Browser-dependent, so observations and not checks. Chrome (Dawn): two device errors per invalid pipeline,
+  // quoting the offending source line. Safari (WebKit): one device error for the invalid compute pipeline, NONE
+  // for the invalid render pipeline, and the text does not name the identifier; the shader-diagnostics event
+  // is then the only signal that the render pipeline is broken.
+  run.notes.deviceErrorNamesIdentifier = errors.some((e) =>
+    e.message.includes('definitelyUndeclared'),
   );
   run.notes.deviceErrorCount = errors.length;
   check(
@@ -737,7 +757,10 @@ async function abandonedRoots() {
   current = 'abandoned-roots';
   const collectGarbage = (globalThis as { gc?: () => void }).gc;
   if (collectGarbage === undefined) {
-    check('gc() is available (Chrome needs --js-flags=--expose-gc)', false);
+    // Not a failure: the engine simply cannot be asked to collect garbage (Safari, Firefox). Recorded, not hidden.
+    skipped.push(
+      'abandoned-roots: gc() is not exposed (Chrome is started with --js-flags=--expose-gc)',
+    );
     return;
   }
   const device = await (await navigator.gpu.requestAdapter())!.requestDevice();
@@ -831,10 +854,13 @@ export async function runViability() {
       if (!f.pass) report.push(`        detail: ${JSON.stringify(f.detail)?.slice(0, 600)}`);
     }
   }
+  retained.length = 0;
+  for (const note of skipped) report.push(`\nSKIPPED  ${note}`);
   return {
     provenance: prov,
     ok: findings.every((f) => f.pass),
     report,
+    skipped,
     findings,
     scenarios,
     evidence,

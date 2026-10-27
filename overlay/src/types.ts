@@ -121,24 +121,32 @@ export type TgpuPipelineCreated = EventBase & {
   readonly layoutLabels: readonly (string | null)[];
 };
 
-/** The async creation rejected. No pipeline exists afterwards; the WGSL and compiler messages are what is left to debug with. */
+/**
+ * Creating the pipeline failed, so no pipeline exists afterwards.
+ * - `phase: 'resolve'`: TypeGPU could not generate the WGSL (a TGSL/resolution error, any trigger). `wgsl` is `null`.
+ * - `phase: 'create'`: WebGPU rejected the async creation (`trigger: 'initAsync'`); the WGSL and, through
+ *   `shader-diagnostics`, the compiler messages are what is left to debug with. A *synchronous* creation never
+ *   rejects: its validation failures arrive as `device-error` and `shader-diagnostics` after `pipeline-created`.
+ * The error itself is rethrown to the application unchanged.
+ */
 export type TgpuPipelineCreationFailed = EventBase & {
   readonly type: 'pipeline-creation-failed';
-  /** Identity of the pipeline core. Stable across repeated failures of the same pipeline; never listed in snapshots. */
+  /** Identity of the pipeline core: the same id as a later successful `pipeline-created` of the same pipeline. Never listed in snapshots. */
   readonly id: number;
   readonly pipeline: 'compute' | 'render';
   readonly label: string | null;
-  /** Only the async entry point rejects; a synchronous `createXPipeline` reports through `device-error` instead. */
-  readonly trigger: 'initAsync';
+  readonly trigger: TgpuPipelineTrigger;
+  readonly phase: 'resolve' | 'create';
+  /** `0` when the failure happened while generating the WGSL. */
   readonly resolveMs: number;
-  /** Wall time until the creation promise rejected. */
+  /** Wall time until the creation promise rejected; `0` for a resolve failure. */
   readonly createMs: number;
-  /** Observed: the exact source given to `device.createShaderModule`; `null` when `captureSource` is off. */
+  /** Observed: the exact source given to `device.createShaderModule`; `null` for a resolve failure or when `captureSource` is off. */
   readonly wgsl: string | null;
   readonly wgslLength: number;
   readonly layoutIds: readonly number[];
   readonly layoutLabels: readonly (string | null)[];
-  /** Constructor name of the rejection (`GPUPipelineError` for validation or internal failures). */
+  /** Constructor name of the error (`GPUPipelineError`, `ResolutionError`, ...). */
   readonly errorType: string;
   readonly message: string;
 };
@@ -251,6 +259,12 @@ export type TgpuInstrumentationCounters = {
   /** Estimated payload bytes currently retained by the history. */
   readonly historyBytes: number;
   /**
+   * Failures of the instrumentation layer itself (a bug in it, or an unexpected object). The first one disables
+   * the layer, so the application keeps running unobserved instead of being disturbed; see `lastInternalError`.
+   */
+  readonly internalErrors: number;
+  readonly lastInternalError: string | null;
+  /**
    * Exceptions thrown by subscribers. They never reach the instrumented application; each is counted here and
    * the first few distinct ones are surfaced through `reportError` (or `console.error`).
    */
@@ -267,6 +281,12 @@ export type TgpuInstrumentationSnapshot = {
   readonly bindGroups: readonly TgpuBindGroupInfo[];
   readonly pipelines: readonly TgpuPipelineInfo[];
   readonly counters: TgpuInstrumentationCounters;
+  /**
+   * The most recent `pipeline-creation-failed` events (at most 16) and the `device-lost` event, pinned outside the
+   * history ring, so a late subscriber still learns why a pipeline is missing after thousands of later events.
+   * Bounded in bytes by the history limit (oldest dropped first); WGSL follows `captureSource`.
+   */
+  readonly retainedFailures: readonly (TgpuPipelineCreationFailed | TgpuDeviceLost)[];
   /** What this layer cannot provide, so consumers never have to guess. */
   readonly unavailable: readonly string[];
 };
@@ -310,7 +330,9 @@ export type PipelineCreationInfo = {
  * `undefined` unless instrumentation is enabled, so a disabled root pays one property read and one branch.
  * Not public API: use {@link TgpuInstrumentation}.
  */
-export interface InstrumentationSink extends TgpuInstrumentation {
+export interface InstrumentationSink {
+  /** What `root['~unstable'].instrumentation` returns: only the public methods, so consumers cannot forge hook calls. */
+  readonly api: TgpuInstrumentation;
   now(): number;
   bufferMaterialized(buffer: object, descriptor: GPUBufferDescriptor): void;
   textureMaterialized(texture: object, descriptor: GPUTextureDescriptor): void;
@@ -319,6 +341,12 @@ export interface InstrumentationSink extends TgpuInstrumentation {
   bindGroupCreated(bindGroup: object, origin: 'created' | 'adopted'): void;
   pipelineCreated(core: object, info: PipelineCreationInfo): void;
   pipelineCreationFailed(core: object, info: PipelineCreationInfo, error: unknown): void;
+  pipelineResolutionFailed(
+    core: object,
+    pipeline: 'compute' | 'render',
+    trigger: TgpuPipelineTrigger,
+    error: unknown,
+  ): void;
   dispatched(core: object): void;
   drew(core: object): void;
   submitted(): void;

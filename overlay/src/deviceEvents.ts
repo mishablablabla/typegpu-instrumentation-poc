@@ -20,6 +20,8 @@ type Entry = {
   readonly errorSinks: Set<WeakRef<DeviceEventSink>>;
   readonly lostSinks: Set<WeakRef<DeviceEventSink>>;
   listener: ((event: Event) => void) | undefined;
+  /** Set once the device was lost; sinks that start watching afterwards are told immediately. */
+  lostInfo: GPUDeviceLostInfo | undefined;
 };
 
 export type DeviceWatch = {
@@ -53,6 +55,7 @@ function makeErrorListener(entry: Entry): (event: Event) => void {
 
 function makeLostHandler(entry: Entry): (info: GPUDeviceLostInfo) => void {
   return (info) => {
+    entry.lostInfo = info;
     for (const ref of entry.lostSinks) {
       ref.deref()?.handleDeviceLost(info);
     }
@@ -63,7 +66,13 @@ function makeLostHandler(entry: Entry): (info: GPUDeviceLostInfo) => void {
 function entryFor(device: GPUDevice): Entry {
   let entry = entries.get(device);
   if (entry === undefined) {
-    entry = { device, errorSinks: new Set(), lostSinks: new Set(), listener: undefined };
+    entry = {
+      device,
+      errorSinks: new Set(),
+      lostSinks: new Set(),
+      listener: undefined,
+      lostInfo: undefined,
+    };
     entries.set(device, entry);
     // `lost` never rejects and its reactions cannot be removed: exactly one per device.
     void device.lost?.then(makeLostHandler(entry));
@@ -78,11 +87,21 @@ function releaseListener(entry: Entry): void {
   }
 }
 
+function notifyLate(ref: WeakRef<DeviceEventSink>, info: GPUDeviceLostInfo): void {
+  // Asynchronous, like the original notification, and holding the sink only weakly until it runs.
+  queueMicrotask(() => ref.deref()?.handleDeviceLost(info));
+}
+
 export function watchDevice(device: GPUDevice, sink: DeviceEventSink): DeviceWatch {
   const entry = entryFor(device);
   const ref = new WeakRef(sink);
   entry.errorSinks.add(ref);
-  entry.lostSinks.add(ref);
+  if (entry.lostInfo !== undefined) {
+    // The one `lost` reaction already ran; this sink would otherwise never hear about it.
+    notifyLate(ref, entry.lostInfo);
+  } else {
+    entry.lostSinks.add(ref);
+  }
   if (entry.listener === undefined && typeof device.addEventListener === 'function') {
     entry.listener = makeErrorListener(entry);
     device.addEventListener('uncapturederror', entry.listener);

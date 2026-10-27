@@ -8,7 +8,6 @@
  *
  * It only uses TypeGPU's public API, so the identical file runs against all three trees.
  */
-import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { appendFileSync } from 'node:fs';
 import { PerformanceObserver, constants } from 'node:perf_hooks';
 import * as v8 from 'node:v8';
@@ -139,10 +138,14 @@ const fragmentMain = tgpu.fragmentFn({ out: d.vec4f })(() => {
   return d.vec4f(1, 0, 0, 1);
 });
 
-function setup() {
+async function setup() {
   const device = makeDevice();
+  // Imported only when asked for: the pristine checkouts have no such entry.
+  const provider = ENABLED
+    ? (await import('typegpu/unstable-instrumentation')).createInstrumentation()
+    : undefined;
   const root = tgpu.initFromDevice(
-    ENABLED ? ({ device, unstable_instrumentation: createInstrumentation() } as never) : { device },
+    provider ? ({ device, unstable_instrumentation: provider } as never) : { device },
   );
   const values = root.createBuffer(d.arrayOf(d.f32, 4)).$usage('storage');
   const uniform = root.createBuffer(d.arrayOf(d.f32, 4)).$usage('uniform');
@@ -182,7 +185,7 @@ const quantile = (xs: number[], q: number) =>
   xs.toSorted((a, b) => a - b)[Math.floor((xs.length - 1) * q)] as number;
 
 test(`overhead [${CONFIG}]`, async () => {
-  const { root, ops } = setup();
+  const { root, ops } = await setup();
   const results: Record<string, unknown> = {};
 
   for (const [name, op] of Object.entries(ops)) {

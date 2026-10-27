@@ -1,6 +1,10 @@
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
-import type { TgpuInstrumentationEvent } from '../../src/core/instrumentation/types.ts';
+import type {
+  TgpuInstrumentationEvent,
+  TgpuInstrumentationOptions,
+} from '../../src/core/instrumentation/types.ts';
 
 type CompilationMessage = { type: string; message: string; lineNum: number; linePos: number };
 
@@ -92,3 +96,30 @@ export const fragmentMain = tgpu.fragmentFn({ out: d.vec4f })(() => {
   'use gpu';
   return d.vec4f(1, 0, 0, 1);
 });
+
+type Mock = ReturnType<typeof vi.fn>;
+type DeviceMock = Record<
+  | 'createBuffer'
+  | 'createBindGroup'
+  | 'createShaderModule'
+  | 'createComputePipeline'
+  | 'createComputePipelineAsync',
+  Mock
+> & { queue: Record<'submit' | 'writeBuffer', Mock> };
+
+export const mockOf = (device: GPUDevice) => (device as unknown as { mock: DeviceMock }).mock;
+
+/** A root with instrumentation on and one recording subscriber. */
+export function enabledRoot(device: GPUDevice, options: TgpuInstrumentationOptions = {}) {
+  const root = tgpu.initFromDevice({
+    device,
+    unstable_instrumentation: createInstrumentation(options),
+  });
+  const inst = root['~unstable'].instrumentation;
+  if (!inst) {
+    throw new Error('instrumentation should be enabled');
+  }
+  const events: TgpuInstrumentationEvent[] = [];
+  inst.subscribe((e) => events.push(e));
+  return { root, inst, events };
+}

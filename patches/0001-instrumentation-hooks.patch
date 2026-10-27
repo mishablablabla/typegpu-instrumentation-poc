@@ -33,7 +33,7 @@ index d64e64de..53d1ea59 100644
          "types": "./dist/internal.d.ts",
          "default": "./dist/internal.js"
 diff --git a/packages/typegpu/src/core/buffer/buffer.ts b/packages/typegpu/src/core/buffer/buffer.ts
-index d2eb90c0..d272009e 100644
+index d2eb90c0..e3f0b92d 100644
 --- a/packages/typegpu/src/core/buffer/buffer.ts
 +++ b/packages/typegpu/src/core/buffer/buffer.ts
 @@ -273,12 +273,14 @@ class TgpuBufferImpl<TData extends BaseData> implements TgpuBuffer<TData> {
@@ -69,14 +69,14 @@ index d2eb90c0..d272009e 100644
        }
      }
    }
-@@ -572,6 +576,7 @@ class TgpuBufferImpl<TData extends BaseData> implements TgpuBuffer<TData> {
-     }
-     this.#destroyed = true;
-     this.#mappedRange = undefined;
-+    this[$internal].root[$internal].instrumentation?.resourceDestroyed(this);
+@@ -575,6 +579,7 @@ class TgpuBufferImpl<TData extends BaseData> implements TgpuBuffer<TData> {
      if (this.#ownBuffer) {
        this[$soul].raw?.destroy();
      }
++    this[$internal].root[$internal].instrumentation?.resourceDestroyed(this);
+   }
+ 
+   toString(): string {
 diff --git a/packages/typegpu/src/core/commandEncoder/commandEncoder.ts b/packages/typegpu/src/core/commandEncoder/commandEncoder.ts
 index 58d76092..4b0db7bb 100644
 --- a/packages/typegpu/src/core/commandEncoder/commandEncoder.ts
@@ -148,31 +148,33 @@ index a3e82175..c81e21ac 100644
    }
  
 diff --git a/packages/typegpu/src/core/pipeline/computePipeline.ts b/packages/typegpu/src/core/pipeline/computePipeline.ts
-index 44be7196..1f2a37a0 100644
+index 44be7196..58939572 100644
 --- a/packages/typegpu/src/core/pipeline/computePipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/computePipeline.ts
 @@ -70,6 +70,7 @@ import {
    type PerformanceTracker,
  } from './performanceTracker.ts';
  import { logger } from '../../tgpuLogger.ts';
-+import type { TgpuPipelineTrigger } from '../instrumentation/types.ts';
++import type { InstrumentationSink, TgpuPipelineTrigger } from '../instrumentation/types.ts';
  
  export interface ComputePipelineInternals {
    readonly core: ComputePipelineCore;
-@@ -507,8 +508,11 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -507,8 +508,13 @@ class ComputePipelineCore implements SelfResolvable {
      if (this.#initAsyncPromise === undefined) {
        // the pipeline did not start resolution & compilation
        const device = this.root.device;
 -      const { resolutionResult, module, immediateSize } = this.resolveAndCreateShaderModule();
-+      const { resolutionResult, module, immediateSize, resolveMs } =
-+        this.resolveAndCreateShaderModule();
-       const { usedBindGroupLayouts, catchall, logResources, usedImmediate } = resolutionResult;
 +      const instrumentation = this.root[$internal].instrumentation;
++      const { resolutionResult, module, immediateSize, resolveMs } = this.#resolveObserved(
++        instrumentation,
++        'initAsync',
++      );
+       const { usedBindGroupLayouts, catchall, logResources, usedImmediate } = resolutionResult;
 +      const createStart = instrumentation?.now() ?? 0;
  
        this.#initAsyncPromise = device
          .createComputePipelineAsync({
-@@ -520,10 +524,37 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -520,10 +526,37 @@ class ComputePipelineCore implements SelfResolvable {
            }),
            compute: { module },
          })
@@ -214,7 +216,7 @@ index 44be7196..1f2a37a0 100644
          .finally(() => {
            this.#initAsyncPromise = undefined;
          });
-@@ -531,7 +562,7 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -531,7 +564,7 @@ class ComputePipelineCore implements SelfResolvable {
      return this.#initAsyncPromise;
    }
  
@@ -223,20 +225,22 @@ index 44be7196..1f2a37a0 100644
      if (this.#memo !== undefined) {
        return;
      }
-@@ -541,8 +572,11 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -541,8 +574,13 @@ class ComputePipelineCore implements SelfResolvable {
      }
  
      const device = this.root.device;
 -    const { resolutionResult, module, immediateSize } = this.resolveAndCreateShaderModule();
-+    const { resolutionResult, module, immediateSize, resolveMs } =
-+      this.resolveAndCreateShaderModule();
-     const { usedBindGroupLayouts, catchall, logResources, usedImmediate } = resolutionResult;
 +    const instrumentation = this.root[$internal].instrumentation;
++    const { resolutionResult, module, immediateSize, resolveMs } = this.#resolveObserved(
++      instrumentation,
++      trigger,
++    );
+     const { usedBindGroupLayouts, catchall, logResources, usedImmediate } = resolutionResult;
 +    const createStart = instrumentation?.now() ?? 0;
  
      this.#memo = {
        pipeline: device.createComputePipeline({
-@@ -560,11 +594,23 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -560,14 +598,36 @@ class ComputePipelineCore implements SelfResolvable {
        usedImmediate,
      };
  
@@ -261,7 +265,20 @@ index 44be7196..1f2a37a0 100644
      return this.#memo as Memo;
    }
  
-@@ -575,6 +621,8 @@ class ComputePipelineCore implements SelfResolvable {
++  /** Reports a failure of WGSL generation (the most common developer error) before it propagates unchanged. */
++  #resolveObserved(instrumentation: InstrumentationSink | undefined, trigger: TgpuPipelineTrigger) {
++    try {
++      return this.resolveAndCreateShaderModule();
++    } catch (error) {
++      instrumentation?.pipelineResolutionFailed(this, 'compute', trigger, error);
++      throw error;
++    }
++  }
++
+   private resolveAndCreateShaderModule() {
+     const device = this.root.device;
+     const enableExtensions = wgslEnableExtensions.filter((extension) =>
+@@ -575,6 +635,8 @@ class ComputePipelineCore implements SelfResolvable {
      );
  
      // Resolving code
@@ -270,7 +287,7 @@ index 44be7196..1f2a37a0 100644
      const ns = namespace({ names: this.root.nameRegistrySetting });
      const resolutionResult = this.#performanceTracker.measureResolve(() =>
        resolve(this, {
-@@ -587,6 +635,7 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -587,6 +649,7 @@ class ComputePipelineCore implements SelfResolvable {
          root: this.root,
        }),
      );
@@ -278,7 +295,7 @@ index 44be7196..1f2a37a0 100644
      const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
  
      if (catchall !== undefined) {
-@@ -604,6 +653,6 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -604,6 +667,6 @@ class ComputePipelineCore implements SelfResolvable {
        code,
      });
  
@@ -287,34 +304,32 @@ index 44be7196..1f2a37a0 100644
    }
  }
 diff --git a/packages/typegpu/src/core/pipeline/drawState.ts b/packages/typegpu/src/core/pipeline/drawState.ts
-index 7664e930..b540b6e7 100644
+index 7664e930..db9f24ce 100644
 --- a/packages/typegpu/src/core/pipeline/drawState.ts
 +++ b/packages/typegpu/src/core/pipeline/drawState.ts
-@@ -327,6 +327,7 @@ export function emitRenderDraw(
+@@ -348,6 +348,7 @@ export function emitRenderDraw(
    }
  
-   const memo = core.unwrap();
+   emit(rawPass);
 +  passInternals.instrumentation?.drew(core);
-   if (!ownsPass) {
-     reportIgnoredPriors(
-       core,
-@@ -363,6 +364,7 @@ export function emitComputeDispatch(
-   selectPipeline(state, pipeline);
+ }
  
-   const memo = core.unwrap();
+ export function emitComputeDispatch(
+@@ -383,4 +384,5 @@ export function emitComputeDispatch(
+   }
+ 
+   emit(rawPass);
 +  passInternals.instrumentation?.dispatched(core);
-   if (!ownsPass) {
-     reportIgnoredPriors(
-       core,
+ }
 diff --git a/packages/typegpu/src/core/pipeline/renderPipeline.ts b/packages/typegpu/src/core/pipeline/renderPipeline.ts
-index 91983963..8387c22f 100644
+index 91983963..b0334511 100644
 --- a/packages/typegpu/src/core/pipeline/renderPipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/renderPipeline.ts
 @@ -104,6 +104,7 @@ import {
    type PerformanceTracker,
  } from './performanceTracker.ts';
  import { logger } from '../../tgpuLogger.ts';
-+import type { TgpuPipelineTrigger } from '../instrumentation/types.ts';
++import type { InstrumentationSink, TgpuPipelineTrigger } from '../instrumentation/types.ts';
  import type { RestoreContext } from '../../serial/types.ts';
  
  export interface RenderPipelineInternals {
@@ -324,6 +339,7 @@ index 91983963..8387c22f 100644
        const device = this.options.root.device;
 -      const { resolutionResult, descriptor, connectedTargets, connectedAttribs } =
 -        this.resolveAndCreateShaderModule();
++      const instrumentation = this.options.root[$internal].instrumentation;
 +      const {
 +        resolutionResult,
 +        descriptor,
@@ -331,9 +347,8 @@ index 91983963..8387c22f 100644
 +        connectedAttribs,
 +        module,
 +        resolveMs,
-+      } = this.resolveAndCreateShaderModule();
++      } = this.#resolveObserved(instrumentation, 'initAsync');
        const { usedBindGroupLayouts, catchall, logResources } = resolutionResult;
-+      const instrumentation = this.options.root[$internal].instrumentation;
 +      const createStart = instrumentation?.now() ?? 0;
  
        this.#initAsyncPromise = device
@@ -406,15 +421,16 @@ index 91983963..8387c22f 100644
  
      const device = this.options.root.device;
 -    const { resolutionResult, descriptor, connectedTargets, connectedAttribs } =
-+    const { resolutionResult, descriptor, connectedTargets, connectedAttribs, module, resolveMs } =
-       this.resolveAndCreateShaderModule();
-     const { usedBindGroupLayouts, catchall, logResources } = resolutionResult;
+-      this.resolveAndCreateShaderModule();
 +    const instrumentation = this.options.root[$internal].instrumentation;
++    const { resolutionResult, descriptor, connectedTargets, connectedAttribs, module, resolveMs } =
++      this.#resolveObserved(instrumentation, trigger);
+     const { usedBindGroupLayouts, catchall, logResources } = resolutionResult;
 +    const createStart = instrumentation?.now() ?? 0;
  
      this.#memo = {
        pipeline: device.createRenderPipeline(descriptor),
-@@ -956,11 +994,23 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -956,14 +994,36 @@ class RenderPipelineCore implements SelfResolvable {
        usedImmediate: resolutionResult.usedImmediate,
      };
  
@@ -439,7 +455,20 @@ index 91983963..8387c22f 100644
      return this.#memo as Memo;
    }
  
-@@ -975,6 +1025,8 @@ class RenderPipelineCore implements SelfResolvable {
++  /** Reports a failure of WGSL generation (the most common developer error) before it propagates unchanged. */
++  #resolveObserved(instrumentation: InstrumentationSink | undefined, trigger: TgpuPipelineTrigger) {
++    try {
++      return this.resolveAndCreateShaderModule();
++    } catch (error) {
++      instrumentation?.pipelineResolutionFailed(this, 'render', trigger, error);
++      throw error;
++    }
++  }
++
+   public resolveAndCreateShaderModule() {
+     const { root, descriptor: tgpuDescriptor } = this.options;
+     if (!tgpuDescriptor) {
+@@ -975,6 +1035,8 @@ class RenderPipelineCore implements SelfResolvable {
      );
  
      // Resolving code
@@ -448,7 +477,7 @@ index 91983963..8387c22f 100644
      const ns = namespace({ names: root.nameRegistrySetting });
      const resolutionResult = this.#performanceTracker.measureResolve(() =>
        resolve(this, {
-@@ -986,6 +1038,7 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -986,6 +1048,7 @@ class RenderPipelineCore implements SelfResolvable {
        }),
      );
  
@@ -456,7 +485,7 @@ index 91983963..8387c22f 100644
      const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
  
      if (catchall !== undefined) {
-@@ -1063,7 +1116,7 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -1063,7 +1126,7 @@ class RenderPipelineCore implements SelfResolvable {
        descriptor.multisample = tgpuDescriptor.multisample;
      }
  
@@ -466,7 +495,7 @@ index 91983963..8387c22f 100644
  }
  
 diff --git a/packages/typegpu/src/core/root/init.ts b/packages/typegpu/src/core/root/init.ts
-index 1756bc5b..07610ce4 100644
+index 1756bc5b..739baa9e 100644
 --- a/packages/typegpu/src/core/root/init.ts
 +++ b/packages/typegpu/src/core/root/init.ts
 @@ -95,6 +95,7 @@ import { getName, setName } from '../../shared/meta.ts';
@@ -477,17 +506,20 @@ index 1756bc5b..07610ce4 100644
  
  /**
   * Changes the given array to a vec of 3 numbers, filling missing values with 1.
-@@ -348,12 +349,19 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -348,12 +349,22 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
    readonly shaderGeneratorClass: WgslGeneratorClass | undefined;
  
    #unwrappedBindGroupLayouts = new WeakMemo((key: TgpuBindGroupLayout) => key.unwrap(this));
 -  #unwrappedBindGroups = new WeakMemo((key: TgpuBindGroup) => key.unwrap(this));
-+  #unwrappedBindGroups = new WeakMemo((key: TgpuBindGroup) => {
-+    const origin = key[$soul].raw !== undefined ? 'adopted' : 'created';
-+    const raw = key.unwrap(this);
-+    this[$internal].instrumentation?.bindGroupCreated(key, origin);
-+    return raw;
-+  });
++  #unwrappedBindGroups = new WeakMemo(
++    (key: TgpuBindGroup) => key.unwrap(this),
++    // Adopted groups wrap a GPUBindGroup the user created, so unwrapping returns it as is.
++    (key, raw) =>
++      this[$internal].instrumentation?.bindGroupCreated(
++        key,
++        key[$soul].raw === raw ? 'adopted' : 'created',
++      ),
++  );
    #ownDevice: boolean;
  
    [$internal]: {
@@ -498,7 +530,7 @@ index 1756bc5b..07610ce4 100644
  
    constructor(
      device: GPUDevice,
-@@ -362,6 +370,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -362,6 +373,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
      ownDevice: boolean,
      logOptions: LogGeneratorOptions,
      shaderGeneratorClass?: WgslGeneratorClass,
@@ -506,7 +538,7 @@ index 1756bc5b..07610ce4 100644
    ) {
      super(() => this, []);
  
-@@ -380,9 +389,22 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -380,9 +392,22 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
        nonTransferablePriors: shaderGeneratorClass ? ['shaderGeneratorClass'] : undefined,
        label: undefined,
      };
@@ -519,7 +551,7 @@ index 1756bc5b..07610ce4 100644
 +    if (instrumentation) {
 +      if (typeof instrumentation.attach !== 'function') {
 +        throw new Error(
-+          "unstable_instrumentation expects the value of `instrumentation()` from 'typegpu/unstable-instrumentation'.",
++          "unstable_instrumentation expects the value of `createInstrumentation()` from 'typegpu/unstable-instrumentation'.",
 +        );
 +      }
 +      // `internals` is a plain object; see the provider contract for why no closure may be used here.
@@ -528,11 +560,11 @@ index 1756bc5b..07610ce4 100644
 +  }
 +
 +  get instrumentation() {
-+    return this.#instrumentation;
++    return this.#instrumentation?.api;
    }
  
    configureContext(options: ConfigureContextOptions): GPUCanvasContext {
-@@ -468,6 +490,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -468,6 +493,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
    }
  
    destroy() {
@@ -540,31 +572,31 @@ index 1756bc5b..07610ce4 100644
      clearTextureUtilsCache(this.device);
  
      if (this.#ownDevice) {
-@@ -624,6 +647,11 @@ export type InitOptions = {
+@@ -624,6 +650,11 @@ export type InitOptions = {
     */
    unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
    unstable_logOptions?: LogGeneratorOptions;
 +  /**
-+   * Opt in to runtime instrumentation: `unstable_instrumentation: instrumentation()` with `instrumentation`
++   * Opt in to runtime instrumentation: `unstable_instrumentation: createInstrumentation()` with `createInstrumentation`
 +   * imported from `typegpu/unstable-instrumentation`. The data is read from `root['~unstable'].instrumentation`.
 +   */
 +  unstable_instrumentation?: TgpuInstrumentationProvider | undefined;
  };
  
  /**
-@@ -648,6 +676,11 @@ export type InitFromDeviceOptions = {
+@@ -648,6 +679,11 @@ export type InitFromDeviceOptions = {
     */
    unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
    unstable_logOptions?: LogGeneratorOptions;
 +  /**
-+   * Opt in to runtime instrumentation: `unstable_instrumentation: instrumentation()` with `instrumentation`
++   * Opt in to runtime instrumentation: `unstable_instrumentation: createInstrumentation()` with `createInstrumentation`
 +   * imported from `typegpu/unstable-instrumentation`. The data is read from `root['~unstable'].instrumentation`.
 +   */
 +  unstable_instrumentation?: TgpuInstrumentationProvider | undefined;
  };
  
  /**
-@@ -676,6 +709,7 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
+@@ -676,6 +712,7 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
      unstable_minify: minify = false,
      unstable_logOptions: logOptions,
      unstable_shaderGeneratorClass: shaderGeneratorClass,
@@ -572,7 +604,7 @@ index 1756bc5b..07610ce4 100644
    } = options ?? {};
    const { optionalFeatures, ...deviceDescriptor } = deviceOpt ?? {};
  
-@@ -712,7 +746,15 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
+@@ -712,7 +749,15 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
      requiredFeatures: availableFeatures,
    });
  
@@ -589,7 +621,7 @@ index 1756bc5b..07610ce4 100644
  }
  
  /**
-@@ -731,7 +773,16 @@ export function initFromDevice(options: InitFromDeviceOptions): TgpuRoot {
+@@ -731,7 +776,16 @@ export function initFromDevice(options: InitFromDeviceOptions): TgpuRoot {
      unstable_minify: minify = false,
      unstable_logOptions: logOptions,
      unstable_shaderGeneratorClass: shaderGeneratorClass,
@@ -646,7 +678,7 @@ index 26408f90..11aef858 100644
    /** @deprecated Use `root.createTexture` instead. */
    createTexture<
 diff --git a/packages/typegpu/src/core/texture/texture.ts b/packages/typegpu/src/core/texture/texture.ts
-index 48e46a9f..7896075e 100644
+index 48e46a9f..5150ae91 100644
 --- a/packages/typegpu/src/core/texture/texture.ts
 +++ b/packages/typegpu/src/core/texture/texture.ts
 @@ -330,7 +330,7 @@ class TgpuTextureImpl<TProps extends TextureProps> implements TgpuTexture<TProps
@@ -669,11 +701,40 @@ index 48e46a9f..7896075e 100644
          }
  
          return soul.raw;
-@@ -683,6 +685,7 @@ class TgpuTextureImpl<TProps extends TextureProps> implements TgpuTexture<TProps
-       return;
-     }
-     this.#destroyed = true;
-+    this[$internal].root[$internal].instrumentation?.resourceDestroyed(this);
+@@ -686,6 +688,7 @@ class TgpuTextureImpl<TProps extends TextureProps> implements TgpuTexture<TProps
      if (this.#ownTexture) {
        this[$soul].raw?.destroy();
      }
++    this[$internal].root[$internal].instrumentation?.resourceDestroyed(this);
+   }
+ }
+ 
+diff --git a/packages/typegpu/src/memo.ts b/packages/typegpu/src/memo.ts
+index 425feaee..bd01270c 100644
+--- a/packages/typegpu/src/memo.ts
++++ b/packages/typegpu/src/memo.ts
+@@ -7,9 +7,15 @@
+ export class WeakMemo<TKey extends object, TValue, TArgs extends unknown[]> {
+   readonly #map = new WeakMap<TKey, TValue>();
+   readonly #make: (key: TKey, ...args: TArgs) => TValue;
++  readonly #onMade: ((key: TKey, value: TValue) => void) | undefined;
+ 
+-  constructor(make: (key: TKey, ...args: TArgs) => TValue) {
++  /** @param onMade Called once per new entry, after it is stored (so it may safely re-enter `getOrMake`). */
++  constructor(
++    make: (key: TKey, ...args: TArgs) => TValue,
++    onMade?: (key: TKey, value: TValue) => void,
++  ) {
+     this.#make = make;
++    this.#onMade = onMade;
+   }
+ 
+   getOrMake(key: TKey, ...args: TArgs): TValue {
+@@ -19,6 +25,7 @@ export class WeakMemo<TKey extends object, TValue, TArgs extends unknown[]> {
+ 
+     const value = this.#make(key, ...args);
+     this.#map.set(key, value);
++    this.#onMade?.(key, value);
+     return value;
+   }
+ }
