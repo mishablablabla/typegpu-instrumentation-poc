@@ -3,6 +3,7 @@ import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
 import { attachConsoleReporter } from './consumers/consoleReporter.ts';
 import { createJsonlExport, JSONL_FORMAT } from './consumers/jsonlExport.ts';
+import { requireInstrumentation } from './consumers/requireInstrumentation.ts';
 import { computeMain, flush, layout, makeObservableDevice } from './support.ts';
 
 function run(device: GPUDevice) {
@@ -109,5 +110,19 @@ describe('JSONL export', () => {
 
     expect(exported.lines()).toHaveLength(2);
     expect(JSON.parse(exported.lines()[1] as string).event.type).toBe('resource-materialized');
+  });
+});
+
+describe('requireInstrumentation', () => {
+  it('returns the instrumentation when it exists', ({ device }) => {
+    const { root, inst } = run(device);
+    expect(requireInstrumentation(root)).toBe(inst);
+  });
+
+  it('explains itself when the root has none (no option, or an unpatched TypeGPU build)', ({
+    device,
+  }) => {
+    const root = tgpu.initFromDevice({ device });
+    expect(() => requireInstrumentation(root)).toThrowError(/hook patch|unstable_instrumentation/);
   });
 });

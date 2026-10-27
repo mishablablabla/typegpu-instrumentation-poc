@@ -2,6 +2,7 @@
 // Real-device validation driver.
 //
 //   node real-gpu/run.mjs [--headed] [--chrome <path>] [--allow-software] [--chrome-arg=<flag> ...]
+//   node real-gpu/run.mjs --example <scenario.ts> [--jsonl <out.jsonl>]   run YOUR scenario and print its instrumentation
 //
 // Builds the page from the patched TypeGPU checkout, serves it on 127.0.0.1, launches the locally installed
 // Chrome with a throwaway profile, drives it over the DevTools protocol (Node's built-in WebSocket, no
@@ -10,7 +11,7 @@
 // Exit codes: 0 = validated on a hardware adapter; 1 = a check failed; 2 = NOT VALIDATED (no WebGPU,
 // or only a software/fallback adapter without --allow-software); 3 = harness error (no browser, build failure).
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
 import { tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
@@ -23,6 +24,9 @@ const args = process.argv.slice(2);
 const flag = (name) => args.includes(name);
 const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : undefined);
 
+const exampleArg = option('--example');
+const jsonlArg = option('--jsonl');
+const exampleMode = exampleArg !== undefined;
 const pkg = join(root, '.work/typegpu/packages/typegpu');
 const pageDir = join(pkg, 'tests/instrumentation/real-gpu-page');
 const distDir = join(root, '.work/real-gpu-dist');
@@ -48,13 +52,25 @@ if (!chrome) {
 // --- build ---
 if (!existsSync(pkg)) fail(3, 'Run scripts/setup.sh first.');
 spawnSync(join(root, 'scripts/sync.sh'), { stdio: 'inherit' });
-const build = spawnSync('node', [join(pageDir, 'build.mjs'), distDir], { cwd: pkg, stdio: 'inherit' });
+// The scenario must live inside the checkout so that `typegpu` resolves; single files only.
+let examplePath = join(pkg, 'tests/instrumentation/examples/compute-scale.ts');
+if (exampleMode) {
+  const source = resolve(process.cwd(), exampleArg);
+  if (!existsSync(source)) fail(3, `Scenario not found: ${source}`);
+  examplePath = join(pageDir, 'user-example.ts');
+  copyFileSync(source, examplePath);
+}
+const build = spawnSync('node', [join(pageDir, 'build.mjs'), distDir, examplePath], { cwd: pkg, stdio: 'inherit' });
 if (build.status !== 0) fail(3, 'Page build failed.');
 
 // --- static server ---
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.map': 'application/json' };
 const server = createServer((req, res) => {
   const path = new URL(req.url, 'http://x').pathname;
+  if (path === '/favicon.ico') {
+    res.writeHead(204).end();
+    return;
+  }
   const file = join(distDir, path === '/' ? 'index.html' : path);
   if (!file.startsWith(distDir) || !existsSync(file)) {
     res.writeHead(404).end();
@@ -163,7 +179,7 @@ for (let i = 0; i < 100 && !ready; i++) {
 if (!ready) fail(3, `Page did not register the scenario. Console: ${JSON.stringify(consoleLog)}`);
 
 const evaluation = await page('Runtime.evaluate', {
-  expression: 'window.runRealDeviceScenario()',
+  expression: exampleMode ? 'window.runExample()' : 'window.runRealDeviceScenario()',
   awaitPromise: true,
   returnByValue: true,
   timeout: 60000,
@@ -173,6 +189,64 @@ if (evaluation.exceptionDetails) {
 }
 const result = evaluation.result.value;
 const gpuInfo = await send('SystemInfo.getInfo').catch(() => null);
+
+// The page only knows what the adapter says about itself. The browser's GPU process is a second, independent source.
+const gpuDevices = gpuInfo?.gpu?.devices ?? [];
+const gpuStrings = gpuDevices.map((g) => `${g.vendorString} ${g.deviceString}`).join(' ');
+const mode = classifyExecution({
+  pageClassification: result.provenance.pageClassification,
+  gpuProcessText: gpuStrings,
+  gpuProcessDeviceCount: gpuDevices.length,
+});
+const validationLevel =
+  mode === 'hardware-adapter'
+    ? 'real-device: adapter reported non-fallback and the browser GPU process lists a hardware GPU'
+    : mode === 'software'
+      ? 'SOFTWARE ADAPTER - not real-GPU validation'
+      : mode === 'unverified-adapter'
+        ? 'UNVERIFIED - the adapter does not say whether it is a fallback; not counted as real-GPU validation'
+        : 'NOT RUN - WebGPU unavailable';
+
+if (exampleMode) {
+  const REPORT_PREFIX = '[typegpu-instrumentation] ';
+  console.log(`Scenario: ${exampleArg}`);
+  console.log(`Chrome ${browserVersion.product} (${flag('--headed') ? 'headed' : 'headless'})`);
+  console.log(`Adapter (from the page): ${result.provenance.vendor} / ${result.provenance.architecture}, isFallbackAdapter: ${result.provenance.isFallbackAdapter}`);
+  console.log(`GPU process (from the browser): ${gpuStrings || 'no information'}`);
+  console.log(`Run classification: ${validationLevel}\n`);
+  for (const entry of consoleLog) {
+    if (entry.text.startsWith('[phase]')) continue;
+    if (entry.text.startsWith(REPORT_PREFIX)) console.log(entry.text.slice(REPORT_PREFIX.length));
+    else if (entry.source === 'page-console') console.log(`[scenario] ${entry.text}`);
+    else console.log(`[browser ${entry.level}] ${entry.text.split('\n')[0].slice(0, 200)}`);
+  }
+
+  if (jsonlArg && result.jsonl.length > 0) {
+    const environment = JSON.stringify({
+      record: 'environment',
+      when: new Date().toISOString(),
+      scenario: exampleArg,
+      chrome: browserVersion.product,
+      headless: !flag('--headed'),
+      classification: mode,
+      adapter: { vendor: result.provenance.vendor, architecture: result.provenance.architecture, isFallbackAdapter: result.provenance.isFallbackAdapter },
+      gpuProcess: gpuStrings,
+      note: 'cpu timestamps (t, resolveMs, createMs) are performance.now() milliseconds in the page; no GPU execution time is recorded',
+    });
+    const [header, ...rest] = result.jsonl;
+    const target = resolve(process.cwd(), jsonlArg);
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, [header, environment, ...rest].join('\n') + '\n');
+    console.log(`\nJSONL written to ${target} (${rest.length + 2} lines)`);
+  }
+
+  if (mode === 'unavailable') fail(2, 'NOT RUN: WebGPU is not available in this browser.');
+  if (result.error) fail(1, `The scenario threw: ${result.error}`);
+  if ((mode === 'software' || mode === 'unverified-adapter') && !flag('--allow-software')) {
+    fail(2, `NOT VALIDATED as real-GPU: ${validationLevel}. The output above is still what the scenario produced.`);
+  }
+  process.exit(0);
+}
 
 // --- summarise the browser's own output per phase ---
 const browserOutput = {};
@@ -187,28 +261,13 @@ result.observations.push({
   value: { withHubListener: withListener, afterHubDisposed: withoutListener, note: 'browser console/log entries during each phase' },
 });
 
-// The page only knows what the adapter says about itself. The browser's GPU process is a second, independent source.
-const gpuDevices = gpuInfo?.gpu?.devices ?? [];
-const gpuStrings = gpuDevices.map((g) => `${g.vendorString} ${g.deviceString}`).join(' ');
-const mode = classifyExecution({
-  pageClassification: result.provenance.pageClassification,
-  gpuProcessText: gpuStrings,
-  gpuProcessDeviceCount: gpuDevices.length,
-});
 const record = {
   when: new Date().toISOString(),
   harness: { chrome: browserVersion.product, userAgent: browserVersion.userAgent, headless: !flag('--headed') },
   gpuProcess: gpuInfo?.gpu?.devices?.slice(0, 2).map((g) => ({ vendorId: g.vendorId, deviceId: g.deviceId, vendorString: g.vendorString, deviceString: g.deviceString, driverVersion: g.driverVersion })) ?? null,
   gpuFeatureStatus: gpuInfo?.gpu?.featureStatus ?? null,
   executionMode: mode,
-  validationLevel:
-    mode === 'hardware-adapter'
-      ? 'real-device: adapter reported non-fallback and the browser GPU process lists a hardware GPU'
-      : mode === 'software'
-        ? 'SOFTWARE ADAPTER - not real-GPU validation'
-        : mode === 'unverified-adapter'
-          ? 'UNVERIFIED - the adapter does not say whether it is a fallback; not counted as real-GPU validation'
-          : 'NOT RUN - WebGPU unavailable',
+  validationLevel,
   ...result,
   browserOutput,
 };

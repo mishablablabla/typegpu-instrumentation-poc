@@ -26,7 +26,7 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
       const entries = e.entries
         .map((x) => `${x.name}=${x.resourceId === null ? '?' : `#${x.resourceId}`}`)
         .join(', ');
-      return `${head} bind group ${name(e.label, e.id)} (${e.origin}) { ${entries} }`;
+      return `${head} bind group #${e.id} of layout ${e.label ?? '<unnamed>'}#${e.layoutId} (${e.origin}) { ${entries} }`;
     }
     case 'pipeline-compiled':
       return (
@@ -46,7 +46,8 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
               .map((m) => `${m.type} at WGSL ${m.lineNum}:${m.linePos}: ${m.message}`)
               .join('; ');
     case 'device-error':
-      return `${head} DEVICE ERROR ${e.errorType}: ${e.message}`;
+      // Browser messages span several lines (source excerpt, call stack); the first line names the problem.
+      return `${head} DEVICE ERROR ${e.errorType}: ${e.message.split('\n')[0]}`;
     case 'device-lost':
       return `${head} DEVICE LOST (${e.reason}): ${e.message}`;
     case 'root-destroyed':

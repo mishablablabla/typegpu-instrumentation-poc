@@ -7,6 +7,8 @@
  *  - `observations`: facts about the real implementation that the design only assumed (reported, not asserted).
  */
 import { d, tgpu } from 'typegpu';
+import { runExample } from './example.ts';
+import { provenance } from './provenance.ts';
 import type {
   TgpuInstrumentation,
   TgpuInstrumentationEvent,
@@ -57,41 +59,6 @@ const fragmentMain = tgpu.fragmentFn({ out: d.vec4f })(() => {
 
 // Raw WGSL with an identifier that does not exist: the browser must reject it.
 const broken = tgpu.computeFn({ workgroupSize: [1] })`{ let x = definitelyUndeclared(1.0); }`;
-
-// --- provenance ---
-
-async function provenance() {
-  const gpu = navigator.gpu;
-  if (!gpu) {
-    return { pageClassification: 'unavailable' as const, reason: 'navigator.gpu is undefined' };
-  }
-  const adapter = await gpu.requestAdapter();
-  if (!adapter) {
-    return { pageClassification: 'unavailable' as const, reason: 'requestAdapter() returned null' };
-  }
-  const info = adapter.info as GPUAdapterInfo & { isFallbackAdapter?: boolean };
-  // Older browsers exposed this on the adapter; current ones on `adapter.info`. `undefined` means "not reported".
-  const isFallbackAdapter: boolean | undefined =
-    info.isFallbackAdapter ?? (adapter as { isFallbackAdapter?: boolean }).isFallbackAdapter;
-  const identity = `${info.vendor} ${info.architecture} ${info.device} ${info.description}`;
-  return {
-    // What the PAGE can tell. The driver combines it with the browser's GPU-process information.
-    pageClassification:
-      (isFallbackAdapter ?? false) ||
-      /swiftshader|llvmpipe|lavapipe|software|warp|mesa/i.test(identity)
-        ? ('software' as const)
-        : typeof isFallbackAdapter === 'boolean'
-          ? ('non-fallback' as const)
-          : ('fallback-status-unreported' as const),
-    userAgent: navigator.userAgent,
-    vendor: info.vendor,
-    architecture: info.architecture,
-    device: info.device,
-    description: info.description,
-    isFallbackAdapter: isFallbackAdapter ?? null,
-    features: [...adapter.features].toSorted(),
-  };
-}
 
 // --- scenario ---
 
@@ -187,12 +154,20 @@ export async function runRealDeviceScenario() {
   const snap1 = inst.getSnapshot();
   check(
     'counters',
-    'one dispatch and at least one submit counted; writes tracked per buffer',
+    'one dispatch and at least one submit counted',
     snap1.pipelines[0]?.dispatches === 1 && snap1.counters.submits >= 1,
     {
       pipelines: snap1.pipelines.map((p) => ({ label: p.label, dispatches: p.dispatches })),
       submits: snap1.counters.submits,
     },
+  );
+  factor.write(4);
+  const factorInfo = inst.getSnapshot().resources.find((r) => r.label === 'factor');
+  check(
+    'buffer-writes',
+    'a TypeGPU write is counted per buffer with its byte size',
+    factorInfo?.writes === 1 && factorInfo.bytesWritten === 4,
+    factorInfo,
   );
   observe(
     'compute.cpuMs',
@@ -480,6 +455,9 @@ export async function runRealDeviceScenario() {
 declare global {
   interface Window {
     runRealDeviceScenario: typeof runRealDeviceScenario;
+    runExample: typeof runExample;
   }
 }
+// Assigned here, not in the modules: the package says `sideEffects: false`, so the bundler drops side effects of modules whose exports are unused.
 window.runRealDeviceScenario = runRealDeviceScenario;
+window.runExample = runExample;
