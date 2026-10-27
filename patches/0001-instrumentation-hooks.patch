@@ -304,7 +304,7 @@ index 91983963..0cd20163 100644
  }
  
 diff --git a/packages/typegpu/src/core/root/init.ts b/packages/typegpu/src/core/root/init.ts
-index 1756bc5b..9a3bea6b 100644
+index 1756bc5b..9f24b3d4 100644
 --- a/packages/typegpu/src/core/root/init.ts
 +++ b/packages/typegpu/src/core/root/init.ts
 @@ -95,6 +95,8 @@ import { getName, setName } from '../../shared/meta.ts';
@@ -345,7 +345,7 @@ index 1756bc5b..9a3bea6b 100644
    ) {
      super(() => this, []);
  
-@@ -380,9 +390,23 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -380,9 +390,21 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
        nonTransferablePriors: shaderGeneratorClass ? ['shaderGeneratorClass'] : undefined,
        label: undefined,
      };
@@ -356,13 +356,11 @@ index 1756bc5b..9a3bea6b 100644
 +    this[$internal] = internals;
 +
 +    if (instrumentation) {
-+      // The publish callback captures `internals`, never the root, so the device cannot keep the root alive.
++      // `internals` is a plain object; see the hub's constructor for why no closure may be used here.
 +      this.#instrumentationHub = new InstrumentationHub(
 +        device,
 +        instrumentation === true ? {} : instrumentation,
-+        (hub) => {
-+          internals.instrumentation = hub;
-+        },
++        internals,
 +      );
 +    }
 +  }
@@ -372,7 +370,7 @@ index 1756bc5b..9a3bea6b 100644
    }
  
    configureContext(options: ConfigureContextOptions): GPUCanvasContext {
-@@ -468,6 +492,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -468,6 +490,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
    }
  
    destroy() {
@@ -380,7 +378,7 @@ index 1756bc5b..9a3bea6b 100644
      clearTextureUtilsCache(this.device);
  
      if (this.#ownDevice) {
-@@ -624,6 +649,8 @@ export type InitOptions = {
+@@ -624,6 +647,8 @@ export type InitOptions = {
     */
    unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
    unstable_logOptions?: LogGeneratorOptions;
@@ -389,7 +387,7 @@ index 1756bc5b..9a3bea6b 100644
  };
  
  /**
-@@ -648,6 +675,8 @@ export type InitFromDeviceOptions = {
+@@ -648,6 +673,8 @@ export type InitFromDeviceOptions = {
     */
    unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
    unstable_logOptions?: LogGeneratorOptions;
@@ -398,7 +396,7 @@ index 1756bc5b..9a3bea6b 100644
  };
  
  /**
-@@ -676,6 +705,7 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
+@@ -676,6 +703,7 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
      unstable_minify: minify = false,
      unstable_logOptions: logOptions,
      unstable_shaderGeneratorClass: shaderGeneratorClass,
@@ -406,7 +404,7 @@ index 1756bc5b..9a3bea6b 100644
    } = options ?? {};
    const { optionalFeatures, ...deviceDescriptor } = deviceOpt ?? {};
  
-@@ -712,7 +742,15 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
+@@ -712,7 +740,15 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
      requiredFeatures: availableFeatures,
    });
  
@@ -423,7 +421,7 @@ index 1756bc5b..9a3bea6b 100644
  }
  
  /**
-@@ -731,7 +769,16 @@ export function initFromDevice(options: InitFromDeviceOptions): TgpuRoot {
+@@ -731,7 +767,16 @@ export function initFromDevice(options: InitFromDeviceOptions): TgpuRoot {
      unstable_minify: minify = false,
      unstable_logOptions: logOptions,
      unstable_shaderGeneratorClass: shaderGeneratorClass,

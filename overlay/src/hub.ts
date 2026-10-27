@@ -66,6 +66,8 @@ type LayoutRec = { readonly kind: 'layout'; readonly id: number };
 type Rec = ResourceRec | BindGroupRec | PipelineRec | LayoutRec;
 type LiveRec = ResourceRec | BindGroupRec | PipelineRec;
 
+export type InstrumentationHolder = { instrumentation: InstrumentationHub | undefined };
+
 export type PipelineCompiledInfo = {
   readonly pipeline: 'compute' | 'render';
   readonly trigger: TgpuPipelineTrigger;
@@ -90,7 +92,7 @@ type BindGroupLike = {
  */
 export class InstrumentationHub implements TgpuInstrumentation {
   readonly #device: GPUDevice;
-  readonly #attach: (hub: InstrumentationHub | undefined) => void;
+  readonly #holder: InstrumentationHolder;
 
   #active = false;
   #disposed = false;
@@ -114,15 +116,18 @@ export class InstrumentationHub implements TgpuInstrumentation {
   #errorListener: ((event: Event) => void) | undefined;
 
   /**
-   * @param attach Publishes (or clears) the hub where hook sites read it. Must not capture the root.
+   * @param holder Where hook sites read the hub from; the hub publishes (or clears) itself there.
+   * It must be a plain object that does not lead back to the root. A callback created inside the
+   * root's constructor would not do: V8 shares one scope object between all closures of a scope, so
+   * it would keep the root alive through the hub (which the device keeps alive).
    */
   constructor(
     device: GPUDevice,
     options: TgpuInstrumentationOptions,
-    attach: (hub: InstrumentationHub | undefined) => void,
+    holder: InstrumentationHolder,
   ) {
     this.#device = device;
-    this.#attach = attach;
+    this.#holder = holder;
     const historySize = Math.max(0, Math.floor(options.historySize ?? DEFAULT_HISTORY_SIZE));
     this.#ring = Array.from({ length: historySize }, () => undefined);
 
@@ -162,12 +167,12 @@ export class InstrumentationHub implements TgpuInstrumentation {
       return;
     }
     this.#active = true;
-    this.#attach(this);
+    this.#holder.instrumentation = this;
   }
 
   disable(): void {
     this.#active = false;
-    this.#attach(undefined);
+    this.#holder.instrumentation = undefined;
   }
 
   subscribe(listener: (event: TgpuInstrumentationEvent) => void): () => void {
@@ -257,7 +262,7 @@ export class InstrumentationHub implements TgpuInstrumentation {
   dispose(): void {
     this.#active = false;
     this.#disposed = true;
-    this.#attach(undefined);
+    this.#holder.instrumentation = undefined;
     this.#listeners = [];
     this.#removeErrorListener();
   }
