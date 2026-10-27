@@ -1,13 +1,31 @@
 $ TEST_BUILT=1 pnpm vitest run tests/instrumentation --exclude '**/bench/**'  (cwd packages/typegpu)
-exit 0
+exit 1
 
- RUN  v4.1.11 /private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-pkg/.work/typegpu/packages/typegpu
+ RUN  v4.1.11 /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/.work/typegpu/packages/typegpu
+
+ ❯ tests/instrumentation/defects.test.ts (25 tests | 1 failed) 100ms
+     × R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once 10ms
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 166 passed (167)
+   Start at  21:31:28
+   Duration  7.34s (transform 7.63s, setup 0ms, import 9.26s, tests 7.61s, environment 1ms)
 
 
- Test Files  4 passed (4)
-      Tests  59 passed (59)
-   Start at  18:19:50
-   Duration  2.67s (transform 2.56s, setup 0ms, import 3.02s, tests 1.39s, environment 0ms)
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/instrumentation/defects.test.ts > the layer never disturbs the application > R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once
+TypeError: Cannot read properties of undefined (reading 'instrumentation')
+ ❯ sinkOf tests/instrumentation/defects.test.ts:40:17
+     38|       { instrumentation: Record<string, (...a: unknown[]) => void> }
+     39|     >
+     40|   )[$internal]!.instrumentation;
+       |                 ^
+     41|
+     42| describe('counters and ids', () => {
+ ❯ tests/instrumentation/defects.test.ts:378:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
 
 
 

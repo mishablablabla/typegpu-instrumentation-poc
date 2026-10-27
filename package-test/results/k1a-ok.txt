@@ -253,16 +253,16 @@ node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct
         Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
           Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
 src/ok.ts(2,59): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
-  There are types at '/private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-pkg/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
 src/ok.ts(8,8): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
-  There are types at '/private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-pkg/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
 src/ok.ts(31,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
 
 $ tsc -p tsconfig.node10.json --skipLibCheck -> exit 2
 src/ok.ts(2,59): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
-  There are types at '/private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-pkg/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
 src/ok.ts(8,8): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
-  There are types at '/private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-pkg/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
 src/ok.ts(31,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
 
 $ [pristine] tsc -p .tmp/tsconfig.baseline.json (skipLibCheck:false, upstream-only import)  -> exit 2

@@ -1,17 +1,17 @@
 ## tarball / unpacked sizes
 pristine  tgz=304465 files=373 | .js outside instrumentation=868541 .d.ts outside=521306 | instrumentation dir: .js=0 .d.ts=0
-patched   tgz=318695 files=383 | .js outside instrumentation=874143 .d.ts outside=523178 | instrumentation dir: .js=25568 .d.ts=19093
+patched   tgz=321808 files=383 | .js outside instrumentation=875212 .d.ts outside=523335 | instrumentation dir: .js=33966 .d.ts=21174
 
 instrumentation dir files:
   core/instrumentation/deviceEvents.d.ts  1229
-  core/instrumentation/deviceEvents.js  2160
+  core/instrumentation/deviceEvents.js  2683
   core/instrumentation/eventSize.d.ts  68
-  core/instrumentation/eventSize.js  1071
-  core/instrumentation/hub.d.ts  2661
-  core/instrumentation/hub.js  21043
+  core/instrumentation/eventSize.js  1059
+  core/instrumentation/hub.d.ts  3198
+  core/instrumentation/hub.js  28930
   core/instrumentation/index.d.ts  607
   core/instrumentation/index.js  908
-  core/instrumentation/types.d.ts  14528
+  core/instrumentation/types.d.ts  16072
   core/instrumentation/types.js  386
 
 ## package.json (packed)
@@ -37,8 +37,8 @@ names from the instrumentation entry also exported by main 'typegpu': none
 files of core/instrumentation loaded when only importing 'typegpu' (baseline.ts, patched): core/instrumentation/types.d.ts
 
 ## tsc --extendedDiagnostics for an upstream-only import (skipLibCheck)
-pristine: Files: 241 | Types: 141 | Instantiations: 29 | Memory used: 78737K
-patched: Files: 242 | Types: 141 | Instantiations: 29 | Memory used: 79036K
+pristine: Files: 241 | Types: 141 | Instantiations: 29 | Memory used: 78344K
+patched: Files: 242 | Types: 141 | Instantiations: 29 | Memory used: 78712K
 
 ## is the $internal symbol (key of the hook holder) reachable from a public entry?
 index.d.ts: no $internal

@@ -1,5 +1,5 @@
 {
-  "measured": "2026-10-27T17:20:25.130Z",
+  "measured": "2026-10-27T20:32:08.271Z",
   "node": "v24.21.0",
   "data": {
     "vite": {
@@ -18,11 +18,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/A": {
-          "raw": 521750,
+          "raw": 522610,
           "min": {
-            "bytes": 327836,
-            "gzip": 82753,
-            "brotli": 68306
+            "bytes": 328088,
+            "gzip": 82760,
+            "brotli": 68289
           },
           "markers": {},
           "hookSites": {
@@ -42,20 +42,20 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 540669,
+          "raw": 546893,
           "min": {
-            "bytes": 339696,
-            "gzip": 86010,
-            "brotli": 71106
+            "bytes": 342923,
+            "gzip": 86710,
+            "brotli": 71686
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -72,7 +72,7 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 36
+          "instrumentationProp": 38
         },
         "pristine/C": {
           "raw": 517393,
@@ -86,11 +86,11 @@
           "instrumentationProp": 0
         },
         "patched/C": {
-          "raw": 521426,
+          "raw": 522286,
           "min": {
-            "bytes": 327546,
-            "gzip": 82626,
-            "brotli": 68226
+            "bytes": 327798,
+            "gzip": 82632,
+            "brotli": 68356
           },
           "markers": {},
           "hookSites": {
@@ -109,20 +109,20 @@
           "instrumentationProp": 25
         },
         "patched/Cb": {
-          "raw": 540245,
+          "raw": 546469,
           "min": {
-            "bytes": 339312,
-            "gzip": 85856,
-            "brotli": 70894
+            "bytes": 342539,
+            "gzip": 86557,
+            "brotli": 71563
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -139,14 +139,14 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 35
+          "instrumentationProp": 37
         },
         "patched/D": {
-          "raw": 521426,
+          "raw": 522286,
           "min": {
-            "bytes": 327546,
-            "gzip": 82626,
-            "brotli": 68291
+            "bytes": 327798,
+            "gzip": 82632,
+            "brotli": 68237
           },
           "markers": {},
           "hookSites": {
@@ -176,11 +176,11 @@
           "instrumentationProp": 0
         },
         "patched/Ak": {
-          "raw": 540027,
+          "raw": 540887,
           "min": {
-            "bytes": 339497,
-            "gzip": 85068,
-            "brotli": 70140
+            "bytes": 339749,
+            "gzip": 85081,
+            "brotli": 70079
           },
           "markers": {},
           "hookSites": {
@@ -199,20 +199,20 @@
           "instrumentationProp": 25
         },
         "patched/Bk": {
-          "raw": 558946,
+          "raw": 565170,
           "min": {
-            "bytes": 351357,
-            "gzip": 88335,
-            "brotli": 72918
+            "bytes": 354584,
+            "gzip": 89048,
+            "brotli": 73530
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -229,7 +229,7 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 36
+          "instrumentationProp": 38
         }
       }
     },
@@ -249,11 +249,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/A": {
-          "raw": 606147,
+          "raw": 607144,
           "min": {
-            "bytes": 303091,
-            "gzip": 86638,
-            "brotli": 72591
+            "bytes": 303276,
+            "gzip": 86681,
+            "brotli": 72585
           },
           "markers": {},
           "hookSites": {
@@ -273,20 +273,20 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 625496,
+          "raw": 632281,
           "min": {
-            "bytes": 311977,
-            "gzip": 89551,
-            "brotli": 75106
+            "bytes": 314250,
+            "gzip": 90199,
+            "brotli": 75775
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -303,7 +303,7 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 33
+          "instrumentationProp": 35
         },
         "pristine/C": {
           "raw": 585744,
@@ -317,11 +317,11 @@
           "instrumentationProp": 0
         },
         "patched/C": {
-          "raw": 590321,
+          "raw": 591318,
           "min": {
-            "bytes": 295317,
-            "gzip": 84231,
-            "brotli": 70774
+            "bytes": 295502,
+            "gzip": 84269,
+            "brotli": 70755
           },
           "markers": {},
           "hookSites": {
@@ -340,20 +340,20 @@
           "instrumentationProp": 26
         },
         "patched/Cb": {
-          "raw": 609564,
+          "raw": 616337,
           "min": {
-            "bytes": 304116,
-            "gzip": 87158,
-            "brotli": 73213
+            "bytes": 306389,
+            "gzip": 87829,
+            "brotli": 73836
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -370,14 +370,14 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 32
+          "instrumentationProp": 34
         },
         "patched/D": {
-          "raw": 590321,
+          "raw": 591318,
           "min": {
-            "bytes": 295317,
-            "gzip": 84231,
-            "brotli": 70774
+            "bytes": 295502,
+            "gzip": 84269,
+            "brotli": 70755
           },
           "markers": {},
           "hookSites": {
@@ -413,11 +413,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/A": {
-          "raw": 872209,
+          "raw": 873278,
           "min": {
-            "bytes": 302175,
-            "gzip": 84213,
-            "brotli": 69949
+            "bytes": 302370,
+            "gzip": 84260,
+            "brotli": 70075
           },
           "markers": {},
           "hookSites": {
@@ -437,20 +437,20 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 898169,
+          "raw": 907653,
           "min": {
-            "bytes": 311328,
-            "gzip": 87212,
-            "brotli": 72564
+            "bytes": 313642,
+            "gzip": 87900,
+            "brotli": 73186
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -467,7 +467,7 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 32
+          "instrumentationProp": 34
         },
         "pristine/C": {
           "raw": 729305,
@@ -481,11 +481,11 @@
           "instrumentationProp": 0
         },
         "patched/C": {
-          "raw": 735075,
+          "raw": 736144,
           "min": {
-            "bytes": 280882,
-            "gzip": 78161,
-            "brotli": 65108
+            "bytes": 281082,
+            "gzip": 78192,
+            "brotli": 65063
           },
           "markers": {},
           "hookSites": {
@@ -504,20 +504,20 @@
           "instrumentationProp": 25
         },
         "patched/Cb": {
-          "raw": 781690,
+          "raw": 791174,
           "min": {
-            "bytes": 296208,
-            "gzip": 82591,
-            "brotli": 68743
+            "bytes": 298519,
+            "gzip": 83219,
+            "brotli": 69314
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -534,14 +534,14 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 31
+          "instrumentationProp": 33
         },
         "patched/D": {
-          "raw": 735159,
+          "raw": 736228,
           "min": {
-            "bytes": 280882,
-            "gzip": 78161,
-            "brotli": 64961
+            "bytes": 281082,
+            "gzip": 78192,
+            "brotli": 65058
           },
           "markers": {},
           "hookSites": {
@@ -577,11 +577,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/A": {
-          "raw": 645723,
+          "raw": 646792,
           "min": {
-            "bytes": 261824,
-            "gzip": 73674,
-            "brotli": 62290
+            "bytes": 262024,
+            "gzip": 73702,
+            "brotli": 62343
           },
           "markers": {},
           "hookSites": {
@@ -601,20 +601,20 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 670632,
+          "raw": 680099,
           "min": {
-            "bytes": 270912,
-            "gzip": 76625,
-            "brotli": 64827
+            "bytes": 273225,
+            "gzip": 77256,
+            "brotli": 65364
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -631,7 +631,7 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 32
+          "instrumentationProp": 34
         },
         "pristine/C": {
           "raw": 639666,
@@ -645,11 +645,11 @@
           "instrumentationProp": 0
         },
         "patched/C": {
-          "raw": 645208,
+          "raw": 646277,
           "min": {
-            "bytes": 261540,
-            "gzip": 73557,
-            "brotli": 62240
+            "bytes": 261740,
+            "gzip": 73589,
+            "brotli": 62244
           },
           "markers": {},
           "hookSites": {
@@ -668,20 +668,20 @@
           "instrumentationProp": 25
         },
         "patched/Cb": {
-          "raw": 670188,
+          "raw": 679655,
           "min": {
-            "bytes": 270539,
-            "gzip": 76492,
-            "brotli": 64692
+            "bytes": 272852,
+            "gzip": 77121,
+            "brotli": 65283
           },
           "markers": {
             "pipeline-created": 1,
-            "pipeline-creation-failed": 1,
+            "pipeline-creation-failed": 5,
             "uncapturederror": 2,
-            "FinalizationRegistry": 2,
+            "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 1,
+            "device-lost": 4,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -698,14 +698,14 @@
             "submitted": 1,
             "rootDestroyed": 1
           },
-          "instrumentationProp": 31
+          "instrumentationProp": 33
         },
         "patched/D": {
-          "raw": 645291,
+          "raw": 646360,
           "min": {
-            "bytes": 261540,
-            "gzip": 73557,
-            "brotli": 62240
+            "bytes": 261740,
+            "gzip": 73589,
+            "brotli": 62244
           },
           "markers": {},
           "hookSites": {
