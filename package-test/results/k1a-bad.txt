@@ -1,0 +1,66 @@
+
+$ tsc -p .tmp/tsconfig.bundler.true.ts.json  -> exit 2
+src/bad/true.ts(3,19): error TS2322: Type 'boolean' is not assignable to type 'TgpuInstrumentationProvider'.
+
+$ tsc -p .tmp/tsconfig.bundler.forgot-call.ts.json  -> exit 2
+src/bad/forgot-call.ts(3,45): error TS2322: Type '(options?: TgpuInstrumentationOptions | undefined) => TgpuInstrumentationProvider' is not assignable to type 'TgpuInstrumentationProvider'.
+
+$ tsc -p .tmp/tsconfig.bundler.option-name.ts.json  -> exit 2
+src/bad/option-name.ts(2,25): error TS2353: Object literal may only specify known properties, and 'historyLength' does not exist in type 'TgpuInstrumentationOptions'.
+
+$ tsc -p .tmp/tsconfig.bundler.option-type.ts.json  -> exit 2
+src/bad/option-type.ts(2,25): error TS2322: Type 'string' is not assignable to type 'number'.
+
+$ tsc -p .tmp/tsconfig.bundler.event-field.ts.json  -> exit 2
+src/bad/event-field.ts(5,60): error TS2339: Property 'wgls' does not exist on type 'TgpuPipelineCreated'.
+
+$ tsc -p .tmp/tsconfig.bundler.event-type.ts.json  -> exit 2
+src/bad/event-type.ts(5,7): error TS2367: This comparison appears to be unintentional because the types '"resource-materialized" | "resource-destroyed" | "bind-group-created" | "pipeline-created" | "pipeline-creation-failed" | "shader-diagnostics" | "device-error" | "device-lost" | "root-destroyed"' and '"pipeline-compiled"' have no overlap.
+
+$ tsc -p .tmp/tsconfig.bundler.no-optional-chain.ts.json  -> exit 2
+src/bad/no-optional-chain.ts(4,1): error TS2532: Object is possibly 'undefined'.
+
+$ tsc -p .tmp/tsconfig.bundler.hub-not-exported.ts.json  -> exit 2
+src/bad/hub-not-exported.ts(1,10): error TS2724: '"typegpu/unstable-instrumentation"' has no exported member named 'InstrumentationHub'. Did you mean 'TgpuInstrumentation'?
+
+$ tsc -p .tmp/tsconfig.bundler.not-from-main.ts.json  -> exit 2
+src/bad/not-from-main.ts(1,10): error TS2614: Module '"typegpu"' has no exported member 'createInstrumentation'. Did you mean to use 'import createInstrumentation from "typegpu"' instead?
+
+$ tsc -p .tmp/tsconfig.bundler.deep-import.ts.json  -> exit 2
+src/bad/deep-import.ts(1,36): error TS2307: Cannot find module 'typegpu/core/instrumentation/hub' or its corresponding type declarations.
+
+$ tsc -p .tmp/tsconfig.bundler.sink-method.ts.json  -> exit 2
+src/bad/sink-method.ts(5,36): error TS2339: Property 'bufferMaterialized' does not exist on type 'TgpuInstrumentation'.
+
+$ tsc -p .tmp/tsconfig.node16.true.ts.json  -> exit 2
+src/bad/true.ts(3,19): error TS2322: Type 'boolean' is not assignable to type 'TgpuInstrumentationProvider'.
+
+$ tsc -p .tmp/tsconfig.node16.forgot-call.ts.json  -> exit 2
+src/bad/forgot-call.ts(3,45): error TS2322: Type '(options?: TgpuInstrumentationOptions | undefined) => TgpuInstrumentationProvider' is not assignable to type 'TgpuInstrumentationProvider'.
+
+$ tsc -p .tmp/tsconfig.node16.option-name.ts.json  -> exit 2
+src/bad/option-name.ts(2,25): error TS2353: Object literal may only specify known properties, and 'historyLength' does not exist in type 'TgpuInstrumentationOptions'.
+
+$ tsc -p .tmp/tsconfig.node16.option-type.ts.json  -> exit 2
+src/bad/option-type.ts(2,25): error TS2322: Type 'string' is not assignable to type 'number'.
+
+$ tsc -p .tmp/tsconfig.node16.event-field.ts.json  -> exit 2
+src/bad/event-field.ts(5,60): error TS2339: Property 'wgls' does not exist on type 'TgpuPipelineCreated'.
+
+$ tsc -p .tmp/tsconfig.node16.event-type.ts.json  -> exit 2
+src/bad/event-type.ts(5,7): error TS2367: This comparison appears to be unintentional because the types '"resource-materialized" | "resource-destroyed" | "bind-group-created" | "pipeline-created" | "pipeline-creation-failed" | "shader-diagnostics" | "device-error" | "device-lost" | "root-destroyed"' and '"pipeline-compiled"' have no overlap.
+
+$ tsc -p .tmp/tsconfig.node16.no-optional-chain.ts.json  -> exit 2
+src/bad/no-optional-chain.ts(4,1): error TS2532: Object is possibly 'undefined'.
+
+$ tsc -p .tmp/tsconfig.node16.hub-not-exported.ts.json  -> exit 2
+src/bad/hub-not-exported.ts(1,10): error TS2724: '"typegpu/unstable-instrumentation"' has no exported member named 'InstrumentationHub'. Did you mean 'TgpuInstrumentation'?
+
+$ tsc -p .tmp/tsconfig.node16.not-from-main.ts.json  -> exit 2
+src/bad/not-from-main.ts(1,10): error TS2614: Module '"typegpu"' has no exported member 'createInstrumentation'. Did you mean to use 'import createInstrumentation from "typegpu"' instead?
+
+$ tsc -p .tmp/tsconfig.node16.deep-import.ts.json  -> exit 2
+src/bad/deep-import.ts(1,36): error TS2307: Cannot find module 'typegpu/core/instrumentation/hub' or its corresponding type declarations.
+
+$ tsc -p .tmp/tsconfig.node16.sink-method.ts.json  -> exit 2
+src/bad/sink-method.ts(5,36): error TS2339: Property 'bufferMaterialized' does not exist on type 'TgpuInstrumentation'.

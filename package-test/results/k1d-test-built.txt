@@ -1,0 +1,18 @@
+$ TEST_BUILT=1 pnpm vitest run tests/instrumentation --exclude '**/bench/**'  (cwd packages/typegpu)
+exit 0
+
+ RUN  v4.1.11 /private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-pkg/.work/typegpu/packages/typegpu
+
+
+ Test Files  4 passed (4)
+      Tests  59 passed (59)
+   Start at  18:19:50
+   Duration  2.67s (transform 2.56s, setup 0ms, import 3.02s, tests 1.39s, environment 0ms)
+
+
+
+--- sabotage check: dist/core/instrumentation/index.js made to throw; TEST_BUILT=1 must FAIL ---
+exit 1
+ Test Files  1 failed (1)
+      Tests  no tests
+Error: SABOTAGE-DIST

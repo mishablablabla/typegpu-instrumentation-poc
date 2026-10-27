@@ -1,0 +1,5 @@
+{
+  "name": "k1-consumer",
+  "private": true,
+  "type": "module"
+}

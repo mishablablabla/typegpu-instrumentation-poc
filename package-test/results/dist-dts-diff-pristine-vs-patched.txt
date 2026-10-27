@@ -1,0 +1,159 @@
+diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/commandEncoder/computePass.d.ts work/patched/node_modules/typegpu/core/commandEncoder/computePass.d.ts
+--- work/pristine/node_modules/typegpu/core/commandEncoder/computePass.d.ts	2026-10-27 18:19:32
++++ work/patched/node_modules/typegpu/core/commandEncoder/computePass.d.ts	2026-10-27 18:19:37
+@@ -10,6 +10,7 @@
+ import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
+ import { type TgpuPassTimestampWrites } from './attachments.ts';
+ import type { TgpuCommandEncoder } from './commandEncoder.ts';
++import type { InstrumentationSink } from '../instrumentation/types.ts';
+ /**
+  * The TypeGPU equivalent of {@link GPUComputePassDescriptor}.
+  * Query sets accept TypeGPU query sets next to raw {@link GPUQuerySet}s.
+@@ -24,6 +25,8 @@
+     /** Undefined for raw pass encoders the caller owns */
+     readonly owner: TgpuCommandEncoder | undefined;
+     appliedVersion: number | undefined;
++    /** Read once when the pass is created, so recording a dispatch does not walk through the root. */
++    readonly instrumentation: InstrumentationSink | undefined;
+ }
+ /**
+  * A compute pass recording into a {@link TgpuCommandEncoder}.
+diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.d.ts work/patched/node_modules/typegpu/core/commandEncoder/renderPass.d.ts
+--- work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.d.ts	2026-10-27 18:19:32
++++ work/patched/node_modules/typegpu/core/commandEncoder/renderPass.d.ts	2026-10-27 18:19:37
+@@ -10,6 +10,7 @@
+ import type { TgpuRenderPipeline } from '../pipeline/renderPipeline.ts';
+ import { type TgpuQuerySet } from '../querySet/querySet.ts';
+ import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
++import type { InstrumentationSink } from '../instrumentation/types.ts';
+ import type { TgpuCommandEncoder } from './commandEncoder.ts';
+ import type { TgpuVertexLayout } from '../vertexLayout/vertexLayout.ts';
+ import { type ColorAttachment, type DepthStencilAttachment, type TgpuPassTimestampWrites } from './attachments.ts';
+@@ -38,6 +39,8 @@
+     /** Undefined for bundle encoders and for raw pass encoders the caller owns */
+     readonly owner: TgpuCommandEncoder | undefined;
+     appliedVersion: number | undefined;
++    /** Read once when the pass is created, so recording a draw does not walk through the root. */
++    readonly instrumentation: InstrumentationSink | undefined;
+ }
+ /**
+  * The draw-recording surface shared by render passes and render bundle encoders,
+diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/pipeline/computePipeline.d.ts work/patched/node_modules/typegpu/core/pipeline/computePipeline.d.ts
+--- work/pristine/node_modules/typegpu/core/pipeline/computePipeline.d.ts	2026-10-27 18:19:32
++++ work/patched/node_modules/typegpu/core/pipeline/computePipeline.d.ts	2026-10-27 18:19:37
+@@ -20,6 +20,7 @@
+ import type { RestoreContext } from '../../serial/types.ts';
+ import { type Timeable, type TimestampWritesPriors } from './timeable.ts';
+ import type { IndirectFlag, TgpuBuffer } from '../buffer/buffer.ts';
++import type { TgpuPipelineTrigger } from '../instrumentation/types.ts';
+ export interface ComputePipelineInternals {
+     readonly core: ComputePipelineCore;
+     readonly priors: TgpuComputePipelinePriors & TimestampWritesPriors;
+@@ -162,7 +163,7 @@
+      * we want it to return the same promise each time.
+      */
+     initAsync(): Promise<void>;
+-    initSync(): void;
++    initSync(trigger?: TgpuPipelineTrigger): void;
+     unwrap(): Memo;
+     private resolveAndCreateShaderModule;
+ }
+diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.d.ts work/patched/node_modules/typegpu/core/pipeline/renderPipeline.d.ts
+--- work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.d.ts	2026-10-27 18:19:32
++++ work/patched/node_modules/typegpu/core/pipeline/renderPipeline.d.ts	2026-10-27 18:19:37
+@@ -25,6 +25,7 @@
+ import { type TgpuRenderCommands } from '../commandEncoder/renderPass.ts';
+ import { type Timeable, type TimestampWritesPriors } from './timeable.ts';
+ import { type PrimitiveOffsetInfo } from '../../data/offsetUtils.ts';
++import type { TgpuPipelineTrigger } from '../instrumentation/types.ts';
+ import type { RestoreContext } from '../../serial/types.ts';
+ export interface RenderPipelineInternals {
+     readonly core: RenderPipelineCore;
+@@ -276,13 +277,15 @@
+     toString(): string;
+     get performanceCallbackQuerySet(): TgpuQuerySet<"timestamp"> | undefined;
+     initAsync(): Promise<void>;
+-    initSync(): void;
++    initSync(trigger?: TgpuPipelineTrigger): void;
+     unwrap(): Memo;
+     resolveAndCreateShaderModule(): {
+         resolutionResult: import("../../resolutionCtx.ts").ResolutionResult;
+         descriptor: GPURenderPipelineDescriptor;
+         connectedTargets: (ConnectedTarget | null)[];
+         connectedAttribs: import("../vertexLayout/connectAttributesToShader.ts").ConnectAttributesToShaderResult;
++        module: GPUShaderModule;
++        resolveMs: number;
+     };
+ }
+ /**
+diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/root/init.d.ts work/patched/node_modules/typegpu/core/root/init.d.ts
+--- work/pristine/node_modules/typegpu/core/root/init.d.ts	2026-10-27 18:19:32
++++ work/patched/node_modules/typegpu/core/root/init.d.ts	2026-10-27 18:19:37
+@@ -8,6 +8,7 @@
+ import { type TgpuComputePipeline } from '../pipeline/computePipeline.ts';
+ import type { ExperimentalTgpuRoot, TgpuGuardedComputePipeline, TgpuGuardedComputePipelineSoul, TgpuRootSoul, TgpuRoot } from './rootTypes.ts';
+ import type { RestoreContext } from '../../serial/types.ts';
++import type { TgpuInstrumentationProvider } from '../instrumentation/types.ts';
+ export declare class TgpuGuardedComputePipelineImpl<TArgs extends number[]> implements TgpuGuardedComputePipeline<TArgs> {
+     #private;
+     readonly resourceType = "guarded-compute-pipeline";
+@@ -56,6 +57,11 @@
+      */
+     unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
+     unstable_logOptions?: LogGeneratorOptions;
++    /**
++     * Opt in to runtime instrumentation: `unstable_instrumentation: createInstrumentation()` with `createInstrumentation`
++     * imported from `typegpu/unstable-instrumentation`. The data is read from `root['~unstable'].instrumentation`.
++     */
++    unstable_instrumentation?: TgpuInstrumentationProvider | undefined;
+ };
+ /**
+  * Options passed into {@link initFromDevice}.
+@@ -79,6 +85,11 @@
+      */
+     unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
+     unstable_logOptions?: LogGeneratorOptions;
++    /**
++     * Opt in to runtime instrumentation: `unstable_instrumentation: createInstrumentation()` with `createInstrumentation`
++     * imported from `typegpu/unstable-instrumentation`. The data is read from `root['~unstable'].instrumentation`.
++     */
++    unstable_instrumentation?: TgpuInstrumentationProvider | undefined;
+ };
+ /**
+  * Requests a new GPU device and creates a root around it.
+diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/root/rootTypes.d.ts work/patched/node_modules/typegpu/core/root/rootTypes.d.ts
+--- work/pristine/node_modules/typegpu/core/root/rootTypes.d.ts	2026-10-27 18:19:32
++++ work/patched/node_modules/typegpu/core/root/rootTypes.d.ts	2026-10-27 18:19:37
+@@ -11,6 +11,7 @@
+ import type { Assume, Mutable, OmitProps, Prettify } from '../../shared/utilityTypes.ts';
+ import type { ExtractBindGroupInputFromLayout, TgpuBindGroup, TgpuBindGroupLayout, TgpuLayoutEntry } from '../../tgpuBindGroupLayout.ts';
+ import type { LogGeneratorOptions } from '../../tgsl/consoleLog/types.ts';
++import type { InstrumentationSink, TgpuInstrumentation } from '../instrumentation/types.ts';
+ import type { ShaderGeneratorClass } from '../../tgsl/shaderGenerator.ts';
+ import type { Unwrapper } from '../../unwrapper.ts';
+ import type { TgpuBuffer } from '../buffer/buffer.ts';
+@@ -289,6 +290,8 @@
+     readonly [$soul]: TgpuRootSoul;
+     [$internal]: {
+         logOptions: LogGeneratorOptions;
++        /** Read by every hook site; `undefined` unless instrumentation is enabled. */
++        instrumentation: InstrumentationSink | undefined;
+     };
+     /**
+      * The GPU device associated with this root.
+@@ -439,12 +442,14 @@
+      * destroys the underlying WebGPU device as well.
+      */
+     destroy(): void;
+-    '~unstable': Pick<ExperimentalTgpuRoot, 'createCommandEncoder' | 'createComparisonSampler' | 'createGuardedComputePipeline' | 'createRenderBundleEncoder' | 'createSampler' | 'createTexture' | 'nameRegistrySetting' | 'shaderGeneratorClass' | 'pipe' | 'with'>;
++    '~unstable': Pick<ExperimentalTgpuRoot, 'createCommandEncoder' | 'createComparisonSampler' | 'createGuardedComputePipeline' | 'createRenderBundleEncoder' | 'createSampler' | 'createTexture' | 'instrumentation' | 'nameRegistrySetting' | 'shaderGeneratorClass' | 'pipe' | 'with'>;
+ }
+ export interface ExperimentalTgpuRoot extends Omit<TgpuRoot, 'with'>, Withable_Deprecated<WithBinding> {
+     readonly nameRegistrySetting: 'strict' | 'random';
+     readonly minify: boolean;
+     readonly shaderGeneratorClass?: ShaderGeneratorClass | undefined;
++    /** Defined only when the root was created with `unstable_instrumentation`. */
++    readonly instrumentation: TgpuInstrumentation | undefined;
+     /** @deprecated Use `root.createTexture` instead. */
+     createTexture<TWidth extends number, THeight extends number, TDepth extends number, TSize extends readonly [TWidth] | readonly [TWidth, THeight] | readonly [TWidth, THeight, TDepth], TFormat extends GPUTextureFormat, TMipLevelCount extends number, TSampleCount extends number, TViewFormats extends GPUTextureFormat[], TDimension extends GPUTextureDimension>(props: CreateTextureOptions<TSize, TFormat, TMipLevelCount, TSampleCount, TViewFormats, TDimension>): TgpuTexture<CreateTextureResult<TSize, TFormat, TMipLevelCount, TSampleCount, TViewFormats, TDimension>>;
+     /**

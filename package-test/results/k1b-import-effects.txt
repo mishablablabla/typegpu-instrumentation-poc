@@ -1,0 +1,52 @@
+{
+  "exports": [
+    "createInstrumentation",
+    "estimateEventBytes"
+  ],
+  "importTypegpu": {
+    "newGlobals": [
+      "__tsover_add",
+      "__tsover_sub",
+      "__tsover_mul",
+      "__tsover_div",
+      "__tsover_pow",
+      "__tsover_mod",
+      "__TYPEGPU_VERSION__",
+      "__TYPEGPU_AUTONAME__"
+    ],
+    "processEventsChanged": false,
+    "activeResourcesDelta": 0,
+    "prototypesChanged": false,
+    "constructed": {
+      "WeakMap": 16,
+      "Map": 5,
+      "Set": 29,
+      "Function": 1
+    },
+    "errorHooksChanged": false
+  },
+  "controlImportNodeOs": {
+    "newGlobals": [],
+    "processEventsChanged": false,
+    "activeResourcesDelta": 0,
+    "prototypesChanged": false,
+    "constructed": {
+      "Set": 1,
+      "Promise": 1
+    },
+    "errorHooksChanged": false
+  },
+  "importEntryAfterTypegpu": {
+    "newGlobals": [],
+    "processEventsChanged": false,
+    "activeResourcesDelta": 0,
+    "prototypesChanged": false,
+    "constructed": {
+      "FinalizationRegistry": 1,
+      "WeakMap": 1,
+      "Set": 1,
+      "Promise": 1
+    },
+    "errorHooksChanged": false
+  }
+}

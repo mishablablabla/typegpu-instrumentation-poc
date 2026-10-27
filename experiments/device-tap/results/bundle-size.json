@@ -1,0 +1,26 @@
+{
+  "app.ts": {
+    "rawBytes": 337982,
+    "gzipBytes": 84410,
+    "brotliBytes": 69650,
+    "containsTapCode": false
+  },
+  "app-tap-unused.ts": {
+    "rawBytes": 337982,
+    "gzipBytes": 84410,
+    "brotliBytes": 69650,
+    "containsTapCode": false
+  },
+  "app-tap-used.ts": {
+    "rawBytes": 351726,
+    "gzipBytes": 88263,
+    "brotliBytes": 72854,
+    "containsTapCode": true
+  },
+  "tap-only.ts": {
+    "rawBytes": 13307,
+    "gzipBytes": 4247,
+    "brotliBytes": 3781,
+    "containsTapCode": true
+  }
+}

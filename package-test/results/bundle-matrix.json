@@ -1,0 +1,729 @@
+{
+  "measured": "2026-10-27T17:20:25.130Z",
+  "node": "v24.21.0",
+  "data": {
+    "vite": {
+      "label": "vite 8.0.5 (rolldown, oxc minify)",
+      "cases": {
+        "pristine/A": {
+          "raw": 517717,
+          "min": {
+            "bytes": 325141,
+            "gzip": 81935,
+            "brotli": 67677
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0,
+          "determinism": "identical on rebuild"
+        },
+        "patched/A": {
+          "raw": 521750,
+          "min": {
+            "bytes": 327836,
+            "gzip": 82753,
+            "brotli": 68306
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25,
+          "determinism": "identical on rebuild"
+        },
+        "patched/B": {
+          "raw": 540669,
+          "min": {
+            "bytes": 339696,
+            "gzip": 86010,
+            "brotli": 71106
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 36
+        },
+        "pristine/C": {
+          "raw": 517393,
+          "min": {
+            "bytes": 324851,
+            "gzip": 81809,
+            "brotli": 67543
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0
+        },
+        "patched/C": {
+          "raw": 521426,
+          "min": {
+            "bytes": 327546,
+            "gzip": 82626,
+            "brotli": 68226
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        },
+        "patched/Cb": {
+          "raw": 540245,
+          "min": {
+            "bytes": 339312,
+            "gzip": 85856,
+            "brotli": 70894
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 35
+        },
+        "patched/D": {
+          "raw": 521426,
+          "min": {
+            "bytes": 327546,
+            "gzip": 82626,
+            "brotli": 68291
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        },
+        "pristine/Ak": {
+          "raw": 535998,
+          "min": {
+            "bytes": 336802,
+            "gzip": 84287,
+            "brotli": 69517
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0
+        },
+        "patched/Ak": {
+          "raw": 540027,
+          "min": {
+            "bytes": 339497,
+            "gzip": 85068,
+            "brotli": 70140
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        },
+        "patched/Bk": {
+          "raw": 558946,
+          "min": {
+            "bytes": 351357,
+            "gzip": 88335,
+            "brotli": 72918
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 36
+        }
+      }
+    },
+    "esbuild": {
+      "label": "esbuild 0.27.5",
+      "cases": {
+        "pristine/A": {
+          "raw": 601563,
+          "min": {
+            "bytes": 300843,
+            "gzip": 85955,
+            "brotli": 72137
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0,
+          "determinism": "identical on rebuild"
+        },
+        "patched/A": {
+          "raw": 606147,
+          "min": {
+            "bytes": 303091,
+            "gzip": 86638,
+            "brotli": 72591
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 26,
+          "determinism": "identical on rebuild"
+        },
+        "patched/B": {
+          "raw": 625496,
+          "min": {
+            "bytes": 311977,
+            "gzip": 89551,
+            "brotli": 75106
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 33
+        },
+        "pristine/C": {
+          "raw": 585744,
+          "min": {
+            "bytes": 293069,
+            "gzip": 83575,
+            "brotli": 70210
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0
+        },
+        "patched/C": {
+          "raw": 590321,
+          "min": {
+            "bytes": 295317,
+            "gzip": 84231,
+            "brotli": 70774
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 26
+        },
+        "patched/Cb": {
+          "raw": 609564,
+          "min": {
+            "bytes": 304116,
+            "gzip": 87158,
+            "brotli": 73213
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 32
+        },
+        "patched/D": {
+          "raw": 590321,
+          "min": {
+            "bytes": 295317,
+            "gzip": 84231,
+            "brotli": 70774
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 26
+        }
+      }
+    },
+    "webpack": {
+      "label": "webpack 5.104.1 (production, terser)",
+      "cases": {
+        "pristine/A": {
+          "raw": 866271,
+          "min": {
+            "bytes": 299895,
+            "gzip": 83554,
+            "brotli": 69397
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0,
+          "determinism": "identical on rebuild"
+        },
+        "patched/A": {
+          "raw": 872209,
+          "min": {
+            "bytes": 302175,
+            "gzip": 84213,
+            "brotli": 69949
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25,
+          "determinism": "identical on rebuild"
+        },
+        "patched/B": {
+          "raw": 898169,
+          "min": {
+            "bytes": 311328,
+            "gzip": 87212,
+            "brotli": 72564
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 32
+        },
+        "pristine/C": {
+          "raw": 729305,
+          "min": {
+            "bytes": 278663,
+            "gzip": 77476,
+            "brotli": 64607
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0
+        },
+        "patched/C": {
+          "raw": 735075,
+          "min": {
+            "bytes": 280882,
+            "gzip": 78161,
+            "brotli": 65108
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        },
+        "patched/Cb": {
+          "raw": 781690,
+          "min": {
+            "bytes": 296208,
+            "gzip": 82591,
+            "brotli": 68743
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 31
+        },
+        "patched/D": {
+          "raw": 735159,
+          "min": {
+            "bytes": 280882,
+            "gzip": 78161,
+            "brotli": 64961
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        }
+      }
+    },
+    "rollup": {
+      "label": "rollup 4.60.1 + node-resolve; minify = terser 5.44.1 post-pass",
+      "cases": {
+        "pristine/A": {
+          "raw": 640181,
+          "min": {
+            "bytes": 259605,
+            "gzip": 72951,
+            "brotli": 61821
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0,
+          "determinism": "identical on rebuild"
+        },
+        "patched/A": {
+          "raw": 645723,
+          "min": {
+            "bytes": 261824,
+            "gzip": 73674,
+            "brotli": 62290
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25,
+          "determinism": "identical on rebuild"
+        },
+        "patched/B": {
+          "raw": 670632,
+          "min": {
+            "bytes": 270912,
+            "gzip": 76625,
+            "brotli": 64827
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 32
+        },
+        "pristine/C": {
+          "raw": 639666,
+          "min": {
+            "bytes": 259321,
+            "gzip": 72837,
+            "brotli": 61725
+          },
+          "markers": {},
+          "hookSites": {},
+          "instrumentationProp": 0
+        },
+        "patched/C": {
+          "raw": 645208,
+          "min": {
+            "bytes": 261540,
+            "gzip": 73557,
+            "brotli": 62240
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        },
+        "patched/Cb": {
+          "raw": 670188,
+          "min": {
+            "bytes": 270539,
+            "gzip": 76492,
+            "brotli": 64692
+          },
+          "markers": {
+            "pipeline-created": 1,
+            "pipeline-creation-failed": 1,
+            "uncapturederror": 2,
+            "FinalizationRegistry": 2,
+            "resource-materialized": 2,
+            "bind-group-created": 1,
+            "device-lost": 1,
+            "root-destroyed": 1,
+            "gpuExecutionTime": 1
+          },
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 31
+        },
+        "patched/D": {
+          "raw": 645291,
+          "min": {
+            "bytes": 261540,
+            "gzip": 73557,
+            "brotli": 62240
+          },
+          "markers": {},
+          "hookSites": {
+            "bufferMaterialized": 1,
+            "textureMaterialized": 1,
+            "bufferWritten": 2,
+            "resourceDestroyed": 2,
+            "bindGroupCreated": 1,
+            "pipelineCreated": 4,
+            "pipelineCreationFailed": 2,
+            "dispatched": 1,
+            "drew": 1,
+            "submitted": 1,
+            "rootDestroyed": 1
+          },
+          "instrumentationProp": 25
+        }
+      }
+    }
+  }
+}

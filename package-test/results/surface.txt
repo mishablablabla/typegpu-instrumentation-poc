@@ -1,0 +1,49 @@
+## tarball / unpacked sizes
+pristine  tgz=304465 files=373 | .js outside instrumentation=868541 .d.ts outside=521306 | instrumentation dir: .js=0 .d.ts=0
+patched   tgz=318695 files=383 | .js outside instrumentation=874143 .d.ts outside=523178 | instrumentation dir: .js=25568 .d.ts=19093
+
+instrumentation dir files:
+  core/instrumentation/deviceEvents.d.ts  1229
+  core/instrumentation/deviceEvents.js  2160
+  core/instrumentation/eventSize.d.ts  68
+  core/instrumentation/eventSize.js  1071
+  core/instrumentation/hub.d.ts  2661
+  core/instrumentation/hub.js  21043
+  core/instrumentation/index.d.ts  607
+  core/instrumentation/index.js  908
+  core/instrumentation/types.d.ts  14528
+  core/instrumentation/types.js  386
+
+## package.json (packed)
+sideEffects=false type=module main=./index.js types=./index.d.ts exports keys=./package.json, ., ./data, ./std, ./common, ./unstable-instrumentation, ./~internal
+exports["./unstable-instrumentation"]={"types":"./core/instrumentation/index.d.ts","default":"./core/instrumentation/index.js"}
+leftover dev-only mapping in packed exports ($built$ / ./src / ./dist): 0
+files field: undefined (none => everything staged is published)
+
+## core JS never imports the instrumentation modules at runtime
+non-instrumentation .js files importing .../instrumentation/*: 0
+non-instrumentation .d.ts files referencing instrumentation/types (type-only): core/commandEncoder/computePass.d.ts, core/commandEncoder/renderPass.d.ts, core/pipeline/computePipeline.d.ts, core/pipeline/renderPipeline.d.ts, core/root/init.d.ts, core/root/rootTypes.d.ts
+  core/commandEncoder/computePass.d.ts: import type { InstrumentationSink } from '../instrumentation/types.ts';
+  core/commandEncoder/renderPass.d.ts: import type { InstrumentationSink } from '../instrumentation/types.ts';
+  core/pipeline/computePipeline.d.ts: import type { TgpuPipelineTrigger } from '../instrumentation/types.ts';
+  core/pipeline/renderPipeline.d.ts: import type { TgpuPipelineTrigger } from '../instrumentation/types.ts';
+  core/root/init.d.ts: import type { TgpuInstrumentationProvider } from '../instrumentation/types.ts';
+  core/root/rootTypes.d.ts: import type { InstrumentationSink, TgpuInstrumentation } from '../instrumentation/types.ts';
+
+## names exported by the entry .d.ts (checker) and which are hook-internal
+entry exports (28): InstrumentationHolder, InstrumentationSink, PipelineCreationInfo, TgpuBindGroupCreated, TgpuBindGroupEntryInfo, TgpuBindGroupInfo, TgpuBufferMaterialized, TgpuDeviceError, TgpuDeviceLost, TgpuInstrumentation, TgpuInstrumentationCounters, TgpuInstrumentationEvent, TgpuInstrumentationEventInit, TgpuInstrumentationOptions, TgpuInstrumentationProvider, TgpuInstrumentationSnapshot, TgpuPipelineCreated, TgpuPipelineCreationFailed, TgpuPipelineInfo, TgpuPipelineTrigger, TgpuResourceDestroyed, TgpuResourceInfo, TgpuRootDestroyed, TgpuShaderDiagnosticMessage, TgpuShaderDiagnostics, TgpuTextureMaterialized, createInstrumentation, estimateEventBytes
+hook-contract names exported publicly: InstrumentationHolder, InstrumentationSink, PipelineCreationInfo, TgpuInstrumentationEventInit, TgpuInstrumentationProvider
+names from the instrumentation entry also exported by main 'typegpu': none
+files of core/instrumentation loaded when only importing 'typegpu' (baseline.ts, patched): core/instrumentation/types.d.ts
+
+## tsc --extendedDiagnostics for an upstream-only import (skipLibCheck)
+pristine: Files: 241 | Types: 141 | Instantiations: 29 | Memory used: 78737K
+patched: Files: 242 | Types: 141 | Instantiations: 29 | Memory used: 79036K
+
+## is the $internal symbol (key of the hook holder) reachable from a public entry?
+index.d.ts: no $internal
+internal.d.ts: no $internal
+indexNamedExports.d.ts: no $internal
+data/index.d.ts: no $internal
+std/index.d.ts: no $internal
+common/index.d.ts: no $internal

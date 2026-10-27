@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "target": "es2022",
+    "lib": ["esnext", "dom"],
+    "types": [],
+    "skipLibCheck": false,
+    "verbatimModuleSyntax": false,
+    "ignoreDeprecations": "6.0"
+  }
+}
