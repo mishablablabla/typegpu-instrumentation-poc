@@ -7,6 +7,7 @@
  *
  * A scenario only appears here if it can actually be triggered and observed on this device.
  */
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { d, tgpu } from 'typegpu';
 import type {
   TgpuInstrumentation,
@@ -86,7 +87,9 @@ type Ctx = {
 };
 
 async function execute(body: (ctx: Ctx) => Promise<void>, historySize = 1024): Promise<Run> {
-  const root = await tgpu.init({ unstable_instrumentation: { historySize } });
+  const root = await tgpu.init({
+    unstable_instrumentation: createInstrumentation({ historySize }),
+  });
   const inst = root['~unstable'].instrumentation;
   if (!inst) throw new Error('instrumentation missing');
   const events: Ev[] = [];
@@ -147,8 +150,8 @@ function invariants(run: Run) {
     }),
   );
 
-  const compiled = ofType(events, 'pipeline-compiled');
-  const failed = ofType(events, 'pipeline-compile-failed');
+  const compiled = ofType(events, 'pipeline-created');
+  const failed = ofType(events, 'pipeline-creation-failed');
   const pipelineIds = [...compiled.map((c) => c.id), ...failed.map((f) => f.id)];
   check(
     'no pipeline reported twice',
@@ -157,7 +160,7 @@ function invariants(run: Run) {
   );
   check(
     'pipeline WGSL is non-empty and has a stage entry point',
-    [...compiled, ...failed].every((p) => /@(compute|vertex|fragment)/.test(p.wgsl)),
+    [...compiled, ...failed].every((p) => /@(compute|vertex|fragment)/.test(p.wgsl ?? '')),
   );
 
   const groups = ofType(events, 'bind-group-created');
@@ -326,7 +329,7 @@ async function computeBindGroups() {
   });
   invariants(run);
   expectTypes(run, [
-    'pipeline-compiled',
+    'pipeline-created',
     'resource-materialized', // data1 (entry order of the layout: data, factor)
     'resource-materialized', // factor
     'bind-group-created',
@@ -342,10 +345,10 @@ async function computeBindGroups() {
       same(run.notes.data2, [4, 8, 12, 16, 20, 24, 28, 32]),
     { data1: run.notes.data1, data2: run.notes.data2 },
   );
-  const [compiled] = ofType(run.events, 'pipeline-compiled');
+  const [compiled] = ofType(run.events, 'pipeline-created');
   check(
     'one lazy compile for five dispatches over two handles',
-    ofType(run.events, 'pipeline-compiled').length === 1 &&
+    ofType(run.events, 'pipeline-created').length === 1 &&
       compiled?.trigger === 'lazy' &&
       compiled.label === 'scale',
     compiled && { ...compiled, wgsl: undefined },
@@ -429,20 +432,20 @@ async function render() {
   expectTypes(run, [
     // `#ownPassDescriptor()` reads the compiled pipeline's connected targets before the pass is created,
     // so the pipeline compiles first and the attachment is unwrapped (materialized) after it.
-    'pipeline-compiled',
+    'pipeline-created',
     'resource-materialized',
     'shader-diagnostics',
     'root-destroyed',
     'device-lost',
   ]);
   check('the draw produced red pixels', same(run.notes.pixel, [255, 0, 0, 255]), run.notes.pixel);
-  const compiled = ofType(run.events, 'pipeline-compiled')[0];
+  const compiled = ofType(run.events, 'pipeline-created')[0];
   check(
     'render pipeline compiled once, lazily, with vertex and fragment stages',
     compiled?.pipeline === 'render' &&
       compiled.trigger === 'lazy' &&
-      /@vertex/.test(compiled.wgsl) &&
-      /@fragment/.test(compiled.wgsl),
+      /@vertex/.test(compiled.wgsl ?? '') &&
+      /@fragment/.test(compiled.wgsl ?? ''),
   );
   const p = run.snapshot.pipelines[0];
   check(
@@ -474,7 +477,7 @@ async function explicitInit() {
     renderPipeline.withColorAttachment({ view: target, loadOp: 'clear', storeOp: 'store' }).draw(3);
   });
   invariants(run);
-  const compiled = ofType(run.events, 'pipeline-compiled');
+  const compiled = ofType(run.events, 'pipeline-created');
   check(
     'exactly two compiles, with the explicit triggers, in call order',
     same(
@@ -512,7 +515,7 @@ async function syncFailures() {
     keep(c, r);
   });
   invariants(run);
-  const compiled = ofType(run.events, 'pipeline-compiled');
+  const compiled = ofType(run.events, 'pipeline-created');
   const diags = ofType(run.events, 'shader-diagnostics');
   const errors = ofType(run.events, 'device-error');
   check(
@@ -527,15 +530,15 @@ async function syncFailures() {
         dg?.messages.some(
           (m) =>
             m.type === 'error' &&
-            (c.wgsl.split('\n')[m.lineNum - 1] ?? '').includes('definitelyUndeclared'),
+            ((c.wgsl ?? '').split('\n')[m.lineNum - 1] ?? '').includes('definitelyUndeclared'),
         ) === true
       );
     }),
     diags.map((x) => x.messages),
   );
   check(
-    'no pipeline-compile-failed on the sync path',
-    ofType(run.events, 'pipeline-compile-failed').length === 0,
+    'no pipeline-creation-failed on the sync path',
+    ofType(run.events, 'pipeline-creation-failed').length === 0,
   );
   check(
     'device errors name the bad identifier',
@@ -581,9 +584,9 @@ async function asyncFailures() {
     same(run.notes.rejections, ['GPUPipelineError', 'GPUPipelineError']),
     run.notes.rejections,
   );
-  const failed = ofType(run.events, 'pipeline-compile-failed');
+  const failed = ofType(run.events, 'pipeline-creation-failed');
   check(
-    'one pipeline-compile-failed per failure, compute then render',
+    'one pipeline-creation-failed per failure, compute then render',
     failed.length === 2 &&
       same(
         failed.map((f) => f.pipeline),
@@ -593,8 +596,8 @@ async function asyncFailures() {
     failed.map((f) => ({ ...f, wgsl: undefined })),
   );
   check(
-    'no pipeline-compiled event for a failed async creation',
-    ofType(run.events, 'pipeline-compiled').length === 0,
+    'no pipeline-created event for a failed async creation',
+    ofType(run.events, 'pipeline-created').length === 0,
   );
   const diags = ofType(run.events, 'shader-diagnostics');
   check(
@@ -606,7 +609,7 @@ async function asyncFailures() {
           x.messages.some(
             (m) =>
               m.type === 'error' &&
-              (f.wgsl.split('\n')[m.lineNum - 1] ?? '').includes('definitelyUndeclared'),
+              ((f.wgsl ?? '').split('\n')[m.lineNum - 1] ?? '').includes('definitelyUndeclared'),
           ),
       ),
     ),
@@ -663,7 +666,7 @@ async function lifecycle() {
     // A compile whose diagnostics are still in flight when instrumentation is disposed.
     const pipeline = root.createComputePipeline({ compute: noop });
     const aBeforeCompile = a;
-    pipeline.initSync(); // emits pipeline-compiled now; its diagnostics are still in flight
+    pipeline.initSync(); // emits pipeline-created now; its diagnostics are still in flight
     inst.dispose();
     await root.device.queue.onSubmittedWorkDone();
     await sleep(200);
@@ -712,7 +715,7 @@ async function lifecycle() {
     resume,
   );
   const disposed = run.notes.disposed as { listenerCallsAfterDispose: number; enabled: boolean };
-  // exactly one event after the counter was taken: the pipeline-compiled emitted before dispose();
+  // exactly one event after the counter was taken: the pipeline-created emitted before dispose();
   // the in-flight diagnostics and the later buffer activity must not arrive
   check(
     'after dispose(): the in-flight diagnostics and later resource activity produce no events',
@@ -742,7 +745,10 @@ async function abandonedRoots() {
   const roots: WeakRef<object>[] = [];
   const spawn = () => {
     for (let i = 0; i < 30; i++) {
-      const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+      const root = tgpu.initFromDevice({
+        device,
+        unstable_instrumentation: createInstrumentation(),
+      });
       const inst = root['~unstable'].instrumentation!;
       hubs.push(new WeakRef(inst));
       roots.push(new WeakRef(root));

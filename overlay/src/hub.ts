@@ -1,11 +1,14 @@
 import { getName } from '../../shared/meta.ts';
 import { $soul } from '../../shared/symbols.ts';
 import { type DeviceEventSink, type DeviceWatch, watchDevice } from './deviceEvents.ts';
+import { estimateEventBytes } from './eventSize.ts';
 import type {
+  InstrumentationHolder,
+  InstrumentationSink,
+  PipelineCreationInfo,
   TgpuBindGroupCreated,
   TgpuBindGroupEntryInfo,
   TgpuBindGroupInfo,
-  TgpuInstrumentation,
   TgpuInstrumentationEvent,
   TgpuInstrumentationEventInit,
   TgpuInstrumentationOptions,
@@ -16,6 +19,12 @@ import type {
 } from './types.ts';
 
 const DEFAULT_HISTORY_SIZE = 256;
+const MAX_HISTORY_SIZE = 1_000_000;
+const DEFAULT_HISTORY_MAX_BYTES = 4 * 1024 * 1024;
+/** Events a single delivery pass may chain through re-entrant listeners before the storm is cut off. */
+const MAX_EVENTS_PER_DELIVERY = 10_000;
+/** Distinct subscriber failures surfaced per hub; later ones are only counted. */
+const MAX_SURFACED_LISTENER_ERRORS = 5;
 
 const UNAVAILABLE = [
   'gpuExecutionTime',
@@ -55,7 +64,8 @@ type PipelineRec = {
   readonly trigger: TgpuPipelineTrigger;
   readonly resolveMs: number;
   readonly createMs: number;
-  readonly wgsl: string;
+  readonly wgsl: string | null;
+  readonly wgslLength: number;
   readonly layoutIds: readonly number[];
   dispatches: number;
   draws: number;
@@ -67,33 +77,23 @@ type IdentityRec = { readonly kind: 'identity'; readonly id: number };
 type Rec = ResourceRec | BindGroupRec | PipelineRec | IdentityRec;
 type LiveRec = ResourceRec | BindGroupRec | PipelineRec;
 
-export type InstrumentationHolder = { instrumentation: InstrumentationHub | undefined };
-
-export type PipelineCompiledInfo = {
-  readonly pipeline: 'compute' | 'render';
-  readonly trigger: TgpuPipelineTrigger;
-  readonly resolveMs: number;
-  readonly createMs: number;
-  readonly wgsl: string;
-  /** The `TgpuBindGroupLayout`s the pipeline uses, in group-index order. */
-  readonly layouts: readonly object[];
-  readonly module: unknown;
-};
-
 type BindGroupLike = {
   readonly layout: { readonly entries: Readonly<Record<string, object | null>> };
   readonly entries: Readonly<Record<string, unknown>>;
 };
 
 /**
- * The per-root instrumentation state. Hook sites in TypeGPU call the internal methods (everything
- * not part of {@link TgpuInstrumentation}); consumers only see the public interface.
+ * The per-root instrumentation state. Hook sites in TypeGPU call the sink methods (everything not part
+ * of the public {@link TgpuInstrumentation} interface); consumers only see the public interface.
  *
  * Holds no strong reference to the root, to any tracked object or to any GPU object other than the device.
  */
-export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink {
+export class InstrumentationHub implements InstrumentationSink, DeviceEventSink {
   readonly #watch: DeviceWatch;
   readonly #holder: InstrumentationHolder;
+  readonly #historySize: number;
+  readonly #historyMaxBytes: number;
+  readonly #captureSource: boolean;
 
   #active = false;
   #disposed = false;
@@ -101,9 +101,15 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
 
   #seq = 0;
   #nextId = 1;
-  readonly #ring: (TgpuInstrumentationEvent | undefined)[];
-  #ringStart = 0;
-  #ringSize = 0;
+  // History: a queue with a moving head. Evicted slots are cleared so that evicted events can be collected.
+  #events: (TgpuInstrumentationEvent | undefined)[] = [];
+  #eventBytes: number[] = [];
+  #head = 0;
+  #historyBytes = 0;
+
+  // Delivery: events emitted while a delivery is running (a listener called back into TypeGPU) wait their turn.
+  #pending: TgpuInstrumentationEvent[] = [];
+  #delivering = false;
 
   readonly #byObject = new WeakMap<object, Rec>();
   readonly #live = new Map<number, LiveRec>();
@@ -112,13 +118,15 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
   #submits = 0;
   #collectedWithoutDestroy = 0;
   #droppedEvents = 0;
+  #droppedBytes = 0;
   #listenerErrors = 0;
+  #lastListenerError: string | null = null;
+  #surfacedListenerErrors = new Set<string>();
 
   /**
    * @param holder Where hook sites read the hub from; the hub publishes (or clears) itself there.
-   * It must be a plain object that does not lead back to the root. A callback created inside the
-   * root's constructor would not do: V8 shares one scope object between all closures of a scope, so
-   * it would keep the root alive through the hub (which the device keeps alive).
+   * See {@link TgpuInstrumentationProvider} for why it must be a plain object that does not lead back to the root.
+   * @throws RangeError for an invalid option, at attach time (a developer error, never at run time).
    */
   constructor(
     device: GPUDevice,
@@ -126,8 +134,19 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
     holder: InstrumentationHolder,
   ) {
     this.#holder = holder;
-    const historySize = Math.max(0, Math.floor(options.historySize ?? DEFAULT_HISTORY_SIZE));
-    this.#ring = Array.from({ length: historySize }, () => undefined);
+    this.#historySize = checkedOption(
+      'historySize',
+      options.historySize,
+      DEFAULT_HISTORY_SIZE,
+      MAX_HISTORY_SIZE,
+    );
+    this.#historyMaxBytes = checkedOption(
+      'historyMaxBytes',
+      options.historyMaxBytes,
+      DEFAULT_HISTORY_MAX_BYTES,
+      Number.MAX_SAFE_INTEGER,
+    );
+    this.#captureSource = options.captureSource ?? true;
 
     // One shared, weakly-referencing listener per device; see deviceEvents.ts.
     this.#watch = watchDevice(device, this);
@@ -166,13 +185,7 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
   }
 
   history(): readonly TgpuInstrumentationEvent[] {
-    const result: TgpuInstrumentationEvent[] = [];
-    for (let i = 0; i < this.#ringSize; i++) {
-      result.push(
-        this.#ring[(this.#ringStart + i) % this.#ring.length] as TgpuInstrumentationEvent,
-      );
-    }
-    return result;
+    return this.#events.slice(this.#head) as TgpuInstrumentationEvent[];
   }
 
   getSnapshot(): TgpuInstrumentationSnapshot {
@@ -214,6 +227,7 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
           resolveMs: rec.resolveMs,
           createMs: rec.createMs,
           wgsl: rec.wgsl,
+          wgslLength: rec.wgslLength,
           layoutIds: rec.layoutIds,
           dispatches: rec.dispatches,
           draws: rec.draws,
@@ -222,7 +236,7 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
     }
 
     return {
-      v: 1,
+      v: 2,
       t: performance.now(),
       enabled: this.#active,
       resources,
@@ -232,7 +246,10 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
         submits: this.#submits,
         collectedWithoutDestroy: this.#collectedWithoutDestroy,
         droppedEvents: this.#droppedEvents,
+        droppedBytes: this.#droppedBytes,
+        historyBytes: this.#historyBytes,
         listenerErrors: this.#listenerErrors,
+        lastListenerError: this.#lastListenerError,
       },
       unavailable: UNAVAILABLE,
     };
@@ -243,6 +260,7 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
     this.#disposed = true;
     this.#holder.instrumentation = undefined;
     this.#listeners = [];
+    this.#surfacedListenerErrors.clear();
     this.#watch.stopAll();
   }
 
@@ -390,12 +408,13 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
     } satisfies Omit<TgpuBindGroupCreated, 'v' | 'seq' | 't'>);
   }
 
-  pipelineCompiled(core: object, info: PipelineCompiledInfo): void {
+  pipelineCreated(core: object, info: PipelineCreationInfo): void {
     // The async path can report after `disable()`.
     if (!this.#active) {
       return;
     }
     const layoutIds = info.layouts.map((layout) => this.#identityId(layout));
+    const wgsl = this.#captureSource ? info.wgsl : null;
     const rec: PipelineRec = {
       kind: 'pipeline',
       id: this.#nextId++,
@@ -404,21 +423,24 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
       trigger: info.trigger,
       resolveMs: info.resolveMs,
       createMs: info.createMs,
-      wgsl: info.wgsl,
+      wgsl,
+      wgslLength: info.wgsl.length,
       layoutIds,
       dispatches: 0,
       draws: 0,
     };
     this.#register(core, rec);
     this.#emit({
-      type: 'pipeline-compiled',
+      type: 'pipeline-created',
       id: rec.id,
       pipeline: info.pipeline,
       label: getName(core) ?? null,
       trigger: info.trigger,
+      validation: info.trigger === 'initAsync' ? 'passed' : 'deferred',
       resolveMs: info.resolveMs,
       createMs: info.createMs,
-      wgsl: info.wgsl,
+      wgsl,
+      wgslLength: info.wgsl.length,
       layoutIds,
       layoutLabels: info.layouts.map((layout) => getName(layout) ?? null),
     });
@@ -430,20 +452,21 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
    * The async entry point rejects for an invalid pipeline, and then no pipeline exists to list.
    * The generated WGSL and the compiler messages are what the developer needs most at that point.
    */
-  pipelineFailed(core: object, info: PipelineCompiledInfo, error: unknown): void {
+  pipelineCreationFailed(core: object, info: PipelineCreationInfo, error: unknown): void {
     if (!this.#active) {
       return;
     }
     const id = this.#identityId(core);
     this.#emit({
-      type: 'pipeline-compile-failed',
+      type: 'pipeline-creation-failed',
       id,
       pipeline: info.pipeline,
       label: getName(core) ?? null,
       trigger: 'initAsync',
       resolveMs: info.resolveMs,
       createMs: info.createMs,
-      wgsl: info.wgsl,
+      wgsl: this.#captureSource ? info.wgsl : null,
+      wgslLength: info.wgsl.length,
       layoutIds: info.layouts.map((layout) => this.#identityId(layout)),
       layoutLabels: info.layouts.map((layout) => getName(layout) ?? null),
       errorType: (error as Error | undefined)?.constructor?.name ?? 'unknown',
@@ -568,33 +591,144 @@ export class InstrumentationHub implements TgpuInstrumentation, DeviceEventSink 
   }
 
   #emit(init: TgpuInstrumentationEventInit): void {
-    const event = {
-      v: 1,
+    const event = deepFreeze({
+      v: 2,
       seq: ++this.#seq,
       t: performance.now(),
       ...init,
-    } as TgpuInstrumentationEvent;
+    } as TgpuInstrumentationEvent);
 
-    const capacity = this.#ring.length;
-    if (capacity === 0) {
-      this.#droppedEvents++;
-    } else if (this.#ringSize < capacity) {
-      this.#ring[(this.#ringStart + this.#ringSize) % capacity] = event;
-      this.#ringSize++;
-    } else {
-      this.#ring[this.#ringStart] = event;
-      this.#ringStart = (this.#ringStart + 1) % capacity;
-      this.#droppedEvents++;
+    this.#record(event);
+
+    // Events caused by a listener (it called back into TypeGPU) are queued behind the current delivery, so
+    // every listener sees the events in `seq` order and a listener is never re-entered.
+    this.#pending.push(event);
+    if (this.#delivering) {
+      return;
     }
-
-    for (const listener of this.#listeners) {
-      try {
-        listener(event);
-      } catch {
-        this.#listenerErrors++;
+    this.#delivering = true;
+    try {
+      for (let i = 0; i < this.#pending.length; i++) {
+        if (i >= MAX_EVENTS_PER_DELIVERY) {
+          this.#noteListenerError(
+            new Error(
+              `a subscriber keeps causing new events (over ${MAX_EVENTS_PER_DELIVERY} in one delivery); delivery stopped`,
+            ),
+          );
+          break;
+        }
+        const queued = this.#pending[i] as TgpuInstrumentationEvent;
+        for (const listener of this.#listeners) {
+          try {
+            listener(queued);
+          } catch (error) {
+            this.#noteListenerError(error);
+          }
+        }
       }
+    } finally {
+      this.#pending = [];
+      this.#delivering = false;
     }
   }
+
+  #record(event: TgpuInstrumentationEvent): void {
+    const bytes = estimateEventBytes(event);
+    if (this.#historySize === 0) {
+      this.#droppedEvents++;
+      this.#droppedBytes += bytes;
+      return;
+    }
+    this.#events.push(event);
+    this.#eventBytes.push(bytes);
+    this.#historyBytes += bytes;
+    // The newest event is always kept, even when it alone exceeds the byte bound.
+    while (
+      this.#events.length - this.#head > this.#historySize ||
+      (this.#historyBytes > this.#historyMaxBytes && this.#events.length - this.#head > 1)
+    ) {
+      this.#evictOldest();
+    }
+  }
+
+  #evictOldest(): void {
+    const bytes = this.#eventBytes[this.#head] as number;
+    this.#events[this.#head] = undefined;
+    this.#head++;
+    this.#historyBytes -= bytes;
+    this.#droppedEvents++;
+    this.#droppedBytes += bytes;
+    // Compact once the dead prefix dominates, so the arrays do not grow with the number of events ever emitted.
+    if (this.#head >= 1024 && this.#head * 2 >= this.#events.length) {
+      this.#events = this.#events.slice(this.#head);
+      this.#eventBytes = this.#eventBytes.slice(this.#head);
+      this.#head = 0;
+    }
+  }
+
+  /**
+   * A subscriber failure must not reach the instrumented application and must not be silent: it is counted,
+   * and the first few distinct ones are surfaced to the environment's error reporting.
+   */
+  #noteListenerError(error: unknown): void {
+    this.#listenerErrors++;
+    const text = describeError(error);
+    this.#lastListenerError = text;
+    if (
+      this.#surfacedListenerErrors.size >= MAX_SURFACED_LISTENER_ERRORS ||
+      this.#surfacedListenerErrors.has(text)
+    ) {
+      return;
+    }
+    this.#surfacedListenerErrors.add(text);
+    surfaceError(error);
+  }
+}
+
+function describeError(error: unknown): string {
+  if (error instanceof Error) {
+    return `${error.name}: ${error.message}`;
+  }
+  return String(error);
+}
+
+function surfaceError(error: unknown): void {
+  try {
+    if (typeof globalThis.reportError === 'function') {
+      globalThis.reportError(error);
+    } else {
+      console.error('[typegpu instrumentation] a subscriber threw:', error);
+    }
+  } catch {
+    // The environment's own error reporting failed; the failure stays counted in the snapshot.
+  }
+}
+
+function checkedOption(
+  name: string,
+  value: number | undefined,
+  fallback: number,
+  max: number,
+): number {
+  if (value === undefined) {
+    return fallback;
+  }
+  if (typeof value !== 'number' || !Number.isInteger(value) || value < 0 || value > max) {
+    throw new RangeError(
+      `unstable_instrumentation: ${name} must be an integer between 0 and ${max}, got ${String(value)}`,
+    );
+  }
+  return value;
+}
+
+function deepFreeze<T>(value: T): T {
+  if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const inner of Object.values(value)) {
+      deepFreeze(inner);
+    }
+  }
+  return value;
 }
 
 /** A buffer entry is a buffer, or a binding that wraps one; touching `.buffer` of a TgpuBuffer would materialize it. */

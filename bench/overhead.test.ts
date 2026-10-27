@@ -8,6 +8,7 @@
  *
  * It only uses TypeGPU's public API, so the identical file runs against all three trees.
  */
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { appendFileSync } from 'node:fs';
 import { PerformanceObserver, constants } from 'node:perf_hooks';
 import * as v8 from 'node:v8';
@@ -141,7 +142,7 @@ const fragmentMain = tgpu.fragmentFn({ out: d.vec4f })(() => {
 function setup() {
   const device = makeDevice();
   const root = tgpu.initFromDevice(
-    ENABLED ? ({ device, unstable_instrumentation: true } as never) : { device },
+    ENABLED ? ({ device, unstable_instrumentation: createInstrumentation() } as never) : { device },
   );
   const values = root.createBuffer(d.arrayOf(d.f32, 4)).$usage('storage');
   const uniform = root.createBuffer(d.arrayOf(d.f32, 4)).$usage('uniform');

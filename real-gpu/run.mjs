@@ -89,7 +89,15 @@ const server = createServer((req, res) => {
     res.writeHead(404).end();
     return;
   }
-  res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream' }).end(readFileSync(file));
+  // Cross-origin isolation makes performance.now() fine-grained (about 5 us instead of 0.1 ms); the overhead
+  // benchmark records the tick it actually got.
+  res
+    .writeHead(200, {
+      'content-type': types[extname(file)] ?? 'application/octet-stream',
+      'cross-origin-opener-policy': 'same-origin',
+      'cross-origin-embedder-policy': 'require-corp',
+    })
+    .end(readFileSync(file));
 });
 await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
 const url = `http://127.0.0.1:${server.address().port}/`;

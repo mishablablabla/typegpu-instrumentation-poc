@@ -38,9 +38,9 @@ function run(example, mustPrint) {
 }
 
 const compute = run('compute-scale', ['created [lazy]', 'result after x3: [3,6,9,12,15,18,21,24]', 'factor#', '2 writes, 8 B written', 'DEVICE LOST (destroyed)']);
-expect(compute.some((e) => e.type === 'pipeline-compiled' && e.trigger === 'lazy'), 'compute-scale: a lazy pipeline-compiled event');
-const broken = run('broken-shader', ['FAILED to compile [initAsync]', 'shader: error at WGSL 1:51']);
-expect(broken.some((e) => e.type === 'pipeline-compile-failed'), 'broken-shader: a pipeline-compile-failed event');
+expect(compute.some((e) => e.type === 'pipeline-created' && e.trigger === 'lazy'), 'compute-scale: a lazy pipeline-created event');
+const broken = run('broken-shader', ['creation FAILED [initAsync]', 'shader: error at WGSL 1:51']);
+expect(broken.some((e) => e.type === 'pipeline-creation-failed'), 'broken-shader: a pipeline-creation-failed event');
 
 rmSync(tmp, { recursive: true, force: true });
 console.log(failures === 0 ? '\nAll example checks passed on the hardware adapter.' : `\n${failures} check(s) failed.`);

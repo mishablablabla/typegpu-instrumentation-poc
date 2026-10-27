@@ -28,17 +28,17 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
         .join(', ');
       return `${head} bind group #${e.id} of layout ${e.label ?? '<unnamed>'}#${e.layoutId} (${e.origin}) { ${entries} }`;
     }
-    case 'pipeline-compiled':
+    case 'pipeline-created':
       return (
         // A synchronous creation cannot know whether the pipeline is valid (observed on a real device:
         // an invalid shader still produces this event), so only the async success may say "compiled".
         `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} ${e.trigger === 'initAsync' ? 'compiled' : 'created'} [${e.trigger}] ` +
-        `resolve ${e.resolveMs.toFixed(2)} ms (CPU), create ${e.createMs.toFixed(2)} ms (CPU), ${e.wgsl.length} chars of WGSL`
+        `resolve ${e.resolveMs.toFixed(2)} ms (CPU), create ${e.createMs.toFixed(2)} ms (CPU), ${e.wgslLength} chars of WGSL`
       );
-    case 'pipeline-compile-failed':
+    case 'pipeline-creation-failed':
       return (
-        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} FAILED to compile [${e.trigger}] ` +
-        `${e.errorType}: ${e.message.split('\n')[0]} (${e.wgsl.length} chars of WGSL kept)`
+        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} creation FAILED [${e.trigger}] ` +
+        `${e.errorType}: ${e.message.split('\n')[0]} (${e.wgslLength} chars of WGSL)`
       );
     case 'shader-diagnostics':
       return e.messages.length === 0

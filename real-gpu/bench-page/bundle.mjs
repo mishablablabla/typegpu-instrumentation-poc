@@ -40,7 +40,7 @@ for (const entry of ['bundle-entry-import.ts', 'bundle-entry-app.ts']) {
     rawBytes: code.length,
     gzipBytes: gzipSync(code, { level: 9 }).length,
     brotliBytes: brotliCompressSync(code).length,
-    containsInstrumentationHub: code.includes('pipeline-compile-failed'),
+    containsInstrumentationHub: code.includes('pipeline-creation-failed'),
   };
   rmSync(outDir, { recursive: true, force: true });
 }

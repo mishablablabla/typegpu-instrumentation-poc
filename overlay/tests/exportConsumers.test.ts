@@ -1,3 +1,4 @@
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { describe, expect } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
@@ -8,7 +9,7 @@ import { computeMain, flush, layout, makeObservableDevice } from './support.ts';
 
 function run(device: GPUDevice) {
   makeObservableDevice(device);
-  const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+  const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
   const inst = root['~unstable'].instrumentation!;
   return { root, inst };
 }
@@ -89,7 +90,7 @@ describe('JSONL export', () => {
       record: 'header',
       format: JSONL_FORMAT,
       version: 1,
-      eventSchema: 1,
+      eventSchema: 2,
     });
     const events = records.filter((r) => r.record === 'event').map((r) => r.event);
     expect(events).toEqual(emitted);

@@ -7,12 +7,24 @@
  */
 
 export type TgpuInstrumentationOptions = {
-  /** Maximum number of events kept for late subscribers. @default 256 */
+  /** Maximum number of events kept for late subscribers. `0` keeps none. @default 256 */
   historySize?: number | undefined;
+  /**
+   * Upper bound on the *estimated* payload size of the retained history, in bytes (see `estimateEventBytes`:
+   * UTF-16 string length × 2 plus a fixed cost per field; it is not a heap measurement). The oldest events are
+   * evicted until the history fits. The newest event is always kept, so the bound is
+   * `max(historyMaxBytes, size of the newest event)`. @default 4 MiB
+   */
+  historyMaxBytes?: number | undefined;
+  /**
+   * Keep the generated WGSL text in pipeline events and snapshots. `false` keeps only its length
+   * (`wgsl: null`), which removes the largest payloads. @default true
+   */
+  captureSource?: boolean | undefined;
 };
 
 type EventBase = {
-  readonly v: 1;
+  readonly v: 2;
   /** Monotonic per root, starts at 1. A gap between consecutive `seq` values never happens; drops only truncate history. */
   readonly seq: number;
   /**
@@ -73,14 +85,17 @@ export type TgpuBindGroupCreated = EventBase & {
 export type TgpuPipelineTrigger = 'lazy' | 'initSync' | 'initAsync';
 
 /**
- * TypeGPU handed the generated shader and the pipeline descriptor to WebGPU, either synchronously or
- * because the async creation resolved. A synchronous creation cannot report whether the pipeline is valid:
- * an invalid one still produces this event, followed by `shader-diagnostics` with errors and a `device-error`
- * (observed on a real device). Only the async path distinguishes success (this event) from failure
- * (`pipeline-compile-failed`).
+ * TypeGPU generated WGSL and asked WebGPU to create a pipeline from it. This reports an **attempt that
+ * returned**, not a successful compilation:
+ * - `validation: 'deferred'` (synchronous creation, triggers `lazy` and `initSync`): WebGPU does not report
+ *   whether the pipeline is valid. An invalid pipeline still produces this event, followed by a
+ *   `shader-diagnostics` event with errors and one or two `device-error` events (observed on a real device).
+ * - `validation: 'passed'` (`initAsync`): the creation promise resolved, so the pipeline is valid.
+ *   A rejected promise produces `pipeline-creation-failed` instead.
+ * Emitted synchronously inside the creating call (sync) or when the promise settles (async).
  */
-export type TgpuPipelineCompiled = EventBase & {
-  readonly type: 'pipeline-compiled';
+export type TgpuPipelineCreated = EventBase & {
+  readonly type: 'pipeline-created';
   /** Identity of the pipeline *core*; every `pipeline.with(...)` handle shares it. */
   readonly id: number;
   readonly pipeline: 'compute' | 'render';
@@ -90,6 +105,7 @@ export type TgpuPipelineCompiled = EventBase & {
    * implicit use), `initSync`/`initAsync` = compiled by an explicit call.
    */
   readonly trigger: TgpuPipelineTrigger;
+  readonly validation: 'deferred' | 'passed';
   /** CPU time spent in TypeGPU's WGSL generation. */
   readonly resolveMs: number;
   /**
@@ -97,14 +113,17 @@ export type TgpuPipelineCompiled = EventBase & {
    * `...Async` promise settled. It is neither GPU time nor pure shader-compilation time.
    */
   readonly createMs: number;
-  /** Observed: the exact source given to `device.createShaderModule`. */
-  readonly wgsl: string;
+  /** Observed: the exact source given to `device.createShaderModule`; `null` when `captureSource` is off. */
+  readonly wgsl: string | null;
+  /** Length of the source in UTF-16 code units, always present. */
+  readonly wgslLength: number;
   readonly layoutIds: readonly number[];
   readonly layoutLabels: readonly (string | null)[];
 };
 
-export type TgpuPipelineCompileFailed = EventBase & {
-  readonly type: 'pipeline-compile-failed';
+/** The async creation rejected. No pipeline exists afterwards; the WGSL and compiler messages are what is left to debug with. */
+export type TgpuPipelineCreationFailed = EventBase & {
+  readonly type: 'pipeline-creation-failed';
   /** Identity of the pipeline core. Stable across repeated failures of the same pipeline; never listed in snapshots. */
   readonly id: number;
   readonly pipeline: 'compute' | 'render';
@@ -114,8 +133,9 @@ export type TgpuPipelineCompileFailed = EventBase & {
   readonly resolveMs: number;
   /** Wall time until the creation promise rejected. */
   readonly createMs: number;
-  /** Observed: the exact source given to `device.createShaderModule`. */
-  readonly wgsl: string;
+  /** Observed: the exact source given to `device.createShaderModule`; `null` when `captureSource` is off. */
+  readonly wgsl: string | null;
+  readonly wgslLength: number;
   readonly layoutIds: readonly number[];
   readonly layoutLabels: readonly (string | null)[];
   /** Constructor name of the rejection (`GPUPipelineError` for validation or internal failures). */
@@ -126,14 +146,14 @@ export type TgpuPipelineCompileFailed = EventBase & {
 export type TgpuShaderDiagnosticMessage = {
   readonly type: string;
   readonly message: string;
-  /** Position in the generated WGSL (see `pipeline-compiled.wgsl`), not in the TypeScript source. */
+  /** Position in the generated WGSL (see `pipeline-created.wgsl`), not in the TypeScript source. */
   readonly lineNum: number;
   readonly linePos: number;
 };
 
 export type TgpuShaderDiagnostics = EventBase & {
   readonly type: 'shader-diagnostics';
-  /** Id of the `pipeline-compiled` or `pipeline-compile-failed` event this belongs to. */
+  /** Id of the `pipeline-created` or `pipeline-creation-failed` event this belongs to. */
   readonly pipelineId: number;
   /** Empty means the compiler was asked and reported nothing. */
   readonly messages: readonly TgpuShaderDiagnosticMessage[];
@@ -165,8 +185,8 @@ export type TgpuInstrumentationEvent =
   | TgpuTextureMaterialized
   | TgpuResourceDestroyed
   | TgpuBindGroupCreated
-  | TgpuPipelineCompiled
-  | TgpuPipelineCompileFailed
+  | TgpuPipelineCreated
+  | TgpuPipelineCreationFailed
   | TgpuShaderDiagnostics
   | TgpuDeviceError
   | TgpuDeviceLost
@@ -210,7 +230,8 @@ export type TgpuPipelineInfo = {
   readonly trigger: TgpuPipelineTrigger;
   readonly resolveMs: number;
   readonly createMs: number;
-  readonly wgsl: string;
+  readonly wgsl: string | null;
+  readonly wgslLength: number;
   readonly layoutIds: readonly number[];
   /** Calls to `dispatchWorkgroups*` made through TypeGPU on any handle of this pipeline. Not workgroups. */
   readonly dispatches: number;
@@ -223,14 +244,23 @@ export type TgpuInstrumentationCounters = {
   readonly submits: number;
   /** Tracked resources that were garbage-collected without `destroy()`. Depends on GC timing: a hint, not a measurement. */
   readonly collectedWithoutDestroy: number;
-  /** Events evicted from the history ring. */
+  /** Events evicted from the history (by count or by bytes). */
   readonly droppedEvents: number;
-  /** Exceptions thrown by subscribers (swallowed). */
+  /** Estimated payload bytes of the events evicted from the history. */
+  readonly droppedBytes: number;
+  /** Estimated payload bytes currently retained by the history. */
+  readonly historyBytes: number;
+  /**
+   * Exceptions thrown by subscribers. They never reach the instrumented application; each is counted here and
+   * the first few distinct ones are surfaced through `reportError` (or `console.error`).
+   */
   readonly listenerErrors: number;
+  /** `name: message` of the most recent subscriber exception, `null` if none. */
+  readonly lastListenerError: string | null;
 };
 
 export type TgpuInstrumentationSnapshot = {
-  readonly v: 1;
+  readonly v: 2;
   readonly t: number;
   readonly enabled: boolean;
   readonly resources: readonly TgpuResourceInfo[];
@@ -255,4 +285,56 @@ export interface TgpuInstrumentation {
   getSnapshot(): TgpuInstrumentationSnapshot;
   /** Permanent: drops subscribers and device listeners. History and snapshots stay readable. */
   dispose(): void;
+}
+
+// ----------
+// Provider and sink: the contract between TypeGPU's hook sites and an implementation
+// ----------
+
+/** Where hook sites read the active sink from. A plain object owned by the root; the sink publishes itself into it. */
+export type InstrumentationHolder = { instrumentation: InstrumentationSink | undefined };
+
+export type PipelineCreationInfo = {
+  readonly pipeline: 'compute' | 'render';
+  readonly trigger: TgpuPipelineTrigger;
+  readonly resolveMs: number;
+  readonly createMs: number;
+  readonly wgsl: string;
+  /** The `TgpuBindGroupLayout`s the pipeline uses, in group-index order. */
+  readonly layouts: readonly object[];
+  readonly module: unknown;
+};
+
+/**
+ * What TypeGPU's hook sites call. The roots read it from `root[$internal].instrumentation`, which is
+ * `undefined` unless instrumentation is enabled, so a disabled root pays one property read and one branch.
+ * Not public API: use {@link TgpuInstrumentation}.
+ */
+export interface InstrumentationSink extends TgpuInstrumentation {
+  now(): number;
+  bufferMaterialized(buffer: object, descriptor: GPUBufferDescriptor): void;
+  textureMaterialized(texture: object, descriptor: GPUTextureDescriptor): void;
+  bufferWritten(buffer: object, bytes: number): void;
+  resourceDestroyed(resource: object): void;
+  bindGroupCreated(bindGroup: object, origin: 'created' | 'adopted'): void;
+  pipelineCreated(core: object, info: PipelineCreationInfo): void;
+  pipelineCreationFailed(core: object, info: PipelineCreationInfo, error: unknown): void;
+  dispatched(core: object): void;
+  drew(core: object): void;
+  submitted(): void;
+  rootDestroyed(ownDevice: boolean): void;
+}
+
+/**
+ * What `unstable_instrumentation` accepts: a factory the root calls exactly once from its constructor.
+ * It lives behind a type-only import in TypeGPU's core, so the implementation (`typegpu/unstable-instrumentation`)
+ * is bundled only into applications that import it.
+ */
+export interface TgpuInstrumentationProvider {
+  /**
+   * `holder` must stay unreachable from the root's closures, and the returned sink must not retain the
+   * root: V8 shares one scope object between all closures of a scope, so a callback created inside the root
+   * constructor would keep the root alive through anything the device keeps alive.
+   */
+  attach(device: GPUDevice, holder: InstrumentationHolder): InstrumentationSink;
 }

@@ -48,7 +48,7 @@ Run classification: real-device: adapter reported non-fallback and the browser G
 JSONL written to out.jsonl (11 lines)
 ```
 
-Reading it: `created [lazy]` means the pipeline was created by its first dispatch (a synchronous creation cannot say whether the pipeline is valid; the `shader:` line that follows is the compiler's verdict); the times are CPU `performance.now()` milliseconds (0.1 ms granularity in Chrome), **not** GPU time; `factor` was never destroyed and is reported as still alive at the end. A scenario with a broken shader (`examples/broken-shader.ts`) shows `FAILED to compile [initAsync]` with the compiler error and its position in the generated WGSL.
+Reading it: `created [lazy]` means the pipeline was created by its first dispatch (a synchronous creation cannot say whether the pipeline is valid; the `shader:` line that follows is the compiler's verdict); the times are CPU `performance.now()` milliseconds (0.1 ms granularity in Chrome), **not** GPU time; `factor` was never destroyed and is reported as still alive at the end. A scenario with a broken shader (`examples/broken-shader.ts`) shows `creation FAILED [initAsync]` with the compiler error and its position in the generated WGSL.
 
 The JSONL file has one JSON object per line: a `header`, an `environment` record written by the harness, one `event` record per event (exactly what the core emitted, schema in [docs/POC-DESIGN.md](docs/POC-DESIGN.md) and `overlay/src/types.ts`), and a `snapshot` record tagged with the last event it is consistent with. Real samples: [real-gpu/results/example-compute-scale.jsonl](real-gpu/results/example-compute-scale.jsonl), [example-broken-shader.jsonl](real-gpu/results/example-broken-shader.jsonl).
 

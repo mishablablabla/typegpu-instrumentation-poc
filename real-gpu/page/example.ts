@@ -3,6 +3,7 @@
  * prints the events through the console reporter and returns the JSONL lines for the driver to write.
  * Registered as `window.runExample` by main.ts; used by `real-gpu/run.mjs --example`.
  */
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import example from 'example-under-test';
 import { tgpu } from 'typegpu';
 import { attachConsoleReporter } from '../consumers/consoleReporter.ts';
@@ -19,7 +20,9 @@ export async function runExample() {
     return { provenance: prov, jsonl: [] as string[], error: null };
   }
 
-  const root = await tgpu.init({ unstable_instrumentation: { historySize: 512 } });
+  const root = await tgpu.init({
+    unstable_instrumentation: createInstrumentation({ historySize: 512 }),
+  });
   const instrumentation = requireInstrumentation(root);
   const reporter = attachConsoleReporter(instrumentation, {
     log: (line) => console.log(`${REPORT_PREFIX}${line}`),

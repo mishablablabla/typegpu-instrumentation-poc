@@ -1,3 +1,37 @@
+diff --git a/packages/typegpu/package.json b/packages/typegpu/package.json
+index d64e64de..53d1ea59 100644
+--- a/packages/typegpu/package.json
++++ b/packages/typegpu/package.json
+@@ -34,6 +34,7 @@
+     "./data": "./src/data/index.ts",
+     "./std": "./src/std/index.ts",
+     "./common": "./src/common/index.ts",
++    "./unstable-instrumentation": "./src/core/instrumentation/index.ts",
+     "./~internal": "./src/internal.ts",
+     "./$built$": {
+       "types": "./dist/index.d.ts",
+@@ -51,6 +52,10 @@
+       "types": "./dist/common/index.d.ts",
+       "default": "./dist/common/index.js"
+     },
++    "./unstable-instrumentation/$built$": {
++      "types": "./dist/core/instrumentation/index.d.ts",
++      "default": "./dist/core/instrumentation/index.js"
++    },
+     "./~internal/$built$": {
+       "types": "./dist/internal.d.ts",
+       "default": "./dist/internal.js"
+@@ -77,6 +82,10 @@
+         "types": "./dist/common/index.d.ts",
+         "default": "./dist/common/index.js"
+       },
++      "./unstable-instrumentation": {
++        "types": "./dist/core/instrumentation/index.d.ts",
++        "default": "./dist/core/instrumentation/index.js"
++      },
+       "./~internal": {
+         "types": "./dist/internal.d.ts",
+         "default": "./dist/internal.js"
 diff --git a/packages/typegpu/src/core/buffer/buffer.ts b/packages/typegpu/src/core/buffer/buffer.ts
 index d2eb90c0..d272009e 100644
 --- a/packages/typegpu/src/core/buffer/buffer.ts
@@ -56,14 +90,14 @@ index 58d76092..4b0db7bb 100644
      for (const hook of afterSubmit.values()) {
        hook();
 diff --git a/packages/typegpu/src/core/commandEncoder/computePass.ts b/packages/typegpu/src/core/commandEncoder/computePass.ts
-index 3871ba4a..41a2643d 100644
+index 3871ba4a..e465e750 100644
 --- a/packages/typegpu/src/core/commandEncoder/computePass.ts
 +++ b/packages/typegpu/src/core/commandEncoder/computePass.ts
 @@ -21,6 +21,7 @@ import type { TgpuComputePipeline } from '../pipeline/computePipeline.ts';
  import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
  import { type TgpuPassTimestampWrites, unwrapTimestampWrites } from './attachments.ts';
  import type { TgpuCommandEncoder } from './commandEncoder.ts';
-+import type { InstrumentationHub } from '../instrumentation/hub.ts';
++import type { InstrumentationSink } from '../instrumentation/types.ts';
  
  // ----------
  // Public API
@@ -72,7 +106,7 @@ index 3871ba4a..41a2643d 100644
    readonly owner: TgpuCommandEncoder | undefined;
    appliedVersion: number | undefined;
 +  /** Read once when the pass is created, so recording a dispatch does not walk through the root. */
-+  readonly instrumentation: InstrumentationHub | undefined;
++  readonly instrumentation: InstrumentationSink | undefined;
  }
  
  /**
@@ -85,14 +119,14 @@ index 3871ba4a..41a2643d 100644
    }
  
 diff --git a/packages/typegpu/src/core/commandEncoder/renderPass.ts b/packages/typegpu/src/core/commandEncoder/renderPass.ts
-index a3e82175..c719b7aa 100644
+index a3e82175..c81e21ac 100644
 --- a/packages/typegpu/src/core/commandEncoder/renderPass.ts
 +++ b/packages/typegpu/src/core/commandEncoder/renderPass.ts
 @@ -26,6 +26,7 @@ import {
  import type { TgpuRenderPipeline } from '../pipeline/renderPipeline.ts';
  import { isQuerySet, type TgpuQuerySet } from '../querySet/querySet.ts';
  import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
-+import type { InstrumentationHub } from '../instrumentation/hub.ts';
++import type { InstrumentationSink } from '../instrumentation/types.ts';
  import type { TgpuCommandEncoder } from './commandEncoder.ts';
  import type { TgpuVertexLayout } from '../vertexLayout/vertexLayout.ts';
  import {
@@ -101,7 +135,7 @@ index a3e82175..c719b7aa 100644
    readonly owner: TgpuCommandEncoder | undefined;
    appliedVersion: number | undefined;
 +  /** Read once when the pass is created, so recording a draw does not walk through the root. */
-+  readonly instrumentation: InstrumentationHub | undefined;
++  readonly instrumentation: InstrumentationSink | undefined;
  }
  
  /**
@@ -114,7 +148,7 @@ index a3e82175..c719b7aa 100644
    }
  
 diff --git a/packages/typegpu/src/core/pipeline/computePipeline.ts b/packages/typegpu/src/core/pipeline/computePipeline.ts
-index 44be7196..ce2298e6 100644
+index 44be7196..1f2a37a0 100644
 --- a/packages/typegpu/src/core/pipeline/computePipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/computePipeline.ts
 @@ -70,6 +70,7 @@ import {
@@ -149,7 +183,7 @@ index 44be7196..ce2298e6 100644
 +        .then(
 +          (pipeline) => {
 +            this.#memo = { pipeline, usedBindGroupLayouts, catchall, logResources, usedImmediate };
-+            instrumentation?.pipelineCompiled(this, {
++            instrumentation?.pipelineCreated(this, {
 +              pipeline: 'compute',
 +              trigger: 'initAsync',
 +              resolveMs,
@@ -161,7 +195,7 @@ index 44be7196..ce2298e6 100644
 +            this.#performanceTracker.measureCompile(device);
 +          },
 +          (error: unknown) => {
-+            instrumentation?.pipelineFailed(
++            instrumentation?.pipelineCreationFailed(
 +              this,
 +              {
 +                pipeline: 'compute',
@@ -206,7 +240,7 @@ index 44be7196..ce2298e6 100644
        usedImmediate,
      };
  
-+    instrumentation?.pipelineCompiled(this, {
++    instrumentation?.pipelineCreated(this, {
 +      pipeline: 'compute',
 +      trigger,
 +      resolveMs,
@@ -273,7 +307,7 @@ index 7664e930..b540b6e7 100644
      reportIgnoredPriors(
        core,
 diff --git a/packages/typegpu/src/core/pipeline/renderPipeline.ts b/packages/typegpu/src/core/pipeline/renderPipeline.ts
-index 91983963..95b33603 100644
+index 91983963..8387c22f 100644
 --- a/packages/typegpu/src/core/pipeline/renderPipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/renderPipeline.ts
 @@ -104,6 +104,7 @@ import {
@@ -327,7 +361,7 @@ index 91983963..95b33603 100644
 +              connectedTargets,
 +              usedImmediate: resolutionResult.usedImmediate,
 +            };
-+            instrumentation?.pipelineCompiled(this, {
++            instrumentation?.pipelineCreated(this, {
 +              pipeline: 'render',
 +              trigger: 'initAsync',
 +              resolveMs,
@@ -339,7 +373,7 @@ index 91983963..95b33603 100644
 +            this.#performanceTracker.measureCompile(device);
 +          },
 +          (error: unknown) => {
-+            instrumentation?.pipelineFailed(
++            instrumentation?.pipelineCreationFailed(
 +              this,
 +              {
 +                pipeline: 'render',
@@ -384,7 +418,7 @@ index 91983963..95b33603 100644
        usedImmediate: resolutionResult.usedImmediate,
      };
  
-+    instrumentation?.pipelineCompiled(this, {
++    instrumentation?.pipelineCreated(this, {
 +      pipeline: 'render',
 +      trigger,
 +      resolveMs,
@@ -432,19 +466,18 @@ index 91983963..95b33603 100644
  }
  
 diff --git a/packages/typegpu/src/core/root/init.ts b/packages/typegpu/src/core/root/init.ts
-index 1756bc5b..9f24b3d4 100644
+index 1756bc5b..07610ce4 100644
 --- a/packages/typegpu/src/core/root/init.ts
 +++ b/packages/typegpu/src/core/root/init.ts
-@@ -95,6 +95,8 @@ import { getName, setName } from '../../shared/meta.ts';
+@@ -95,6 +95,7 @@ import { getName, setName } from '../../shared/meta.ts';
  import { logger } from '../../tgpuLogger.ts';
  import { safeStringify } from '../../shared/stringify.ts';
  import type { RestoreContext } from '../../serial/types.ts';
-+import { InstrumentationHub } from '../instrumentation/hub.ts';
-+import type { TgpuInstrumentationOptions } from '../instrumentation/types.ts';
++import type { InstrumentationSink, TgpuInstrumentationProvider } from '../instrumentation/types.ts';
  
  /**
   * Changes the given array to a vec of 3 numbers, filling missing values with 1.
-@@ -348,12 +350,19 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -348,12 +349,19 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
    readonly shaderGeneratorClass: WgslGeneratorClass | undefined;
  
    #unwrappedBindGroupLayouts = new WeakMemo((key: TgpuBindGroupLayout) => key.unwrap(this));
@@ -459,42 +492,43 @@ index 1756bc5b..9f24b3d4 100644
  
    [$internal]: {
      logOptions: LogGeneratorOptions;
-+    instrumentation: InstrumentationHub | undefined;
++    instrumentation: InstrumentationSink | undefined;
    };
-+  #instrumentationHub: InstrumentationHub | undefined;
++  #instrumentation: InstrumentationSink | undefined;
  
    constructor(
      device: GPUDevice,
-@@ -362,6 +371,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -362,6 +370,7 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
      ownDevice: boolean,
      logOptions: LogGeneratorOptions,
      shaderGeneratorClass?: WgslGeneratorClass,
-+    instrumentation?: boolean | TgpuInstrumentationOptions,
++    instrumentation?: TgpuInstrumentationProvider,
    ) {
      super(() => this, []);
  
-@@ -380,9 +390,21 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
+@@ -380,9 +389,22 @@ class TgpuRootImpl extends WithBindingImpl implements TgpuRoot, ExperimentalTgpu
        nonTransferablePriors: shaderGeneratorClass ? ['shaderGeneratorClass'] : undefined,
        label: undefined,
      };
 -    this[$internal] = {
 -      logOptions,
 -    };
-+    const internals = { logOptions, instrumentation: undefined as InstrumentationHub | undefined };
++    const internals = { logOptions, instrumentation: undefined as InstrumentationSink | undefined };
 +    this[$internal] = internals;
 +
 +    if (instrumentation) {
-+      // `internals` is a plain object; see the hub's constructor for why no closure may be used here.
-+      this.#instrumentationHub = new InstrumentationHub(
-+        device,
-+        instrumentation === true ? {} : instrumentation,
-+        internals,
-+      );
++      if (typeof instrumentation.attach !== 'function') {
++        throw new Error(
++          "unstable_instrumentation expects the value of `instrumentation()` from 'typegpu/unstable-instrumentation'.",
++        );
++      }
++      // `internals` is a plain object; see the provider contract for why no closure may be used here.
++      this.#instrumentation = instrumentation.attach(device, internals);
 +    }
 +  }
 +
 +  get instrumentation() {
-+    return this.#instrumentationHub;
++    return this.#instrumentation;
    }
  
    configureContext(options: ConfigureContextOptions): GPUCanvasContext {
@@ -502,29 +536,35 @@ index 1756bc5b..9f24b3d4 100644
    }
  
    destroy() {
-+    this.#instrumentationHub?.rootDestroyed(this.#ownDevice);
++    this.#instrumentation?.rootDestroyed(this.#ownDevice);
      clearTextureUtilsCache(this.device);
  
      if (this.#ownDevice) {
-@@ -624,6 +647,8 @@ export type InitOptions = {
+@@ -624,6 +647,11 @@ export type InitOptions = {
     */
    unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
    unstable_logOptions?: LogGeneratorOptions;
-+  /** Opt in to runtime instrumentation, see `root['~unstable'].instrumentation`. */
-+  unstable_instrumentation?: boolean | TgpuInstrumentationOptions | undefined;
++  /**
++   * Opt in to runtime instrumentation: `unstable_instrumentation: instrumentation()` with `instrumentation`
++   * imported from `typegpu/unstable-instrumentation`. The data is read from `root['~unstable'].instrumentation`.
++   */
++  unstable_instrumentation?: TgpuInstrumentationProvider | undefined;
  };
  
  /**
-@@ -648,6 +673,8 @@ export type InitFromDeviceOptions = {
+@@ -648,6 +676,11 @@ export type InitFromDeviceOptions = {
     */
    unstable_shaderGeneratorClass?: WgslGeneratorClass | undefined;
    unstable_logOptions?: LogGeneratorOptions;
-+  /** Opt in to runtime instrumentation, see `root['~unstable'].instrumentation`. */
-+  unstable_instrumentation?: boolean | TgpuInstrumentationOptions | undefined;
++  /**
++   * Opt in to runtime instrumentation: `unstable_instrumentation: instrumentation()` with `instrumentation`
++   * imported from `typegpu/unstable-instrumentation`. The data is read from `root['~unstable'].instrumentation`.
++   */
++  unstable_instrumentation?: TgpuInstrumentationProvider | undefined;
  };
  
  /**
-@@ -676,6 +703,7 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
+@@ -676,6 +709,7 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
      unstable_minify: minify = false,
      unstable_logOptions: logOptions,
      unstable_shaderGeneratorClass: shaderGeneratorClass,
@@ -532,7 +572,7 @@ index 1756bc5b..9f24b3d4 100644
    } = options ?? {};
    const { optionalFeatures, ...deviceDescriptor } = deviceOpt ?? {};
  
-@@ -712,7 +740,15 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
+@@ -712,7 +746,15 @@ export async function init(options?: InitOptions): Promise<TgpuRoot> {
      requiredFeatures: availableFeatures,
    });
  
@@ -549,7 +589,7 @@ index 1756bc5b..9f24b3d4 100644
  }
  
  /**
-@@ -731,7 +767,16 @@ export function initFromDevice(options: InitFromDeviceOptions): TgpuRoot {
+@@ -731,7 +773,16 @@ export function initFromDevice(options: InitFromDeviceOptions): TgpuRoot {
      unstable_minify: minify = false,
      unstable_logOptions: logOptions,
      unstable_shaderGeneratorClass: shaderGeneratorClass,
@@ -568,28 +608,27 @@ index 1756bc5b..9f24b3d4 100644
 +  );
  }
 diff --git a/packages/typegpu/src/core/root/rootTypes.ts b/packages/typegpu/src/core/root/rootTypes.ts
-index 26408f90..8a170b6d 100644
+index 26408f90..11aef858 100644
 --- a/packages/typegpu/src/core/root/rootTypes.ts
 +++ b/packages/typegpu/src/core/root/rootTypes.ts
-@@ -23,6 +23,8 @@ import type {
+@@ -23,6 +23,7 @@ import type {
    TgpuLayoutEntry,
  } from '../../tgpuBindGroupLayout.ts';
  import type { LogGeneratorOptions } from '../../tgsl/consoleLog/types.ts';
-+import type { InstrumentationHub } from '../instrumentation/hub.ts';
-+import type { TgpuInstrumentation } from '../instrumentation/types.ts';
++import type { InstrumentationSink, TgpuInstrumentation } from '../instrumentation/types.ts';
  import type { ShaderGeneratorClass } from '../../tgsl/shaderGenerator.ts';
  import type { Unwrapper } from '../../unwrapper.ts';
  import type { TgpuBuffer } from '../buffer/buffer.ts';
-@@ -502,6 +504,8 @@ export interface TgpuRoot extends Unwrapper, WithBinding {
+@@ -502,6 +503,8 @@ export interface TgpuRoot extends Unwrapper, WithBinding {
    readonly [$soul]: TgpuRootSoul;
    [$internal]: {
      logOptions: LogGeneratorOptions;
 +    /** Read by every hook site; `undefined` unless instrumentation is enabled. */
-+    instrumentation: InstrumentationHub | undefined;
++    instrumentation: InstrumentationSink | undefined;
    };
  
    /**
-@@ -744,6 +748,7 @@ export interface TgpuRoot extends Unwrapper, WithBinding {
+@@ -744,6 +747,7 @@ export interface TgpuRoot extends Unwrapper, WithBinding {
      | 'createRenderBundleEncoder'
      | 'createSampler'
      | 'createTexture'
@@ -597,7 +636,7 @@ index 26408f90..8a170b6d 100644
      | 'nameRegistrySetting'
      | 'shaderGeneratorClass'
      | 'pipe'
-@@ -756,6 +761,8 @@ export interface ExperimentalTgpuRoot
+@@ -756,6 +760,8 @@ export interface ExperimentalTgpuRoot
    readonly nameRegistrySetting: 'strict' | 'random';
    readonly minify: boolean;
    readonly shaderGeneratorClass?: ShaderGeneratorClass | undefined;

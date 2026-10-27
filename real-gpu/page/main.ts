@@ -6,6 +6,7 @@
  *  - `checks`: assertions that must hold for the run to count as validated.
  *  - `observations`: facts about the real implementation that the design only assumed (reported, not asserted).
  */
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { d, tgpu } from 'typegpu';
 import { runExample } from './example.ts';
 import { runViability } from './viability.ts';
@@ -79,7 +80,9 @@ export async function runRealDeviceScenario() {
   }
 
   // 1. Initialization on a device the root owns.
-  const root = await tgpu.init({ unstable_instrumentation: { historySize: 64 } });
+  const root = await tgpu.init({
+    unstable_instrumentation: createInstrumentation({ historySize: 64 }),
+  });
   const inst = root['~unstable'].instrumentation;
   check('init', 'instrumentation is present and enabled after tgpu.init', inst?.enabled === true);
   if (!inst) {
@@ -112,14 +115,14 @@ export async function runRealDeviceScenario() {
     result.every((v, i) => v === (i + 1) * 3),
     result,
   );
-  const compiled = ofType(events, 'pipeline-compiled');
+  const compiled = ofType(events, 'pipeline-created');
   check(
     'pipeline-event',
-    'exactly one pipeline-compiled event, lazy, with generated WGSL',
+    'exactly one pipeline-created event, lazy, with generated WGSL',
     compiled.length === 1 &&
       compiled[0]?.trigger === 'lazy' &&
       /fn scale/.test(compiled[0]?.wgsl ?? ''),
-    compiled.map((c) => ({ trigger: c.trigger, label: c.label, wgslLength: c.wgsl.length })),
+    compiled.map((c) => ({ trigger: c.trigger, label: c.label, wgslLength: c.wgslLength })),
   );
   const diagnostics = ofType(events, 'shader-diagnostics');
   check(
@@ -215,7 +218,7 @@ export async function runRealDeviceScenario() {
   const brokenDiag = ofType(after, 'shader-diagnostics').find((x) =>
     x.messages.some((m) => m.type === 'error'),
   );
-  const brokenCompiled = ofType(after, 'pipeline-compiled')[0];
+  const brokenCompiled = ofType(after, 'pipeline-created')[0];
   check(
     'diagnostics-error',
     'the compiler error is reported with a line number that points at the offending line of the generated WGSL',
@@ -223,7 +226,9 @@ export async function runRealDeviceScenario() {
       brokenDiag.messages.some(
         (m) =>
           m.type === 'error' &&
-          (brokenCompiled?.wgsl.split('\n')[m.lineNum - 1] ?? '').includes('definitelyUndeclared'),
+          ((brokenCompiled?.wgsl ?? '').split('\n')[m.lineNum - 1] ?? '').includes(
+            'definitelyUndeclared',
+          ),
       ),
     { messages: brokenDiag?.messages, wgsl: brokenCompiled?.wgsl },
   );
@@ -253,22 +258,22 @@ export async function runRealDeviceScenario() {
   observe('async.pipelineCreation', {
     rejected: asyncRejection !== null,
     rejection: asyncRejection,
-    pipelineCompiledEvents: ofType(afterAsync, 'pipeline-compiled').length,
+    pipelineCompiledEvents: ofType(afterAsync, 'pipeline-created').length,
     shaderDiagnosticsWithErrors: ofType(afterAsync, 'shader-diagnostics').filter(
       (x) => x.messages.length > 0,
     ).length,
     deviceErrors: ofType(afterAsync, 'device-error').length,
   });
 
-  const failedEvent = ofType(afterAsync, 'pipeline-compile-failed')[0];
+  const failedEvent = ofType(afterAsync, 'pipeline-creation-failed')[0];
   const failedDiagnostics = ofType(afterAsync, 'shader-diagnostics').find(
     (x) => failedEvent !== undefined && x.pipelineId === failedEvent.id,
   );
   check(
     'async-failure-event',
-    'an invalid pipeline created with initAsync reports pipeline-compile-failed with its WGSL, and the compiler error follows',
+    'an invalid pipeline created with initAsync reports pipeline-creation-failed with its WGSL, and the compiler error follows',
     failedEvent?.errorType === 'GPUPipelineError' &&
-      failedEvent.wgsl.includes('definitelyUndeclared') &&
+      (failedEvent.wgsl ?? '').includes('definitelyUndeclared') &&
       failedDiagnostics?.messages.some((m) => m.type === 'error') === true,
     {
       failed: failedEvent && { ...failedEvent, wgsl: undefined },
@@ -325,7 +330,10 @@ export async function runRealDeviceScenario() {
     });
 
   const deviceX = await newDevice();
-  const rootX = tgpu.initFromDevice({ device: deviceX, unstable_instrumentation: true });
+  const rootX = tgpu.initFromDevice({
+    device: deviceX,
+    unstable_instrumentation: createInstrumentation(),
+  });
   const instX = rootX['~unstable'].instrumentation!;
   const eventsX = collect(instX);
   phase('error-with-listener');
@@ -353,7 +361,10 @@ export async function runRealDeviceScenario() {
 
   // 8. Device loss on a borrowed device, destroyed directly (the root stays alive).
   const deviceY = await newDevice();
-  const rootY = tgpu.initFromDevice({ device: deviceY, unstable_instrumentation: true });
+  const rootY = tgpu.initFromDevice({
+    device: deviceY,
+    unstable_instrumentation: createInstrumentation(),
+  });
   const instY = rootY['~unstable'].instrumentation!;
   const eventsY = collect(instY);
   rootY.unwrap(rootY.createBuffer(d.f32).$usage('uniform').$name('leftover'));
@@ -384,7 +395,10 @@ export async function runRealDeviceScenario() {
   } else {
     const deviceZ = await newDevice();
     const make = () => {
-      const rootZ = tgpu.initFromDevice({ device: deviceZ, unstable_instrumentation: true });
+      const rootZ = tgpu.initFromDevice({
+        device: deviceZ,
+        unstable_instrumentation: createInstrumentation(),
+      });
       const buffer = rootZ.createBuffer(d.f32).$usage('uniform');
       rootZ.unwrap(buffer);
       const pipelineZ = rootZ.createComputePipeline({ compute: scale });
