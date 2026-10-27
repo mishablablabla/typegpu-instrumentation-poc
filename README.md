@@ -73,7 +73,7 @@ Exit codes of `run.mjs`: `0` ran on a hardware adapter · `1` the scenario threw
 
 ```bash
 scripts/setup.sh && scripts/setup-pristine.sh          # TypeGPU at the pinned commit with/without the patch
-(cd .work/typegpu && pnpm install --frozen-lockfile --filter "treeshake-test...")   # webpack/rollup/terser for the bundle matrix
+(cd .work/typegpu && pnpm install --frozen-lockfile --filter "treeshake-test..." --filter "@typegpu/noise...")   # webpack/rollup/terser for the bundle matrix
 scripts/check.sh                                       # mock tests, tsc, lint/format (no GPU, no browser) = what CI runs
 node real-gpu/run.mjs                                  # 20 real-device checks (Chrome, CDP)
 node real-gpu/run.mjs --call 'window.runViability()' --out v.json                       # 131 checks, 9 scenarios, Chrome
