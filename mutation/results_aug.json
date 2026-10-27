@@ -1,0 +1,598 @@
+[
+ {
+  "id": "N04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps about 4 MiB of history by default"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N06",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds accepts historyMaxBytes up to Number.MAX_SAFE_INTEGER and no more"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N11",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N16",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds hands out snapshots that later failures do not change"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N18",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds lists every documented blind spot as unavailable"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N26",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery and failure reporting cuts a subscriber that keeps causing events off after exactly 10 000 events"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N31",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery and failure reporting surfaces the same subscriber failure only once"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N39",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N42",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps events that fit the byte bound exactly"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N46",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds lets an evicted event be garbage-collected"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N47",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N48",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps its byte accounting and order exact through thousands of evictions"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N50",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N52",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds retains the device loss outside the history ring",
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N54",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N57",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds bounds retained failures by bytes, and always keeps the newest"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N60",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N61",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds bounds retained failures by bytes, and always keeps the newest"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N64",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N74",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps no WGSL of a failed pipeline either when captureSource is off"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N77",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures gives a pipeline whose WGSL generation keeps failing one stable id"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N78",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures are only reported while recording does not report an async creation failure that settles after disable()"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N79",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N83",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device lets go of its subscribers once the terminal device loss was delivered"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N88",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device stops listening for device errors as soon as the root is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N89",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device cannot be re-enabled after the root is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N96",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N98",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N99",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N100",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N101",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N102",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q01",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a draw that threw"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q02",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a dispatch that threw"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report reports a texture as destroyed only after the GPU texture was destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q08",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q09",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q10",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q12",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q14",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q21",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device reports root-destroyed before the device is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q23",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a buffer write that the device rejected"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q24",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a buffer patch that the device rejected"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q25",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report reports no resource that the device failed to create"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q26",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report reports no resource that the device failed to create"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q27",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a submit that threw"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q29",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not",
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q30",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not",
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q31",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q33",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q34",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q37",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q38",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q39",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q40",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q41",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C01",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line",
+   "text report of failures shows only the summary line of an async creation error, and the size of the rejected WGSL"
+  ],
+  "n": 2
+ },
+ {
+  "id": "C02",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C03",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures truncates a long failure text to 300 characters ending in an ellipsis"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures truncates a long failure text to 300 characters ending in an ellipsis"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C05",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C06",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures shows only the summary line of an async creation error, and the size of the rejected WGSL"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C07",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots points out three live resources with one name, but not two"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C08",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots points out three live resources with one name, but not two"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C09",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C10",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C11",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line",
+   "text report of failures truncates a long failure text to 300 characters ending in an ellipsis"
+  ],
+  "n": 2
+ }
+]
