@@ -30,9 +30,30 @@ jobs:
         run: scripts/check.sh
 
   upstream-drift:
-    name: hook patch applies to upstream main
+    name: patch + overlay work on upstream main
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: scripts/check-drift.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      # applies the patch to the current tip of upstream main, installs, runs the instrumentation tests and tsc
+      - run: scripts/check-drift-full.sh
+
+  packaging:
+    name: built package, bundle matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: scripts/setup.sh && scripts/setup-pristine.sh
+      # offline from here on: packs the built package, type-checks a consumer against it, bundles with four bundlers
+      - run: package-test/run.sh
+      - name: Fail on any recorded FAIL
+        run: "! grep -q FAIL package-test/results/k1.log"
