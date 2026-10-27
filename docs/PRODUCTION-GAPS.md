@@ -10,6 +10,8 @@ Ranked by how much each one blocks a production release. Evidence is from this r
 - **What a user had to do before this slice:** run the unit tests, or `real-gpu/run.mjs`, whose output is pass/fail checks (the first 80 events only land in a JSON result file). There was no way to run an existing scenario and look at its events. Now: `node real-gpu/run.mjs --example <file> [--jsonl <out>]` (README).
 - **Patched internals:** the core is a module in `core/instrumentation/` plus a hook patch in 10 TypeGPU files (+210/−37). If the hooks are absent: [measured] an unpatched TypeGPU accepts `unstable_instrumentation` and silently ignores it; `root['~unstable'].instrumentation` is `undefined` and the scenario runs with no data. The harness now turns that into an explicit error (`requireInstrumentation`, tested).
 
+**Update after the viability gate** ([VIABILITY-REPORT.md](VIABILITY-REPORT.md)): render-pipeline async failures, texture destroy, explicit `initSync`/`initAsync` success and sync failures are now validated on a real device; browser overhead and bundle size are measured (hub: +3.1 KB gzip for everyone); a device-listener retention defect was found and fixed (row 5 below mentions the remaining bundle cost).
+
 ## Gaps, ranked
 
 | # | Gap | Severity | Evidence | What would close it |

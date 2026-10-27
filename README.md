@@ -8,6 +8,7 @@ Status: experiment. Nothing here is published, released, or proposed as a stable
 - Background research (written against TypeGPU `bec5d554`): [docs/DEVTOOLS-INSTRUMENTATION-RESEARCH.md](docs/DEVTOOLS-INSTRUMENTATION-RESEARCH.md)
 - Results: [docs/POC-RESULTS.md](docs/POC-RESULTS.md)
 - Remaining production gaps, ranked: [docs/PRODUCTION-GAPS.md](docs/PRODUCTION-GAPS.md)
+- Viability gate (event correctness on a real GPU, browser overhead, bundle size, decision): [docs/VIABILITY-REPORT.md](docs/VIABILITY-REPORT.md)
 - Real-GPU validation (Chrome on a hardware adapter, what was and was not verified): [docs/REAL-DEVICE-VALIDATION.md](docs/REAL-DEVICE-VALIDATION.md)
 
 ## See the instrumentation output of a TypeGPU scenario
@@ -80,6 +81,9 @@ The hooks have to live inside TypeGPU's core (that is the point of the experimen
 scripts/setup.sh            # once (needs pnpm 11, Node >= 24, network; or TYPEGPU_UPSTREAM=<local clone>)
 scripts/test.sh             # sync overlay + run the instrumentation tests
 node real-gpu/run.mjs       # real-GPU run in the locally installed Chrome (exit 2 = NOT validated: no WebGPU / software / unverified)
+node real-gpu/run.mjs --call 'window.runViability()' --out v.json   # viability gate: 9 real-device scenarios, expected events + invariants
+REPS=9 node real-gpu/overhead.mjs                                    # in-browser CPU overhead: pristine / A/A / disabled / enabled (then real-gpu/overhead-summary.mjs <file>)
+node real-gpu/bundle-size.mjs                                        # bundle-size delta, pristine vs patched
 scripts/check.sh            # what CI runs after setup: mock tests, tsc, lint/format check (no GPU, no browser)
 scripts/check-drift.sh      # does the hook patch still apply to upstream TypeGPU main?
 scripts/save-patch.sh       # after editing existing files inside .work/typegpu

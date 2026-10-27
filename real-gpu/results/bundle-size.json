@@ -1,5 +1,5 @@
 {
-  "measured": "2026-10-27T15:56:14.245Z",
+  "measured": "2026-10-27T16:17:05.758Z",
   "note": "vite build, minify, NODE_ENV=production, lib mode, es format",
   "pristine": {
     "bundle-entry-import.ts": {
@@ -20,16 +20,16 @@
   "patched": {
     "bundle-entry-import.ts": {
       "files": 1,
-      "rawBytes": 335783,
-      "gzipBytes": 85058,
-      "brotliBytes": 70124,
+      "rawBytes": 336911,
+      "gzipBytes": 85335,
+      "brotliBytes": 70327,
       "containsInstrumentationHub": true
     },
     "bundle-entry-app.ts": {
       "files": 1,
-      "rawBytes": 344058,
-      "gzipBytes": 87159,
-      "brotliBytes": 71848,
+      "rawBytes": 345186,
+      "gzipBytes": 87433,
+      "brotliBytes": 72258,
       "containsInstrumentationHub": true
     }
   }
