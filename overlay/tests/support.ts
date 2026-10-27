@@ -126,3 +126,50 @@ export function enabledRoot(device: GPUDevice, options: TgpuInstrumentationOptio
   inst.subscribe((e) => events.push(e));
   return { root, inst, events };
 }
+
+const noop = () => {};
+
+/**
+ * A device made of plain functions: unlike the shared `vi.fn` mock it records nothing, so a long loop shows the
+ * memory behaviour of the code under test and not of the test double (the `vi.fn` mock alone grows ~640 MiB
+ * over 48 000 buffer creations).
+ */
+export function makePlainDevice(): GPUDevice {
+  const pass = {
+    setPipeline: noop,
+    setBindGroup: noop,
+    dispatchWorkgroups: noop,
+    draw: noop,
+    end: noop,
+    setImmediates: noop,
+  };
+  const encoder = { beginComputePass: () => pass, beginRenderPass: () => pass, finish: () => ({}) };
+  return {
+    features: new Set<string>(),
+    limits: {
+      maxUniformBuffersPerShaderStage: 12,
+      maxStorageBuffersPerShaderStage: 8,
+      maxComputeWorkgroupStorageSize: 16384,
+    },
+    lost: new Promise(noop),
+    addEventListener: noop,
+    removeEventListener: noop,
+    createBindGroup: () => ({}),
+    createBindGroupLayout: () => ({}),
+    createBuffer: ({ size, usage }: { size: number; usage: number }) => ({
+      size,
+      usage,
+      mapState: 'unmapped',
+      label: '',
+      destroy: noop,
+      getMappedRange: () => new ArrayBuffer(size),
+      unmap: noop,
+    }),
+    createPipelineLayout: () => ({}),
+    createShaderModule: () => ({}),
+    createComputePipeline: () => ({}),
+    createCommandEncoder: () => encoder,
+    queue: { submit: noop, writeBuffer: noop, onSubmittedWorkDone: () => Promise.resolve() },
+    destroy: noop,
+  } as unknown as GPUDevice;
+}

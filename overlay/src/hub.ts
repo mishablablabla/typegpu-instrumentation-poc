@@ -29,6 +29,7 @@ const MAX_EVENTS_PER_DELIVERY = 10_000;
 /** Distinct failures surfaced per hub; later ones are only counted. */
 const MAX_SURFACED_ERRORS = 5;
 const MAX_RETAINED_PIPELINE_FAILURES = 16;
+const MIN_SWEEP_SIZE = 1024;
 
 /** Frozen: every snapshot and every root shares it. */
 const UNAVAILABLE: readonly string[] = Object.freeze([
@@ -134,7 +135,8 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
 
   readonly #byObject = new WeakMap<object, Rec>();
   readonly #live = new Map<number, LiveRec>();
-  readonly #finalizer = new FinalizationRegistry<number>((id) => this.#onCollected(id));
+  /** `#live` is swept of collected objects whenever it reaches this size (and on every snapshot). */
+  #sweepAt = MIN_SWEEP_SIZE;
 
   #submits = 0;
   #collectedWithoutDestroy = 0;
@@ -219,6 +221,7 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
   }
 
   getSnapshot(): TgpuInstrumentationSnapshot {
+    this.#sweep();
     const resources: TgpuResourceInfo[] = [];
     const bindGroups: TgpuBindGroupInfo[] = [];
     const pipelines: TgpuPipelineInfo[] = [];
@@ -693,7 +696,26 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
   #register(object: object, rec: LiveRec): void {
     this.#byObject.set(object, rec);
     this.#live.set(rec.id, rec);
-    this.#finalizer.register(object, rec.id);
+    if (this.#live.size >= this.#sweepAt) {
+      this.#sweep();
+    }
+  }
+
+  /**
+   * Forgets records whose object was garbage-collected, counting the resources among them. Deterministic
+   * (no finalizer callbacks): it runs when the registry has doubled since the last sweep, so a long-running
+   * application that never asks for a snapshot cannot grow it without bound, and in every `getSnapshot()`.
+   */
+  #sweep(): void {
+    for (const [id, rec] of this.#live) {
+      if (rec.ref.deref() === undefined) {
+        this.#live.delete(id);
+        if (rec.kind === 'buffer' || rec.kind === 'texture') {
+          this.#collectedWithoutDestroy++;
+        }
+      }
+    }
+    this.#sweepAt = Math.max(MIN_SWEEP_SIZE, this.#live.size * 2);
   }
 
   #identityId(object: object): number {
@@ -712,24 +734,13 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
     return this.#byObject.get(object)?.id ?? null;
   }
 
-  #onCollected(id: number): void {
-    const rec = this.#live.get(id);
-    if (rec === undefined) {
-      return;
-    }
-    this.#live.delete(id);
-    if (rec.kind === 'buffer' || rec.kind === 'texture') {
-      this.#collectedWithoutDestroy++;
-    }
-  }
-
   #emit(init: TgpuInstrumentationEventInit): void {
-    const event = deepFreeze({
-      v: 2,
-      seq: ++this.#seq,
-      t: performance.now(),
-      ...init,
-    } as TgpuInstrumentationEvent);
+    // `init` is a fresh literal owned by this call, so it becomes the event itself (no copy).
+    const stamped = init as unknown as { v: number; seq: number; t: number };
+    stamped.v = 2;
+    stamped.seq = ++this.#seq;
+    stamped.t = performance.now();
+    const event = deepFreeze(init as TgpuInstrumentationEvent);
 
     this.#record(event);
 
@@ -919,8 +930,8 @@ function checkedOption(
 function deepFreeze<T>(value: T): T {
   if (typeof value === 'object' && value !== null && !Object.isFrozen(value)) {
     Object.freeze(value);
-    for (const inner of Object.values(value)) {
-      deepFreeze(inner);
+    for (const key in value) {
+      deepFreeze(value[key]);
     }
   }
   return value;

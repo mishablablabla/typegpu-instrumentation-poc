@@ -48,6 +48,8 @@ export type BenchConfig = {
     subscriber: Subscriber;
   };
   ops?: string[];
+  /** Per-operation batch size, replacing the default (used to study how the cost depends on the batch). */
+  batches?: Record<string, number>;
   samples?: number;
   warmupBatches?: number;
 };
@@ -181,10 +183,11 @@ export async function runBench(config: BenchConfig) {
         for (let i = 0; i < n; i++) uniform.write(values);
       },
     },
-    // Everything one dispatch/draw costs: encoder, pass, bind groups, submit.
+    // Everything one dispatch/draw costs: encoder, pass, bind groups, submit. Batch <= 2000: measured on this
+    // machine, 4000 calls per batch already push the cost per call from 2.4 to 9.5 us (wire-buffer flushes).
     'dispatch (own encoder)': {
       kind: 'hot',
-      batch: 4000,
+      batch: 2000,
       eventsPerIteration: 0,
       run: (n) => {
         for (let i = 0; i < n; i++) bound.dispatchWorkgroups(1);
@@ -192,7 +195,7 @@ export async function runBench(config: BenchConfig) {
     },
     'draw (own encoder)': {
       kind: 'hot',
-      batch: 4000,
+      batch: 2000,
       eventsPerIteration: 0,
       run: (n) => {
         for (let i = 0; i < n; i++) attached.draw(3);
@@ -233,6 +236,12 @@ export async function runBench(config: BenchConfig) {
     },
   };
 
+  for (const [name, batch] of Object.entries(config.batches ?? {})) {
+    const op = ops[name];
+    if (op !== undefined) {
+      op.batch = batch;
+    }
+  }
   const selected = config.ops ?? Object.keys(ops);
   const gc = (globalThis as { gc?: () => void }).gc;
   const result: Record<

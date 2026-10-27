@@ -1,4 +1,6 @@
 import { createInstrumentation, estimateEventBytes } from 'typegpu/unstable-instrumentation';
+import * as v8 from 'node:v8';
+import * as vm from 'node:vm';
 import { afterEach, describe, expect, vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
@@ -6,7 +8,18 @@ import type {
   TgpuInstrumentationEvent,
   TgpuInstrumentationOptions,
 } from '../../src/core/instrumentation/types.ts';
-import { computeMain, flush, layout, makeObservableDevice, ofType, typesOf } from './support.ts';
+import {
+  computeMain,
+  flush,
+  layout,
+  makeObservableDevice,
+  makePlainDevice,
+  ofType,
+  typesOf,
+} from './support.ts';
+
+v8.setFlagsFromString('--expose-gc');
+const gc = vm.runInNewContext('gc') as () => void;
 
 function setup(device: GPUDevice, options: TgpuInstrumentationOptions = {}) {
   makeObservableDevice(device);
@@ -340,5 +353,48 @@ describe('subscriber failures are isolated and observable', () => {
     });
     expect(() => materialize(root, 'a')).not.toThrow();
     expect(inst.getSnapshot().counters.listenerErrors).toBe(1);
+  });
+});
+
+describe('the registry stays bounded under churn nobody ever inspects', () => {
+  const heap = () => {
+    gc();
+    gc();
+    return process.memoryUsage().heapUsed;
+  };
+
+  it('forgets collected resources without a snapshot or a finalizer callback', async () => {
+    const root = tgpu.initFromDevice({
+      device: makePlainDevice(),
+      unstable_instrumentation: createInstrumentation({ historySize: 0 }),
+    });
+    const inst = root['~unstable'].instrumentation!;
+    const batch = async () => {
+      gc(); // the previous batch's buffers are really dead now, so the sweeps below can drop their records
+      for (let i = 0; i < 4_000; i++) {
+        root.unwrap(root.createBuffer(d.f32).$usage('uniform')); // dropped at once, never destroyed
+      }
+      await flush();
+    };
+
+    // Records are released when their object is collected. With a collection before every batch the registry
+    // must hold about one batch of records, whatever the total: measure growth from 40 000 to 400 000 buffers.
+    // (Left to V8's own cadence it would follow it up to a high-water mark of tens of MiB, which is bounded
+    // too but not a deterministic thing to assert.)
+    for (let i = 0; i < 10; i++) {
+      await batch();
+    }
+    const plateau = heap();
+    for (let i = 0; i < 90; i++) {
+      await batch();
+    }
+    const grown = heap() - plateau;
+
+    // A registry that never released anything would add about 54 MiB over those 360 000 buffers.
+    expect(grown).toBeLessThan(4 * 1024 * 1024);
+    // Sweeps ran on their own: almost all 400 000 are already accounted as collected before this snapshot.
+    const snapshot = inst.getSnapshot();
+    expect(snapshot.counters.collectedWithoutDestroy).toBeGreaterThan(390_000);
+    expect(snapshot.resources.length).toBeLessThan(5_000);
   });
 });

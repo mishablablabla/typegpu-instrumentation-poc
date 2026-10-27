@@ -20,8 +20,8 @@ export function estimateEventBytes(value: unknown): number {
         return 4;
       }
       let bytes = OBJECT_COST;
-      for (const inner of Object.values(value)) {
-        bytes += FIELD_COST + estimateEventBytes(inner);
+      for (const key in value) {
+        bytes += FIELD_COST + estimateEventBytes((value as Record<string, unknown>)[key]);
       }
       return bytes;
     }

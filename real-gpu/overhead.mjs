@@ -13,7 +13,7 @@
 // Env: BLOCKS, SAMPLES, OPS (comma separated names), CONFIGS (comma separated names), SEED.
 // CPU-side timings of the JavaScript calls only; no GPU time is measured or claimed.
 import { spawnSync } from 'node:child_process';
-import { appendFileSync, mkdirSync, readFileSync, rmSync } from 'node:fs';
+import { appendFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -87,14 +87,28 @@ const shuffled = (xs) => {
 };
 
 const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-const out = join(root, 'real-gpu/results', `overhead2-${stamp}.jsonl`);
+const resume = process.env.RESUME ? resolve(process.env.RESUME) : undefined;
+const out = resume ?? join(root, 'real-gpu/results', `overhead2-${stamp}.jsonl`);
 const tmp = join(root, `.work/overhead-run-${process.pid}.json`);
 mkdirSync(dirname(out), { recursive: true });
 
-for (let block = 1; block <= BLOCKS; block++) {
+// RESUME=<file>: continue an interrupted run. Only complete blocks are kept; the seeded shuffles of the finished
+// blocks are replayed so the remaining blocks get the orders they would have had.
+let firstBlock = 1;
+if (resume) {
+  const rows = readFileSync(resume, 'utf8').trim().split('\n').map((l) => JSON.parse(l));
+  const complete = new Set(
+    [...new Set(rows.map((r) => r.block))].filter((b) => rows.filter((r) => r.block === b).length === configs.length),
+  );
+  writeFileSync(resume, rows.filter((r) => complete.has(r.block)).map((r) => JSON.stringify(r) + '\n').join(''));
+  firstBlock = Math.max(0, ...complete) + 1;
+  for (let b = 1; b < firstBlock; b++) shuffled(configs);
+  console.error(`resuming ${resume} at block ${firstBlock}`);
+}
+for (let block = firstBlock; block <= BLOCKS; block++) {
   const order = shuffled(configs);
   for (const [position, config] of order.entries()) {
-    const benchConfig = { instrumentation: config.instrumentation, samples: SAMPLES, ...(OPS ? { ops: OPS } : {}) };
+    const benchConfig = { instrumentation: config.instrumentation, samples: SAMPLES, ...(OPS ? { ops: OPS } : {}), ...(process.env.BATCHES ? { batches: JSON.parse(process.env.BATCHES) } : {}) };
     const tree = trees[builds[config.build].tree];
     const r = spawnSync(
       'node',

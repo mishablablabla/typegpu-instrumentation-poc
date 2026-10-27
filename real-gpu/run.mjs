@@ -94,8 +94,12 @@ const server = createServer((req, res) => {
   res
     .writeHead(200, {
       'content-type': types[extname(file)] ?? 'application/octet-stream',
-      'cross-origin-opener-policy': 'same-origin',
-      'cross-origin-embedder-policy': 'require-corp',
+      ...(process.env.NO_COI
+        ? {}
+        : {
+            'cross-origin-opener-policy': 'same-origin',
+            'cross-origin-embedder-policy': 'require-corp',
+          }),
     })
     .end(readFileSync(file));
 });
@@ -139,7 +143,8 @@ async function waitFor(fn, what, timeoutMs = 20000) {
 }
 
 const portFile = join(profile, 'DevToolsActivePort');
-await waitFor(() => existsSync(portFile), 'Chrome DevTools port');
+// The file appears before Chrome has finished writing it: wait for both lines.
+await waitFor(() => existsSync(portFile) && readFileSync(portFile, 'utf8').trim().split('\n').length >= 2, 'Chrome DevTools port');
 const [port, wsPath] = readFileSync(portFile, 'utf8').trim().split('\n');
 const ws = new WebSocket(`ws://127.0.0.1:${port}${wsPath}`);
 await new Promise((ok, no) => {
