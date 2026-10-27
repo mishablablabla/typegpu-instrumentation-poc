@@ -55,6 +55,10 @@ Exit codes: `0` ran on a hardware adapter · `1` the scenario threw · `2` not v
 
 Using the data yourself, in any JavaScript runtime: `root['~unstable'].instrumentation` has `subscribe(listener)`, `history()`, `getSnapshot()`. `consumers/consoleReporter.ts` and `consumers/jsonlExport.ts` are the two consumers used above; they only build lines and let the caller choose the sink. This works only with a TypeGPU that has the hook patch applied; an unpatched TypeGPU ignores the option, `instrumentation` is `undefined`, and `consumers/requireInstrumentation.ts` turns that into an explicit error.
 
+## CI
+
+[.github/workflows/ci.yml](.github/workflows/ci.yml) runs on push, pull request, manually, and weekly. Job `checks`: `scripts/setup.sh`, then `scripts/check.sh` (mock tests, `tsc`, TypeGPU's own `oxfmt --check` and `oxlint`). Job `upstream-drift`: `scripts/check-drift.sh`, i.e. `git apply --check` of the hook patch against the current tip of upstream `main`; it says the hunks still match, not that the result works. The real-GPU run is not in CI: hosted runners have no usable GPU, so it stays a manual step (`node real-gpu/run.mjs`).
+
 ## How this repo relates to TypeGPU
 
 This repo does **not** contain a copy of TypeGPU and the original TypeGPU repository is never touched.
@@ -76,6 +80,8 @@ The hooks have to live inside TypeGPU's core (that is the point of the experimen
 scripts/setup.sh            # once (needs pnpm 11, Node >= 24, network; or TYPEGPU_UPSTREAM=<local clone>)
 scripts/test.sh             # sync overlay + run the instrumentation tests
 node real-gpu/run.mjs       # real-GPU run in the locally installed Chrome (exit 2 = NOT validated: no WebGPU / software / unverified)
+scripts/check.sh            # what CI runs after setup: mock tests, tsc, lint/format check (no GPU, no browser)
+scripts/check-drift.sh      # does the hook patch still apply to upstream TypeGPU main?
 scripts/save-patch.sh       # after editing existing files inside .work/typegpu
 scripts/format.sh           # TypeGPU's own oxfmt + oxlint on everything this repo adds or patches
 scripts/setup-pristine.sh   # two untouched upstream trees (baseline + A/A control) for the benchmark

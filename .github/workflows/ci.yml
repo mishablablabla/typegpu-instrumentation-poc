@@ -1,0 +1,38 @@
+name: CI
+
+# No GPU and no browser are used here: GitHub-hosted runners have neither a usable GPU nor a way to
+# validate real-device behaviour. The real-device run (real-gpu/) stays a manual, recorded step.
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1' # weekly: upstream may have moved under the patch
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: setup, mock tests, tsc, lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      # upstream pins pnpm in its package.json (`packageManager`); corepack picks that exact version
+      - run: corepack enable
+      - name: Set up the patched TypeGPU checkout
+        run: scripts/setup.sh
+      - name: Tests, type check, lint
+        run: scripts/check.sh
+
+  upstream-drift:
+    name: hook patch applies to upstream main
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - run: scripts/check-drift.sh
