@@ -27,7 +27,7 @@ No npm dependencies are installed: Chrome is controlled over the DevTools protoc
 
 ## 3. Result: all checks pass on the hardware adapter
 
-Three consecutive runs with 18 checks (`2026-10-27T14-59-46`, `…49`, `…52`), then the 19th check (`gc-real-device`) was added and passed in `15-00-53`. All runs classified `hardware-adapter`. Headed mode (`--headed`) exists but was not run.
+Three consecutive runs with 18 checks (`2026-10-27T14-59-46`, `…49`, `…52`), then the 19th check (`gc-real-device`) was added and passed in `15-00-53`. All runs classified `hardware-adapter`. Headed mode (`--headed`) exists but was not run. The suite now has 20 checks (`buffer-writes` was added); the latest full run is `2026-10-27T15-15-16`, 20 of 20. The bundled scenarios are checked on the hardware adapter by `real-gpu/check-examples.mjs` (21 checks, passing).
 
 | Check | What it proves on the real device |
 |---|---|
@@ -38,6 +38,7 @@ Three consecutive runs with 18 checks (`2026-10-27T14-59-46`, `…49`, `…52`),
 | `resources` | buffers materialize with real sizes, before the bind group |
 | `bind-group` | entries resolve to the tracked buffers |
 | `counters` | 1 dispatch, ≥ 1 submit |
+| `buffer-writes` | a TypeGPU `write` is counted per buffer with its byte size (added with the usable-output milestone) |
 | `render` | render pipeline compiles lazily, 1 draw counted, no device error (**output not read back**) |
 | `diagnostics-error` | for invalid WGSL the browser's error `lineNum` points at the line of the **generated** WGSL containing the bad identifier |
 | `device-error` | an invalid pipeline surfaces as an uncaptured `GPUValidationError` event |
