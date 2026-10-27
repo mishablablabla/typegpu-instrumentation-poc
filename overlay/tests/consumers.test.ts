@@ -134,12 +134,20 @@ describe('two independent consumers of one stream', () => {
   it('consumers depend on no UI framework, DOM, or TypeGPU runtime code', () => {
     const dir = join(import.meta.dirname, 'consumers');
     const files = readdirSync(dir).filter((f) => f.endsWith('.ts'));
-    expect(files.length).toBeGreaterThanOrEqual(2);
+    expect(files.length).toBeGreaterThanOrEqual(4);
 
     for (const file of files) {
       const source = readFileSync(join(dir, file), 'utf8');
       const specifiers = [...source.matchAll(/from '([^']+)'/g)].map((m) => m[1]);
-      expect(specifiers, file).toEqual(['../../../src/core/instrumentation/types.ts']);
+      // only the public data model, or another consumer next to it
+      expect(
+        specifiers.every(
+          (s) =>
+            s === '../../../src/core/instrumentation/types.ts' || /^\.\/\w+\.ts$/.test(s ?? ''),
+        ),
+        `${file}: ${specifiers.join(', ')}`,
+      ).toBe(true);
+      expect(source, file).not.toMatch(/node:|from 'fs'|require\(/);
       expect(source, file).not.toMatch(/\b(document|window|HTMLElement|React)\b/);
     }
   });
