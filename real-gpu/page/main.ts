@@ -8,6 +8,7 @@
  */
 import { d, tgpu } from 'typegpu';
 import { runExample } from './example.ts';
+import { runViability } from './viability.ts';
 import { provenance } from './provenance.ts';
 import type {
   TgpuInstrumentation,
@@ -456,8 +457,10 @@ declare global {
   interface Window {
     runRealDeviceScenario: typeof runRealDeviceScenario;
     runExample: typeof runExample;
+    runViability: typeof runViability;
   }
 }
 // Assigned here, not in the modules: the package says `sideEffects: false`, so the bundler drops side effects of modules whose exports are unused.
 window.runRealDeviceScenario = runRealDeviceScenario;
 window.runExample = runExample;
+window.runViability = runViability;

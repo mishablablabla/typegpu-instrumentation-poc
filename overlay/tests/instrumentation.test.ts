@@ -606,3 +606,86 @@ describe('garbage collection compatibility', () => {
     expect(inst.getSnapshot().resources.length).toBeLessThan(500);
   });
 });
+
+// Viability gate: the lifecycle claims, as durable mock-device tests (the same claims are checked on a
+// real device by real-gpu/page/viability.ts).
+describe('lifecycle under sustained use', () => {
+  it('keeps history at its bound over 40 000 events and accounts for every eviction', ({
+    device,
+  }) => {
+    makeObservableDevice(device);
+    const { root, inst, events } = enabledRoot(device, { historySize: 256 });
+
+    for (let i = 0; i < 20_000; i++) {
+      const buffer = root.createBuffer(d.f32).$usage('uniform');
+      root.unwrap(buffer);
+      buffer.destroy();
+    }
+
+    const history = inst.history();
+    expect(events).toHaveLength(40_000);
+    expect(history).toHaveLength(256);
+    expect(history.map((e) => e.seq)).toEqual(Array.from({ length: 256 }, (_, i) => 39_745 + i));
+    expect(inst.getSnapshot().counters.droppedEvents).toBe(40_000 - 256);
+    expect(inst.getSnapshot().resources).toEqual([]);
+  });
+
+  it('does not count destroyed-then-collected resources as leaked', async ({ device }) => {
+    makeObservableDevice(device);
+    const { root, inst } = enabledRoot(device);
+    (() => {
+      for (let i = 0; i < 50; i++) {
+        const buffer = root.createBuffer(d.f32).$usage('uniform');
+        root.unwrap(buffer);
+        buffer.destroy();
+      }
+    })();
+
+    for (let i = 0; i < 10; i++) {
+      await flush();
+      gc();
+    }
+
+    expect(inst.getSnapshot().counters.collectedWithoutDestroy).toBe(0);
+  });
+
+  it('produces nothing after dispose(): in-flight diagnostics, device errors, device loss, later resources', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const { root, inst, events } = enabledRoot(device);
+    root.createComputePipeline({ compute: computeMain }).initSync(); // diagnostics still in flight
+    const before = events.length;
+
+    inst.dispose();
+    observable.fireError('late');
+    observable.lose('unknown', 'late');
+    root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+    await flush();
+
+    expect(before).toBe(1);
+    expect(events).toHaveLength(before);
+    expect(inst.history()).toHaveLength(before);
+  });
+
+  it('keeps unsubscribed and independent consumers independent over many events', ({ device }) => {
+    makeObservableDevice(device);
+    const { root, inst } = enabledRoot(device);
+    let kept = 0;
+    let dropped = 0;
+    let thrown = 0;
+    inst.subscribe(() => kept++);
+    const off = inst.subscribe(() => dropped++);
+    inst.subscribe(() => {
+      thrown++;
+      throw new Error('consumer bug');
+    });
+
+    for (let i = 0; i < 100; i++) root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+    off();
+    for (let i = 0; i < 100; i++) root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+
+    expect({ kept, dropped, thrown }).toEqual({ kept: 200, dropped: 100, thrown: 200 });
+    expect(inst.getSnapshot().counters.listenerErrors).toBe(200);
+  });
+});

@@ -30,7 +30,9 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
     }
     case 'pipeline-compiled':
       return (
-        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} compiled [${e.trigger}] ` +
+        // A synchronous creation cannot know whether the pipeline is valid (observed on a real device:
+        // an invalid shader still produces this event), so only the async success may say "compiled".
+        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} ${e.trigger === 'initAsync' ? 'compiled' : 'created'} [${e.trigger}] ` +
         `resolve ${e.resolveMs.toFixed(2)} ms (CPU), create ${e.createMs.toFixed(2)} ms (CPU), ${e.wgsl.length} chars of WGSL`
       );
     case 'pipeline-compile-failed':

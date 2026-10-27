@@ -115,6 +115,25 @@ describe('two independent consumers of one stream', () => {
     expect(result.shaderProblems[0]?.messages[0]?.wgslLine).toContain('var<storage');
   });
 
+  // Found by the viability gate on a real device: an invalid shader created synchronously still produces
+  // pipeline-compiled, and the report used to print "compiled" for it.
+  it('the text report does not claim a synchronous creation "compiled"', async ({ device }) => {
+    makeObservableDevice(device);
+    const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+    const inst = root['~unstable'].instrumentation!;
+    const report = createTextReport(inst);
+
+    root.createComputePipeline({ compute: computeMain }).initSync();
+    await root.createComputePipeline({ compute: computeMain }).initAsync();
+
+    const [sync, async_] = report
+      .lines()
+      .filter((l) => l.includes('pipeline') && !l.includes('shader'));
+    expect(sync).toContain('created [initSync]');
+    expect(sync).not.toContain('compiled');
+    expect(async_).toContain('compiled [initAsync]');
+  });
+
   it('a consumer attached late reconstructs the same state from history', async ({ device }) => {
     const { inst, index } = await scenario(device);
 

@@ -37,7 +37,7 @@ function run(example, mustPrint) {
   return events;
 }
 
-const compute = run('compute-scale', ['compiled [lazy]', 'result after x3: [3,6,9,12,15,18,21,24]', 'factor#', '2 writes, 8 B written', 'DEVICE LOST (destroyed)']);
+const compute = run('compute-scale', ['created [lazy]', 'result after x3: [3,6,9,12,15,18,21,24]', 'factor#', '2 writes, 8 B written', 'DEVICE LOST (destroyed)']);
 expect(compute.some((e) => e.type === 'pipeline-compiled' && e.trigger === 'lazy'), 'compute-scale: a lazy pipeline-compiled event');
 const broken = run('broken-shader', ['FAILED to compile [initAsync]', 'shader: error at WGSL 1:51']);
 expect(broken.some((e) => e.type === 'pipeline-compile-failed'), 'broken-shader: a pipeline-compile-failed event');
