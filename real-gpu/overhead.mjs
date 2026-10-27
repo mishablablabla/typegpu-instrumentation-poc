@@ -124,7 +124,7 @@ for (let block = 1; block <= BLOCKS; block++) {
       console.error(`${config.name} block ${block}: an operation did not do the work it claims (verified=false)`);
       process.exit(1);
     }
-    appendFileSync(out, JSON.stringify({ config: config.name, block, position, ...result }) + '\n');
+    appendFileSync(out, JSON.stringify({ ...result, config: config.name, block, position }) + '\n');
   }
   console.error(`block ${block}/${BLOCKS} done`);
 }

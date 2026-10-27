@@ -310,7 +310,7 @@ export async function runBench(config: BenchConfig) {
   return {
     provenance: prov,
     ok: true,
-    config,
+    benchConfig: config,
     hasInstrumentation,
     instrumentationAvailableInBuild: available,
     padding: padding.length,
@@ -327,9 +327,114 @@ export async function runBench(config: BenchConfig) {
   };
 }
 
+export type SustainedConfig = {
+  instrumentation: BenchConfig['instrumentation'];
+  seconds: number;
+  /** Seconds before the heap trend is measured (JIT warm-up, caches filling). */
+  warmupSeconds: number;
+};
+
+/**
+ * A long, steady workload that emits events continuously (a buffer created and destroyed, a bind group, a
+ * dispatch, and now and then a pipeline), sampled once per second: operations per second (does it slow
+ * down?), heap size after a forced collection (does it grow?), and how full the history is.
+ * The slope of the heap after warm-up is the answer to "does this leak under sustained use".
+ */
+export async function runSustained(config: SustainedConfig) {
+  const prov = await provenance();
+  if (prov.pageClassification === 'unavailable') {
+    return { provenance: prov, ok: false };
+  }
+  const requested = config.instrumentation;
+  const root = await tgpu.init(
+    requested
+      ? ({
+          unstable_instrumentation: makeProvider({
+            historySize: requested.historySize,
+            captureSource: requested.captureSource,
+          }),
+        } as never)
+      : undefined,
+  );
+  const inst = (
+    root['~unstable'] as unknown as {
+      instrumentation?: {
+        getSnapshot(): {
+          counters: { droppedEvents: number; historyBytes: number; listenerErrors: number };
+        };
+        history(): readonly unknown[];
+      };
+    }
+  ).instrumentation;
+  const subscriber =
+    inst && requested ? attachSubscriber(requested.subscriber, inst as never) : null;
+  const data = root.createBuffer(d.arrayOf(d.f32, 8), [1, 2, 3, 4, 5, 6, 7, 8]).$usage('storage');
+  const factor = root.createBuffer(d.f32, 1).$usage('uniform');
+  const bindGroup = root.createBindGroup(layout, { data, factor });
+  const pipeline = root.createComputePipeline({ compute: scale });
+  pipeline.initSync();
+  const bound = pipeline.with(bindGroup);
+  const gc = (globalThis as { gc?: () => void }).gc;
+
+  const points: {
+    second: number;
+    opsPerSecond: number;
+    heapBytes: number | null;
+    historyLength: number;
+    historyBytes: number;
+    droppedEvents: number;
+    eventsSeen: number;
+  }[] = [];
+  let iteration = 0;
+  const started = performance.now();
+  for (let second = 1; second <= config.seconds; second++) {
+    let ops = 0;
+    const until = started + second * 1000;
+    while (performance.now() < until) {
+      for (let i = 0; i < 20; i++) {
+        const buffer = root.createBuffer(d.f32).$usage('uniform');
+        root.unwrap(buffer);
+        buffer.destroy();
+        root.unwrap(root.createBindGroup(layout, { data, factor }));
+        bound.dispatchWorkgroups(1);
+        ops += 3;
+      }
+      if (++iteration % 25 === 0) {
+        root.createComputePipeline({ compute: scale }).initSync();
+        ops++;
+      }
+      await root.device.queue.onSubmittedWorkDone();
+    }
+    gc?.();
+    const snapshot = inst?.getSnapshot();
+    points.push({
+      second,
+      opsPerSecond: ops,
+      heapBytes: heapBytes(),
+      historyLength: inst?.history().length ?? 0,
+      historyBytes: snapshot?.counters.historyBytes ?? 0,
+      droppedEvents: snapshot?.counters.droppedEvents ?? 0,
+      eventsSeen: subscriber?.count() ?? 0,
+    });
+  }
+  const listenerErrors = inst?.getSnapshot().counters.listenerErrors ?? 0;
+  root.destroy();
+  return {
+    provenance: prov,
+    ok: true,
+    benchConfig: config,
+    hasInstrumentation: inst !== undefined,
+    preciseMemory: typeof (performance as unknown as { memory?: unknown }).memory !== 'undefined',
+    listenerErrors,
+    points,
+  };
+}
+
 declare global {
   interface Window {
     runBench: typeof runBench;
+    runSustained: typeof runSustained;
   }
 }
 window.runBench = runBench;
+window.runSustained = runSustained;

@@ -203,7 +203,7 @@ const evaluation = await page('Runtime.evaluate', {
   expression: callExpr ?? (exampleMode ? 'window.runExample()' : 'window.runRealDeviceScenario()'),
   awaitPromise: true,
   returnByValue: true,
-  timeout: 60000,
+  timeout: Number(option('--eval-timeout') ?? 60000),
 });
 if (evaluation.exceptionDetails) {
   fail(3, `Scenario threw: ${JSON.stringify(evaluation.exceptionDetails, null, 2)}\nConsole: ${JSON.stringify(consoleLog, null, 2)}`);

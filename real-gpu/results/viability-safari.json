@@ -1,6 +1,6 @@
 {
   "environment": {
-    "when": "2026-10-27T17:14:52.314Z",
+    "when": "2026-10-27T17:31:44.787Z",
     "browser": "Safari",
     "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.3 Safari/605.1.15",
     "crossOriginIsolated": true,
@@ -42,7 +42,7 @@
       "timestamp-query"
     ]
   },
-  "ok": false,
+  "ok": true,
   "report": [
     "\n== resources: 21/21 checks",
     "PASS  seq is contiguous from 1",
@@ -127,7 +127,7 @@
     "PASS  dispatch/draw after explicit init did not compile again",
     "PASS  counters: 1 dispatch, 1 draw",
     "PASS  every compile got its diagnostics",
-    "\n== sync-failures: 18/19 checks",
+    "\n== sync-failures: 18/18 checks",
     "PASS  seq is contiguous from 1",
     "PASS  t never decreases",
     "PASS  no resource materialized twice",
@@ -145,8 +145,6 @@
     "PASS  both invalid pipelines are reported as compiled (by design: sync creation cannot know) ...",
     "PASS  ... and each has a compiler ERROR pointing at the offending generated line",
     "PASS  no pipeline-creation-failed on the sync path",
-    "FAIL  a sync failure surfaces as at least two device errors, each with a message",
-    "        detail: [\"1 error generated while compiling the shader:\"]",
     "PASS  snapshot still lists both pipelines (they are \"live\" objects, whatever their validity)",
     "\n== async-failures: 20/20 checks",
     "PASS  seq is contiguous from 1",
@@ -300,7 +298,7 @@
       "detail": {
         "v": 2,
         "seq": 1,
-        "t": 119.66000000000001,
+        "t": 123.06000000000002,
         "type": "resource-materialized",
         "resource": "buffer",
         "id": 1,
@@ -316,7 +314,7 @@
       "detail": {
         "v": 2,
         "seq": 2,
-        "t": 120.92000000000002,
+        "t": 124.28000000000002,
         "type": "resource-materialized",
         "resource": "texture",
         "id": 2,
@@ -340,7 +338,7 @@
         {
           "v": 2,
           "seq": 4,
-          "t": 121.06000000000002,
+          "t": 124.42000000000002,
           "type": "resource-destroyed",
           "resource": "buffer",
           "id": 1,
@@ -349,7 +347,7 @@
         {
           "v": 2,
           "seq": 5,
-          "t": 121.08000000000001,
+          "t": 124.44000000000001,
           "type": "resource-destroyed",
           "resource": "texture",
           "id": 2,
@@ -364,7 +362,7 @@
       "detail": {
         "v": 2,
         "seq": 6,
-        "t": 321.42,
+        "t": 324.82000000000005,
         "type": "root-destroyed",
         "ownDevice": true,
         "liveBuffers": 1,
@@ -541,15 +539,15 @@
       "detail": {
         "v": 2,
         "seq": 1,
-        "t": 376.08000000000004,
+        "t": 379.76000000000005,
         "type": "pipeline-created",
         "id": 2,
         "pipeline": "compute",
         "label": "scale",
         "trigger": "lazy",
         "validation": "deferred",
-        "resolveMs": 3.0600000000000023,
-        "createMs": 0.10000000000002274,
+        "resolveMs": 3.2200000000000273,
+        "createMs": 0.12000000000000455,
         "wgslLength": 241,
         "layoutIds": [
           1
@@ -608,8 +606,8 @@
           "pipeline": "compute",
           "label": "scale",
           "trigger": "lazy",
-          "resolveMs": 3.0600000000000023,
-          "createMs": 0.10000000000002274,
+          "resolveMs": 3.2200000000000273,
+          "createMs": 0.12000000000000455,
           "wgslLength": 241,
           "layoutIds": [
             1
@@ -624,7 +622,9 @@
           "droppedBytes": 0,
           "historyBytes": 3048,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         }
       }
     },
@@ -989,14 +989,6 @@
     },
     {
       "scenario": "sync-failures",
-      "check": "a sync failure surfaces as at least two device errors, each with a message",
-      "pass": false,
-      "detail": [
-        "1 error generated while compiling the shader:"
-      ]
-    },
-    {
-      "scenario": "sync-failures",
       "check": "snapshot still lists both pipelines (they are \"live\" objects, whatever their validity)",
       "pass": true
     },
@@ -1099,14 +1091,15 @@
         {
           "v": 2,
           "seq": 2,
-          "t": 1499.3200000000002,
+          "t": 1503.8600000000001,
           "type": "pipeline-creation-failed",
           "id": 1,
           "pipeline": "compute",
           "label": "asyncCompute",
           "trigger": "initAsync",
-          "resolveMs": 1.1399999999998727,
-          "createMs": 0.8000000000001819,
+          "phase": "create",
+          "resolveMs": 0.7799999999999727,
+          "createMs": 0.8599999999999,
           "wgslLength": 85,
           "layoutIds": [],
           "layoutLabels": [],
@@ -1116,13 +1109,14 @@
         {
           "v": 2,
           "seq": 4,
-          "t": 1503.4200000000003,
+          "t": 1506.7400000000002,
           "type": "pipeline-creation-failed",
           "id": 2,
           "pipeline": "render",
           "label": "asyncRender",
           "trigger": "initAsync",
-          "resolveMs": 2.8600000000001273,
+          "phase": "create",
+          "resolveMs": 1.7799999999999727,
           "createMs": 0.4600000000000364,
           "wgslLength": 361,
           "layoutIds": [],
@@ -1165,7 +1159,9 @@
           "droppedBytes": 948576,
           "historyBytes": 15424,
           "listenerErrors": 4000,
-          "lastListenerError": "Error: consumer bug"
+          "lastListenerError": "Error: consumer bug",
+          "internalErrors": 0,
+          "lastInternalError": null
         }
       }
     },
@@ -1180,7 +1176,9 @@
         "droppedBytes": 948576,
         "historyBytes": 15424,
         "listenerErrors": 4000,
-        "lastListenerError": "Error: consumer bug"
+        "lastListenerError": "Error: consumer bug",
+        "internalErrors": 0,
+        "lastInternalError": null
       }
     },
     {
@@ -1301,18 +1299,18 @@
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":119.66000000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"sizeBytes\":16,\"usage\":140}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":120.92000000000002,\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":2,\"label\":\"tex\",\"format\":\"rgba8unorm\",\"size\":[8,8],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":23}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":120.98,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"keep\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":121.06000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":121.08000000000001,\"type\":\"resource-destroyed\",\"resource\":\"texture\",\"id\":2,\"label\":\"tex\"}}",
-        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":321.38,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"buffer\",\"label\":\"keep\",\"sizeBytes\":4,\"usage\":76,\"writes\":0,\"bytesWritten\":0}],\"bindGroups\":[],\"pipelines\":[],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":1390,\"listenerErrors\":0,\"lastListenerError\":null},\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":321.42,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":1,\"liveTextures\":0}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":321.58000000000004,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":123.06000000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"sizeBytes\":16,\"usage\":140}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":124.28000000000002,\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":2,\"label\":\"tex\",\"format\":\"rgba8unorm\",\"size\":[8,8],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":23}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":124.36000000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"keep\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":124.42000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":124.44000000000001,\"type\":\"resource-destroyed\",\"resource\":\"texture\",\"id\":2,\"label\":\"tex\"}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":324.76000000000005,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"buffer\",\"label\":\"keep\",\"sizeBytes\":4,\"usage\":76,\"writes\":0,\"bytesWritten\":0}],\"bindGroups\":[],\"pipelines\":[],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":1390,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":324.82000000000005,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":1,\"liveTextures\":0}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":325.02000000000004,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 321.38,
+        "t": 324.74,
         "enabled": true,
         "resources": [
           {
@@ -1334,8 +1332,11 @@
           "droppedBytes": 0,
           "historyBytes": 1390,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -1344,7 +1345,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {
@@ -1354,7 +1361,7 @@
     },
     "compute-bindgroups": {
       "consoleLines": [
-        "[001] compute pipeline scale#2 created [lazy] resolve 3.06 ms (CPU), create 0.10 ms (CPU), 241 chars of WGSL",
+        "[001] compute pipeline scale#2 created [lazy] resolve 3.22 ms (CPU), create 0.12 ms (CPU), 241 chars of WGSL",
         "[002] buffer data1#3 materialized (32 B)",
         "[003] buffer factor#4 materialized (4 B)",
         "[004] bind group #5 of layout layout#1 (created) { data=#3, factor=#4 }",
@@ -1366,20 +1373,20 @@
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":376.08000000000004,\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"compute\",\"label\":\"scale\",\"trigger\":\"lazy\",\"validation\":\"deferred\",\"resolveMs\":3.0600000000000023,\"createMs\":0.10000000000002274,\"wgsl\":\"@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\\n\\n@group(0) @binding(1) var<uniform> factor: f32;\\n\\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\\n  data[gid.x] = (data[gid.x] * factor);\\n}\",\"wgslLength\":241,\"layoutIds\":[1],\"layoutLabels\":[\"layout\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":376.28000000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"data1\",\"sizeBytes\":32,\"usage\":140}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":376.68,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":4,\"label\":\"factor\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":376.84000000000003,\"type\":\"bind-group-created\",\"id\":5,\"label\":\"layout\",\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":3},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":377.00000000000006,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":6,\"label\":\"data2\",\"sizeBytes\":32,\"usage\":140}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":377.24,\"type\":\"bind-group-created\",\"id\":7,\"label\":\"layout\",\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":6},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":378.2200000000001,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[]}}",
-        "{\"record\":\"snapshot\",\"afterSeq\":7,\"snapshot\":{\"v\":2,\"t\":579.7800000000001,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"buffer\",\"label\":\"data1\",\"sizeBytes\":32,\"usage\":140,\"writes\":0,\"bytesWritten\":0},{\"id\":4,\"resource\":\"buffer\",\"label\":\"factor\",\"sizeBytes\":4,\"usage\":76,\"writes\":0,\"bytesWritten\":0},{\"id\":6,\"resource\":\"buffer\",\"label\":\"data2\",\"sizeBytes\":32,\"usage\":140,\"writes\":0,\"bytesWritten\":0}],\"bindGroups\":[{\"id\":5,\"label\":null,\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":3},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]},{\"id\":7,\"label\":null,\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":6},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}],\"pipelines\":[{\"id\":2,\"pipeline\":\"compute\",\"label\":\"scale\",\"trigger\":\"lazy\",\"resolveMs\":3.0600000000000023,\"createMs\":0.10000000000002274,\"wgsl\":\"@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\\n\\n@group(0) @binding(1) var<uniform> factor: f32;\\n\\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\\n  data[gid.x] = (data[gid.x] * factor);\\n}\",\"wgslLength\":241,\"layoutIds\":[1],\"dispatches\":5,\"draws\":0}],\"counters\":{\"submits\":5,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3048,\"listenerErrors\":0,\"lastListenerError\":null},\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":8,\"t\":579.82,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":3,\"liveTextures\":0}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":9,\"t\":579.9200000000001,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":379.76000000000005,\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"compute\",\"label\":\"scale\",\"trigger\":\"lazy\",\"validation\":\"deferred\",\"resolveMs\":3.2200000000000273,\"createMs\":0.12000000000000455,\"wgsl\":\"@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\\n\\n@group(0) @binding(1) var<uniform> factor: f32;\\n\\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\\n  data[gid.x] = (data[gid.x] * factor);\\n}\",\"wgslLength\":241,\"layoutIds\":[1],\"layoutLabels\":[\"layout\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":379.94000000000005,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"data1\",\"sizeBytes\":32,\"usage\":140}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":380.54,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":4,\"label\":\"factor\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":380.70000000000005,\"type\":\"bind-group-created\",\"id\":5,\"label\":\"layout\",\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":3},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":380.88000000000005,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":6,\"label\":\"data2\",\"sizeBytes\":32,\"usage\":140}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":381.1,\"type\":\"bind-group-created\",\"id\":7,\"label\":\"layout\",\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":6},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":382.06,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[]}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":7,\"snapshot\":{\"v\":2,\"t\":583.82,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"buffer\",\"label\":\"data1\",\"sizeBytes\":32,\"usage\":140,\"writes\":0,\"bytesWritten\":0},{\"id\":4,\"resource\":\"buffer\",\"label\":\"factor\",\"sizeBytes\":4,\"usage\":76,\"writes\":0,\"bytesWritten\":0},{\"id\":6,\"resource\":\"buffer\",\"label\":\"data2\",\"sizeBytes\":32,\"usage\":140,\"writes\":0,\"bytesWritten\":0}],\"bindGroups\":[{\"id\":5,\"label\":null,\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":3},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]},{\"id\":7,\"label\":null,\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":6},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}],\"pipelines\":[{\"id\":2,\"pipeline\":\"compute\",\"label\":\"scale\",\"trigger\":\"lazy\",\"resolveMs\":3.2200000000000273,\"createMs\":0.12000000000000455,\"wgsl\":\"@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\\n\\n@group(0) @binding(1) var<uniform> factor: f32;\\n\\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\\n  data[gid.x] = (data[gid.x] * factor);\\n}\",\"wgslLength\":241,\"layoutIds\":[1],\"dispatches\":5,\"draws\":0}],\"counters\":{\"submits\":5,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3048,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":8,\"t\":583.84,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":3,\"liveTextures\":0}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":9,\"t\":583.94,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 579.7800000000001,
+        "t": 583.8000000000001,
         "enabled": true,
         "resources": [
           {
@@ -1454,8 +1461,8 @@
             "pipeline": "compute",
             "label": "scale",
             "trigger": "lazy",
-            "resolveMs": 3.0600000000000023,
-            "createMs": 0.10000000000002274,
+            "resolveMs": 3.2200000000000273,
+            "createMs": 0.12000000000000455,
             "wgsl": "@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\n\n@group(0) @binding(1) var<uniform> factor: f32;\n\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\n  data[gid.x] = (data[gid.x] * factor);\n}",
             "wgslLength": 241,
             "layoutIds": [
@@ -1472,8 +1479,11 @@
           "droppedBytes": 0,
           "historyBytes": 3048,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -1482,7 +1492,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {
@@ -1511,7 +1527,7 @@
     },
     "render": {
       "consoleLines": [
-        "[001] render pipeline triangle#1 created [lazy] resolve 1.52 ms (CPU), create 0.02 ms (CPU), 356 chars of WGSL",
+        "[001] render pipeline triangle#1 created [lazy] resolve 1.70 ms (CPU), create 0.02 ms (CPU), 356 chars of WGSL",
         "[002] texture target#2 materialized (rgba8unorm 8x8)",
         "[003] pipeline #1 shader: no compiler messages",
         "[004] root destroyed (own device: true), still alive: 0 buffers, 1 textures",
@@ -1519,16 +1535,16 @@
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":632.5600000000001,\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"render\",\"label\":\"triangle\",\"trigger\":\"lazy\",\"validation\":\"deferred\",\"resolveMs\":1.5200000000000955,\"createMs\":0.01999999999998181,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"layoutLabels\":[]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":632.6800000000001,\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":2,\"label\":\"target\",\"format\":\"rgba8unorm\",\"size\":[8,8],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":19}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":632.96,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[]}}",
-        "{\"record\":\"snapshot\",\"afterSeq\":3,\"snapshot\":{\"v\":2,\"t\":835.4,\"enabled\":true,\"resources\":[{\"id\":2,\"resource\":\"texture\",\"label\":\"target\",\"sizeBytes\":null,\"usage\":19,\"writes\":null,\"bytesWritten\":null}],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"render\",\"label\":\"triangle\",\"trigger\":\"lazy\",\"resolveMs\":1.5200000000000955,\"createMs\":0.01999999999998181,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"dispatches\":0,\"draws\":3}],\"counters\":{\"submits\":3,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":1788,\"listenerErrors\":0,\"lastListenerError\":null},\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":835.4200000000001,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":1}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":835.5400000000001,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":636.96,\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"render\",\"label\":\"triangle\",\"trigger\":\"lazy\",\"validation\":\"deferred\",\"resolveMs\":1.7000000000000455,\"createMs\":0.01999999999998181,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"layoutLabels\":[]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":637.1,\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":2,\"label\":\"target\",\"format\":\"rgba8unorm\",\"size\":[8,8],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":19}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":637.4000000000001,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[]}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":3,\"snapshot\":{\"v\":2,\"t\":839.8200000000002,\"enabled\":true,\"resources\":[{\"id\":2,\"resource\":\"texture\",\"label\":\"target\",\"sizeBytes\":null,\"usage\":19,\"writes\":null,\"bytesWritten\":null}],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"render\",\"label\":\"triangle\",\"trigger\":\"lazy\",\"resolveMs\":1.7000000000000455,\"createMs\":0.01999999999998181,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"dispatches\":0,\"draws\":3}],\"counters\":{\"submits\":3,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":1788,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":839.84,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":1}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":839.9200000000001,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 835.4,
+        "t": 839.8200000000002,
         "enabled": true,
         "resources": [
           {
@@ -1548,7 +1564,7 @@
             "pipeline": "render",
             "label": "triangle",
             "trigger": "lazy",
-            "resolveMs": 1.5200000000000955,
+            "resolveMs": 1.7000000000000455,
             "createMs": 0.01999999999998181,
             "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn fragmentRed() -> @location(0) vec4f {\n  return vec4f(1, 0, 0, 1);\n}",
             "wgslLength": 356,
@@ -1564,8 +1580,11 @@
           "droppedBytes": 0,
           "historyBytes": 1788,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -1574,7 +1593,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {
@@ -1589,9 +1614,9 @@
     },
     "explicit-init": {
       "consoleLines": [
-        "[001] compute pipeline explicitSync#1 created [initSync] resolve 0.70 ms (CPU), create 0.00 ms (CPU), 40 chars of WGSL",
+        "[001] compute pipeline explicitSync#1 created [initSync] resolve 0.76 ms (CPU), create 0.00 ms (CPU), 40 chars of WGSL",
         "[002] pipeline #1 shader: no compiler messages",
-        "[003] render pipeline explicitAsync#2 compiled [initAsync] resolve 0.54 ms (CPU), create 0.30 ms (CPU), 356 chars of WGSL",
+        "[003] render pipeline explicitAsync#2 compiled [initAsync] resolve 2.00 ms (CPU), create 0.34 ms (CPU), 356 chars of WGSL",
         "[004] texture t#3 materialized (rgba8unorm 4x4)",
         "[005] pipeline #2 shader: no compiler messages",
         "[006] root destroyed (own device: true), still alive: 0 buffers, 1 textures",
@@ -1599,18 +1624,18 @@
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":886.7800000000001,\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"explicitSync\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.7000000000000455,\"createMs\":0,\"wgsl\":\"@compute @workgroup_size(1) fn noop() {}\",\"wgslLength\":40,\"layoutIds\":[],\"layoutLabels\":[]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":887.5000000000001,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":887.7400000000001,\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"render\",\"label\":\"explicitAsync\",\"trigger\":\"initAsync\",\"validation\":\"passed\",\"resolveMs\":0.5399999999999636,\"createMs\":0.2999999999999545,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"layoutLabels\":[]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":887.82,\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":3,\"label\":\"t\",\"format\":\"rgba8unorm\",\"size\":[4,4],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":19}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":887.8800000000001,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[]}}",
-        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":1090,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"texture\",\"label\":\"t\",\"sizeBytes\":null,\"usage\":19,\"writes\":null,\"bytesWritten\":null}],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"compute\",\"label\":\"explicitSync\",\"trigger\":\"initSync\",\"resolveMs\":0.7000000000000455,\"createMs\":0,\"wgsl\":\"@compute @workgroup_size(1) fn noop() {}\",\"wgslLength\":40,\"layoutIds\":[],\"dispatches\":1,\"draws\":0},{\"id\":2,\"pipeline\":\"render\",\"label\":\"explicitAsync\",\"trigger\":\"initAsync\",\"resolveMs\":0.5399999999999636,\"createMs\":0.2999999999999545,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"dispatches\":0,\"draws\":1}],\"counters\":{\"submits\":2,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":2540,\"listenerErrors\":0,\"lastListenerError\":null},\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1090.02,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":1}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1090.16,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":891.2800000000001,\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"explicitSync\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.7599999999999909,\"createMs\":0,\"wgsl\":\"@compute @workgroup_size(1) fn noop() {}\",\"wgslLength\":40,\"layoutIds\":[],\"layoutLabels\":[]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":893.48,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":893.7400000000001,\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"render\",\"label\":\"explicitAsync\",\"trigger\":\"initAsync\",\"validation\":\"passed\",\"resolveMs\":2,\"createMs\":0.34000000000003183,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"layoutLabels\":[]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":893.84,\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":3,\"label\":\"t\",\"format\":\"rgba8unorm\",\"size\":[4,4],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":19}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":893.9,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[]}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":1095.9800000000002,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"texture\",\"label\":\"t\",\"sizeBytes\":null,\"usage\":19,\"writes\":null,\"bytesWritten\":null}],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"compute\",\"label\":\"explicitSync\",\"trigger\":\"initSync\",\"resolveMs\":0.7599999999999909,\"createMs\":0,\"wgsl\":\"@compute @workgroup_size(1) fn noop() {}\",\"wgslLength\":40,\"layoutIds\":[],\"dispatches\":1,\"draws\":0},{\"id\":2,\"pipeline\":\"render\",\"label\":\"explicitAsync\",\"trigger\":\"initAsync\",\"resolveMs\":2,\"createMs\":0.34000000000003183,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"dispatches\":0,\"draws\":1}],\"counters\":{\"submits\":2,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":2540,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1096.02,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":1}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1096.12,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 1090,
+        "t": 1095.9800000000002,
         "enabled": true,
         "resources": [
           {
@@ -1630,7 +1655,7 @@
             "pipeline": "compute",
             "label": "explicitSync",
             "trigger": "initSync",
-            "resolveMs": 0.7000000000000455,
+            "resolveMs": 0.7599999999999909,
             "createMs": 0,
             "wgsl": "@compute @workgroup_size(1) fn noop() {}",
             "wgslLength": 40,
@@ -1643,8 +1668,8 @@
             "pipeline": "render",
             "label": "explicitAsync",
             "trigger": "initAsync",
-            "resolveMs": 0.5399999999999636,
-            "createMs": 0.2999999999999545,
+            "resolveMs": 2,
+            "createMs": 0.34000000000003183,
             "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn fragmentRed() -> @location(0) vec4f {\n  return vec4f(1, 0, 0, 1);\n}",
             "wgslLength": 356,
             "layoutIds": [],
@@ -1659,8 +1684,11 @@
           "droppedBytes": 0,
           "historyBytes": 2540,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -1669,7 +1697,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {},
@@ -1677,28 +1711,28 @@
     },
     "sync-failures": {
       "consoleLines": [
-        "[001] compute pipeline brokenCompute#1 created [initSync] resolve 0.24 ms (CPU), create 0.02 ms (CPU), 85 chars of WGSL",
+        "[001] compute pipeline brokenCompute#1 created [initSync] resolve 0.26 ms (CPU), create 0.00 ms (CPU), 85 chars of WGSL",
         "[002] DEVICE ERROR GPUValidationError: 1 error generated while compiling the shader:",
         "[003] pipeline #1 shader: error at WGSL 1:58: unresolved call target 'definitelyUndeclared'",
-        "[004] render pipeline brokenRender#2 created [initSync] resolve 0.48 ms (CPU), create 0.00 ms (CPU), 361 chars of WGSL",
+        "[004] render pipeline brokenRender#2 created [initSync] resolve 0.44 ms (CPU), create 0.02 ms (CPU), 361 chars of WGSL",
         "[005] pipeline #2 shader: error at WGSL 11:63: unresolved identifier 'definitelyUndeclared'",
         "[006] root destroyed (own device: true), still alive: 0 buffers, 0 textures",
         "[007] DEVICE LOST (destroyed): "
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":1141.04,\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"brokenCompute\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.2400000000000091,\"createMs\":0.019999999999754436,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":1141.3600000000001,\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"1 error generated while compiling the shader:\\n1:57: unresolved call target 'definitelyUndeclared'\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":1141.4,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved call target 'definitelyUndeclared'\",\"lineNum\":1,\"linePos\":58}]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":1241.9600000000003,\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"render\",\"label\":\"brokenRender\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.4800000000000182,\"createMs\":0,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":1242.22,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved identifier 'definitelyUndeclared'\",\"lineNum\":11,\"linePos\":63}]}}",
-        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":1442.5800000000002,\"enabled\":true,\"resources\":[],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"compute\",\"label\":\"brokenCompute\",\"trigger\":\"initSync\",\"resolveMs\":0.2400000000000091,\"createMs\":0.019999999999754436,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"dispatches\":0,\"draws\":0},{\"id\":2,\"pipeline\":\"render\",\"label\":\"brokenRender\",\"trigger\":\"initSync\",\"resolveMs\":0.4800000000000182,\"createMs\":0,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"dispatches\":0,\"draws\":0}],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3068,\"listenerErrors\":0,\"lastListenerError\":null},\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1442.66,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":0}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1443.2,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":1147.16,\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"brokenCompute\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.2600000000002183,\"createMs\":0,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":1147.5000000000002,\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"1 error generated while compiling the shader:\\n1:57: unresolved call target 'definitelyUndeclared'\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":1147.54,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved call target 'definitelyUndeclared'\",\"lineNum\":1,\"linePos\":58}]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":1248.0800000000002,\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"render\",\"label\":\"brokenRender\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.4399999999998272,\"createMs\":0.01999999999998181,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":1248.3600000000001,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved identifier 'definitelyUndeclared'\",\"lineNum\":11,\"linePos\":63}]}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":1448.6000000000001,\"enabled\":true,\"resources\":[],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"compute\",\"label\":\"brokenCompute\",\"trigger\":\"initSync\",\"resolveMs\":0.2600000000002183,\"createMs\":0,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"dispatches\":0,\"draws\":0},{\"id\":2,\"pipeline\":\"render\",\"label\":\"brokenRender\",\"trigger\":\"initSync\",\"resolveMs\":0.4399999999998272,\"createMs\":0.01999999999998181,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"dispatches\":0,\"draws\":0}],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3068,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1448.72,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":0}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1449.2200000000003,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 1442.5800000000002,
+        "t": 1448.5800000000002,
         "enabled": true,
         "resources": [],
         "bindGroups": [],
@@ -1708,8 +1742,8 @@
             "pipeline": "compute",
             "label": "brokenCompute",
             "trigger": "initSync",
-            "resolveMs": 0.2400000000000091,
-            "createMs": 0.019999999999754436,
+            "resolveMs": 0.2600000000002183,
+            "createMs": 0,
             "wgsl": "@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }",
             "wgslLength": 85,
             "layoutIds": [],
@@ -1721,8 +1755,8 @@
             "pipeline": "render",
             "label": "brokenRender",
             "trigger": "initSync",
-            "resolveMs": 0.4800000000000182,
-            "createMs": 0,
+            "resolveMs": 0.4399999999998272,
+            "createMs": 0.01999999999998181,
             "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }",
             "wgslLength": 361,
             "layoutIds": [],
@@ -1737,8 +1771,11 @@
           "droppedBytes": 0,
           "historyBytes": 3068,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -1747,7 +1784,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {
@@ -1759,27 +1802,27 @@
     "async-failures": {
       "consoleLines": [
         "[001] DEVICE ERROR GPUValidationError: 1 error generated while compiling the shader:",
-        "[002] compute pipeline asyncCompute#1 creation FAILED [initAsync] GPUPipelineError:  (85 chars of WGSL)",
+        "[002] compute pipeline asyncCompute#1 creation FAILED [initAsync, create] GPUPipelineError:  (85 chars of WGSL)",
         "[003] pipeline #1 shader: error at WGSL 1:58: unresolved call target 'definitelyUndeclared'",
-        "[004] render pipeline asyncRender#2 creation FAILED [initAsync] GPUPipelineError: Vertex module is not valid (361 chars of WGSL)",
+        "[004] render pipeline asyncRender#2 creation FAILED [initAsync, create] GPUPipelineError: Vertex module is not valid (361 chars of WGSL)",
         "[005] pipeline #2 shader: error at WGSL 11:63: unresolved identifier 'definitelyUndeclared'",
         "[006] root destroyed (own device: true), still alive: 0 buffers, 0 textures",
         "[007] DEVICE LOST (destroyed): "
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":1498.88,\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"1 error generated while compiling the shader:\\n1:57: unresolved call target 'definitelyUndeclared'\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":1499.3200000000002,\"type\":\"pipeline-creation-failed\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"asyncCompute\",\"trigger\":\"initAsync\",\"resolveMs\":1.1399999999998727,\"createMs\":0.8000000000001819,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":1503.1000000000001,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved call target 'definitelyUndeclared'\",\"lineNum\":1,\"linePos\":58}]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":1503.4200000000003,\"type\":\"pipeline-creation-failed\",\"id\":2,\"pipeline\":\"render\",\"label\":\"asyncRender\",\"trigger\":\"initAsync\",\"resolveMs\":2.8600000000001273,\"createMs\":0.4600000000000364,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"Vertex module is not valid\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":1503.7200000000003,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved identifier 'definitelyUndeclared'\",\"lineNum\":11,\"linePos\":63}]}}",
-        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":1704.0400000000002,\"enabled\":true,\"resources\":[],\"bindGroups\":[],\"pipelines\":[],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3232,\"listenerErrors\":0,\"lastListenerError\":null},\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\"]}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1704.0600000000002,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":0}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1704.3200000000002,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":1503.4,\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"1 error generated while compiling the shader:\\n1:57: unresolved call target 'definitelyUndeclared'\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":1503.8600000000001,\"type\":\"pipeline-creation-failed\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"asyncCompute\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":0.7799999999999727,\"createMs\":0.8599999999999,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":1506.4400000000003,\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved call target 'definitelyUndeclared'\",\"lineNum\":1,\"linePos\":58}]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":1506.7400000000002,\"type\":\"pipeline-creation-failed\",\"id\":2,\"pipeline\":\"render\",\"label\":\"asyncRender\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":1.7799999999999727,\"createMs\":0.4600000000000364,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"Vertex module is not valid\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":1507.0400000000002,\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved identifier 'definitelyUndeclared'\",\"lineNum\":11,\"linePos\":63}]}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":1707.3,\"enabled\":true,\"resources\":[],\"bindGroups\":[],\"pipelines\":[],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3304,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[{\"v\":2,\"seq\":2,\"t\":1503.8600000000001,\"type\":\"pipeline-creation-failed\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"asyncCompute\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":0.7799999999999727,\"createMs\":0.8599999999999,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"\"},{\"v\":2,\"seq\":4,\"t\":1506.7400000000002,\"type\":\"pipeline-creation-failed\",\"id\":2,\"pipeline\":\"render\",\"label\":\"asyncRender\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":1.7799999999999727,\"createMs\":0.4600000000000364,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"Vertex module is not valid\"}],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1707.4,\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":0}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1707.7000000000003,\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"\"}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 1704.02,
+        "t": 1707.3,
         "enabled": true,
         "resources": [],
         "bindGroups": [],
@@ -1789,10 +1832,52 @@
           "collectedWithoutDestroy": 0,
           "droppedEvents": 0,
           "droppedBytes": 0,
-          "historyBytes": 3232,
+          "historyBytes": 3304,
           "listenerErrors": 0,
-          "lastListenerError": null
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [
+          {
+            "v": 2,
+            "seq": 2,
+            "t": 1503.8600000000001,
+            "type": "pipeline-creation-failed",
+            "id": 1,
+            "pipeline": "compute",
+            "label": "asyncCompute",
+            "trigger": "initAsync",
+            "phase": "create",
+            "resolveMs": 0.7799999999999727,
+            "createMs": 0.8599999999999,
+            "wgsl": "@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }",
+            "wgslLength": 85,
+            "layoutIds": [],
+            "layoutLabels": [],
+            "errorType": "GPUPipelineError",
+            "message": ""
+          },
+          {
+            "v": 2,
+            "seq": 4,
+            "t": 1506.7400000000002,
+            "type": "pipeline-creation-failed",
+            "id": 2,
+            "pipeline": "render",
+            "label": "asyncRender",
+            "trigger": "initAsync",
+            "phase": "create",
+            "resolveMs": 1.7799999999999727,
+            "createMs": 0.4600000000000364,
+            "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }",
+            "wgslLength": 361,
+            "layoutIds": [],
+            "layoutLabels": [],
+            "errorType": "GPUPipelineError",
+            "message": "Vertex module is not valid"
+          }
+        ],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -1801,7 +1886,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {
@@ -1897,89 +1988,89 @@
       ],
       "jsonl": [
         "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":1757.8400000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":1758.5800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":1758.8000000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":2,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":1758.8600000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":2,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":1758.9800000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1759.0000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":3,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1759.1000000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":4,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":8,\"t\":1759.1800000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":4,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":9,\"t\":1759.2800000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":5,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":10,\"t\":1759.3200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":5,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":11,\"t\":1759.4200000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":6,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":12,\"t\":1759.4600000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":6,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":13,\"t\":1759.5400000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":7,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":14,\"t\":1759.5600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":7,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":15,\"t\":1759.68,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":8,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":16,\"t\":1759.7,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":8,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":17,\"t\":1759.8200000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":9,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":18,\"t\":1759.8400000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":9,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":19,\"t\":1759.94,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":10,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":20,\"t\":1759.98,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":10,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":21,\"t\":1760.0600000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":11,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":22,\"t\":1760.0800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":11,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":23,\"t\":1760.16,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":12,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":24,\"t\":1760.18,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":12,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":25,\"t\":1760.28,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":13,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":26,\"t\":1760.3200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":13,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":27,\"t\":1760.42,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":14,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":28,\"t\":1760.46,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":14,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":29,\"t\":1760.58,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":15,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":30,\"t\":1760.6200000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":15,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":31,\"t\":1760.76,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":16,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":32,\"t\":1760.8000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":16,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":33,\"t\":1760.9,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":17,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":34,\"t\":1760.9400000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":17,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":35,\"t\":1761.0800000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":18,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":36,\"t\":1761.1200000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":18,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":37,\"t\":1761.2400000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":19,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":38,\"t\":1761.2800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":19,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":39,\"t\":1761.38,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":20,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":40,\"t\":1761.4200000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":20,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":41,\"t\":1761.5,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":21,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":42,\"t\":1761.5400000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":21,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":43,\"t\":1761.6600000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":22,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":44,\"t\":1761.7,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":22,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":45,\"t\":1761.7800000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":23,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":46,\"t\":1761.8000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":23,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":47,\"t\":1761.88,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":24,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":48,\"t\":1761.9000000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":24,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":49,\"t\":1761.98,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":25,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":50,\"t\":1762.0200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":25,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":51,\"t\":1762.1000000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":26,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":52,\"t\":1762.14,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":26,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":53,\"t\":1762.22,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":27,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":54,\"t\":1762.2600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":27,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":55,\"t\":1762.3200000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":28,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":56,\"t\":1762.3600000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":28,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":57,\"t\":1762.4400000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":29,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":58,\"t\":1762.48,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":29,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":59,\"t\":1762.5600000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":30,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":60,\"t\":1762.6000000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":30,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":61,\"t\":1762.7600000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":31,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":62,\"t\":1762.8000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":31,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":63,\"t\":1762.8800000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":32,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":64,\"t\":1762.9400000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":32,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":65,\"t\":1763.0200000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":33,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":66,\"t\":1763.26,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":33,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":67,\"t\":1763.4200000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":34,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":68,\"t\":1763.5200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":34,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":69,\"t\":1763.64,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":35,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":70,\"t\":1763.68,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":35,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":71,\"t\":1763.74,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":36,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":72,\"t\":1763.7600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":36,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":73,\"t\":1763.8200000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":37,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":74,\"t\":1763.88,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":37,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":75,\"t\":1763.98,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":38,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":76,\"t\":1764.0000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":38,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":77,\"t\":1764.0600000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":39,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":78,\"t\":1764.0800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":39,\"label\":\"buf\"}}",
-        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":79,\"t\":1764.14,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":40,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}"
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":1,\"t\":1761.0000000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":2,\"t\":1761.7800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":3,\"t\":1761.9600000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":2,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":4,\"t\":1762.0200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":2,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":5,\"t\":1762.1200000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":6,\"t\":1762.16,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":3,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":7,\"t\":1762.2400000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":4,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":8,\"t\":1762.3000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":4,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":9,\"t\":1762.38,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":5,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":10,\"t\":1762.4400000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":5,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":11,\"t\":1762.52,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":6,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":12,\"t\":1762.5600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":6,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":13,\"t\":1762.64,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":7,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":14,\"t\":1762.6800000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":7,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":15,\"t\":1762.7600000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":8,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":16,\"t\":1762.8000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":8,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":17,\"t\":1762.9,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":9,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":18,\"t\":1762.9400000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":9,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":19,\"t\":1763.0200000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":10,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":20,\"t\":1763.0600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":10,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":21,\"t\":1763.16,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":11,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":22,\"t\":1763.2,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":11,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":23,\"t\":1763.3000000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":12,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":24,\"t\":1763.3400000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":12,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":25,\"t\":1763.4200000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":13,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":26,\"t\":1763.4600000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":13,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":27,\"t\":1763.5400000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":14,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":28,\"t\":1763.5800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":14,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":29,\"t\":1763.6600000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":15,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":30,\"t\":1763.7200000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":15,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":31,\"t\":1763.8200000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":16,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":32,\"t\":1763.8600000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":16,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":33,\"t\":1763.9600000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":17,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":34,\"t\":1764.0000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":17,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":35,\"t\":1764.2000000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":18,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":36,\"t\":1764.2400000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":18,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":37,\"t\":1764.3600000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":19,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":38,\"t\":1764.4,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":19,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":39,\"t\":1764.5400000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":20,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":40,\"t\":1764.6000000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":20,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":41,\"t\":1764.7,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":21,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":42,\"t\":1764.7600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":21,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":43,\"t\":1764.8400000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":22,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":44,\"t\":1764.9,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":22,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":45,\"t\":1765.0400000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":23,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":46,\"t\":1765.1000000000001,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":23,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":47,\"t\":1765.1800000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":24,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":48,\"t\":1765.2200000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":24,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":49,\"t\":1765.2800000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":25,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":50,\"t\":1765.3200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":25,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":51,\"t\":1765.38,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":26,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":52,\"t\":1765.4200000000003,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":26,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":53,\"t\":1765.4800000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":27,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":54,\"t\":1765.5200000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":27,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":55,\"t\":1765.6000000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":28,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":56,\"t\":1765.64,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":28,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":57,\"t\":1765.7,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":29,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":58,\"t\":1765.7600000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":29,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":59,\"t\":1765.8400000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":30,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":60,\"t\":1765.88,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":30,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":61,\"t\":1765.98,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":31,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":62,\"t\":1766.04,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":31,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":63,\"t\":1766.1200000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":32,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":64,\"t\":1766.16,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":32,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":65,\"t\":1766.2600000000002,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":33,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":66,\"t\":1766.5000000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":33,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":67,\"t\":1766.66,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":34,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":68,\"t\":1766.7400000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":34,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":69,\"t\":1766.8600000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":35,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":70,\"t\":1766.96,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":35,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":71,\"t\":1767.02,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":36,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":72,\"t\":1767.0800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":36,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":73,\"t\":1767.14,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":37,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":74,\"t\":1767.2,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":37,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":75,\"t\":1767.26,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":38,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":76,\"t\":1767.2800000000002,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":38,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":77,\"t\":1767.3400000000001,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":39,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":78,\"t\":1767.38,\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":39,\"label\":\"buf\"}}",
+        "{\"record\":\"event\",\"event\":{\"v\":2,\"seq\":79,\"t\":1767.4200000000003,\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":40,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76}}"
       ],
       "snapshot": {
         "v": 2,
-        "t": 2270,
+        "t": 2302.14,
         "enabled": false,
         "resources": [],
         "bindGroups": [],
@@ -1991,8 +2082,11 @@
           "droppedBytes": 949058,
           "historyBytes": 15752,
           "listenerErrors": 4002,
-          "lastListenerError": "Error: consumer bug"
+          "lastListenerError": "Error: consumer bug",
+          "internalErrors": 0,
+          "lastInternalError": null
         },
+        "retainedFailures": [],
         "unavailable": [
           "gpuExecutionTime",
           "gpuMemoryUsage",
@@ -2001,7 +2095,13 @@
           "rawWebGPUCalls",
           "workgroupCounts",
           "perDispatchBindings",
-          "textureMemory"
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
         ]
       },
       "notes": {
@@ -2014,7 +2114,9 @@
             "droppedBytes": 948576,
             "historyBytes": 15424,
             "listenerErrors": 4000,
-            "lastListenerError": "Error: consumer bug"
+            "lastListenerError": "Error: consumer bug",
+            "internalErrors": 0,
+            "lastInternalError": null
           }
         },
         "disabled": {

@@ -103,7 +103,10 @@ type DeviceMock = Record<
   | 'createBindGroup'
   | 'createShaderModule'
   | 'createComputePipeline'
-  | 'createComputePipelineAsync',
+  | 'createComputePipelineAsync'
+  | 'createRenderPipeline'
+  | 'createRenderPipelineAsync'
+  | 'createTexture',
   Mock
 > & { queue: Record<'submit' | 'writeBuffer', Mock> };
 
