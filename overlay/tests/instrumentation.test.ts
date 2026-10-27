@@ -345,6 +345,22 @@ describe('enabling and disabling', () => {
     expect(inst.getSnapshot().resources).toHaveLength(1);
   });
 
+  it('stops counting in a pass that was opened before disable()', ({ device }) => {
+    makeObservableDevice(device);
+    const { root, inst } = enabledRoot(device);
+    const { pipeline, bindGroup } = dispatchOnce(root);
+    const pass = root['~unstable'].createCommandEncoder().beginComputePass();
+    const inPass = pipeline.with(pass).with(bindGroup);
+
+    inPass.dispatchWorkgroups(1);
+    inst.disable();
+    inPass.dispatchWorkgroups(1);
+    inst.enable();
+
+    // 1 from dispatchOnce + 1 in the pass before disable(); the one while disabled is not counted
+    expect(inst.getSnapshot().pipelines[0]?.dispatches).toBe(2);
+  });
+
   it('is permanently off after dispose, but history stays readable', ({ device }) => {
     const observable = makeObservableDevice(device);
     const { root, inst, events } = enabledRoot(device);

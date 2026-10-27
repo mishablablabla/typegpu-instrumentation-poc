@@ -452,6 +452,10 @@ export class InstrumentationHub implements TgpuInstrumentation {
   }
 
   dispatched(core: object): void {
+    // A pass keeps the hub it saw when it was created, so it can outlive `disable()`.
+    if (!this.#active) {
+      return;
+    }
     const rec = this.#byObject.get(core);
     if (rec?.kind === 'pipeline') {
       rec.dispatches++;
@@ -459,6 +463,9 @@ export class InstrumentationHub implements TgpuInstrumentation {
   }
 
   drew(core: object): void {
+    if (!this.#active) {
+      return;
+    }
     const rec = this.#byObject.get(core);
     if (rec?.kind === 'pipeline') {
       rec.draws++;

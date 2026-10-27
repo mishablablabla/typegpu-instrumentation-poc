@@ -55,8 +55,66 @@ index 58d76092..4b0db7bb 100644
  
      for (const hook of afterSubmit.values()) {
        hook();
+diff --git a/packages/typegpu/src/core/commandEncoder/computePass.ts b/packages/typegpu/src/core/commandEncoder/computePass.ts
+index 3871ba4a..41a2643d 100644
+--- a/packages/typegpu/src/core/commandEncoder/computePass.ts
++++ b/packages/typegpu/src/core/commandEncoder/computePass.ts
+@@ -21,6 +21,7 @@ import type { TgpuComputePipeline } from '../pipeline/computePipeline.ts';
+ import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
+ import { type TgpuPassTimestampWrites, unwrapTimestampWrites } from './attachments.ts';
+ import type { TgpuCommandEncoder } from './commandEncoder.ts';
++import type { InstrumentationHub } from '../instrumentation/hub.ts';
+ 
+ // ----------
+ // Public API
+@@ -41,6 +42,8 @@ export interface ComputePassInternals {
+   /** Undefined for raw pass encoders the caller owns */
+   readonly owner: TgpuCommandEncoder | undefined;
+   appliedVersion: number | undefined;
++  /** Read once when the pass is created, so recording a dispatch does not walk through the root. */
++  readonly instrumentation: InstrumentationHub | undefined;
+ }
+ 
+ /**
+@@ -148,6 +151,7 @@ class TgpuComputePassImpl implements TgpuComputePass {
+       state: new ComputeDrawState(),
+       owner,
+       appliedVersion: undefined,
++      instrumentation: root[$internal].instrumentation,
+     };
+   }
+ 
+diff --git a/packages/typegpu/src/core/commandEncoder/renderPass.ts b/packages/typegpu/src/core/commandEncoder/renderPass.ts
+index a3e82175..c719b7aa 100644
+--- a/packages/typegpu/src/core/commandEncoder/renderPass.ts
++++ b/packages/typegpu/src/core/commandEncoder/renderPass.ts
+@@ -26,6 +26,7 @@ import {
+ import type { TgpuRenderPipeline } from '../pipeline/renderPipeline.ts';
+ import { isQuerySet, type TgpuQuerySet } from '../querySet/querySet.ts';
+ import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
++import type { InstrumentationHub } from '../instrumentation/hub.ts';
+ import type { TgpuCommandEncoder } from './commandEncoder.ts';
+ import type { TgpuVertexLayout } from '../vertexLayout/vertexLayout.ts';
+ import {
+@@ -70,6 +71,8 @@ export interface RenderPassInternals<
+   /** Undefined for bundle encoders and for raw pass encoders the caller owns */
+   readonly owner: TgpuCommandEncoder | undefined;
+   appliedVersion: number | undefined;
++  /** Read once when the pass is created, so recording a draw does not walk through the root. */
++  readonly instrumentation: InstrumentationHub | undefined;
+ }
+ 
+ /**
+@@ -378,6 +381,7 @@ class TgpuRenderCommandsImpl<
+       state: new RenderDrawState(),
+       owner,
+       appliedVersion: undefined,
++      instrumentation: root[$internal].instrumentation,
+     };
+   }
+ 
 diff --git a/packages/typegpu/src/core/pipeline/computePipeline.ts b/packages/typegpu/src/core/pipeline/computePipeline.ts
-index 44be7196..bbfb304e 100644
+index 44be7196..9f6dfb25 100644
 --- a/packages/typegpu/src/core/pipeline/computePipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/computePipeline.ts
 @@ -70,6 +70,7 @@ import {
@@ -118,7 +176,7 @@ index 44be7196..bbfb304e 100644
  
      this.#memo = {
        pipeline: device.createComputePipeline({
-@@ -560,11 +576,20 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -560,11 +576,23 @@ class ComputePipelineCore implements SelfResolvable {
        usedImmediate,
      };
  
@@ -136,11 +194,14 @@ index 44be7196..bbfb304e 100644
  
    public unwrap(): Memo {
 -    this.initSync();
-+    this.initSync('lazy');
++    // Checked here so the hot path (already compiled) does not call into the larger `initSync`.
++    if (this.#memo === undefined) {
++      this.initSync('lazy');
++    }
      return this.#memo as Memo;
    }
  
-@@ -575,6 +600,8 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -575,6 +603,8 @@ class ComputePipelineCore implements SelfResolvable {
      );
  
      // Resolving code
@@ -149,7 +210,7 @@ index 44be7196..bbfb304e 100644
      const ns = namespace({ names: this.root.nameRegistrySetting });
      const resolutionResult = this.#performanceTracker.measureResolve(() =>
        resolve(this, {
-@@ -587,6 +614,7 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -587,6 +617,7 @@ class ComputePipelineCore implements SelfResolvable {
          root: this.root,
        }),
      );
@@ -157,7 +218,7 @@ index 44be7196..bbfb304e 100644
      const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
  
      if (catchall !== undefined) {
-@@ -604,6 +632,6 @@ class ComputePipelineCore implements SelfResolvable {
+@@ -604,6 +635,6 @@ class ComputePipelineCore implements SelfResolvable {
        code,
      });
  
@@ -166,14 +227,14 @@ index 44be7196..bbfb304e 100644
    }
  }
 diff --git a/packages/typegpu/src/core/pipeline/drawState.ts b/packages/typegpu/src/core/pipeline/drawState.ts
-index 7664e930..580d12b8 100644
+index 7664e930..b540b6e7 100644
 --- a/packages/typegpu/src/core/pipeline/drawState.ts
 +++ b/packages/typegpu/src/core/pipeline/drawState.ts
 @@ -327,6 +327,7 @@ export function emitRenderDraw(
    }
  
    const memo = core.unwrap();
-+  root[$internal].instrumentation?.drew(core);
++  passInternals.instrumentation?.drew(core);
    if (!ownsPass) {
      reportIgnoredPriors(
        core,
@@ -181,12 +242,12 @@ index 7664e930..580d12b8 100644
    selectPipeline(state, pipeline);
  
    const memo = core.unwrap();
-+  root[$internal].instrumentation?.dispatched(core);
++  passInternals.instrumentation?.dispatched(core);
    if (!ownsPass) {
      reportIgnoredPriors(
        core,
 diff --git a/packages/typegpu/src/core/pipeline/renderPipeline.ts b/packages/typegpu/src/core/pipeline/renderPipeline.ts
-index 91983963..0cd20163 100644
+index 91983963..b435478f 100644
 --- a/packages/typegpu/src/core/pipeline/renderPipeline.ts
 +++ b/packages/typegpu/src/core/pipeline/renderPipeline.ts
 @@ -104,6 +104,7 @@ import {
@@ -255,7 +316,7 @@ index 91983963..0cd20163 100644
  
      this.#memo = {
        pipeline: device.createRenderPipeline(descriptor),
-@@ -956,11 +976,20 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -956,11 +976,23 @@ class RenderPipelineCore implements SelfResolvable {
        usedImmediate: resolutionResult.usedImmediate,
      };
  
@@ -273,11 +334,14 @@ index 91983963..0cd20163 100644
  
    public unwrap(): Memo {
 -    this.initSync();
-+    this.initSync('lazy');
++    // Checked here so the hot path (already compiled) does not call into the larger `initSync`.
++    if (this.#memo === undefined) {
++      this.initSync('lazy');
++    }
      return this.#memo as Memo;
    }
  
-@@ -975,6 +1004,8 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -975,6 +1007,8 @@ class RenderPipelineCore implements SelfResolvable {
      );
  
      // Resolving code
@@ -286,7 +350,7 @@ index 91983963..0cd20163 100644
      const ns = namespace({ names: root.nameRegistrySetting });
      const resolutionResult = this.#performanceTracker.measureResolve(() =>
        resolve(this, {
-@@ -986,6 +1017,7 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -986,6 +1020,7 @@ class RenderPipelineCore implements SelfResolvable {
        }),
      );
  
@@ -294,7 +358,7 @@ index 91983963..0cd20163 100644
      const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
  
      if (catchall !== undefined) {
-@@ -1063,7 +1095,7 @@ class RenderPipelineCore implements SelfResolvable {
+@@ -1063,7 +1098,7 @@ class RenderPipelineCore implements SelfResolvable {
        descriptor.multisample = tgpuDescriptor.multisample;
      }
  
