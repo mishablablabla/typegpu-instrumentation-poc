@@ -53,6 +53,9 @@ jobs:
           node-version: 24
       - run: corepack enable
       - run: scripts/setup.sh && scripts/setup-pristine.sh
+      # the bundle matrix takes webpack / the rollup plugins / terser from the upstream pnpm store; the
+      # filtered setup above does not install them (they belong to apps/treeshake-test)
+      - run: cd .work/typegpu && pnpm install --frozen-lockfile --filter "treeshake-test..."
       # offline from here on: packs the built package, type-checks a consumer against it, bundles with four bundlers
       - run: package-test/run.sh
       - name: Fail on any recorded FAIL

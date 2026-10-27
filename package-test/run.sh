@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Reproduces the whole packaging / bundle-cost study. Offline: no registry access, no browser, no GPU.
 # Prereq (from a fresh clone):  scripts/setup.sh && scripts/setup-pristine.sh
+#   plus the bundlers:  (cd .work/typegpu && pnpm install --frozen-lockfile --filter "treeshake-test...")
 # Usage:  package-test/run.sh            (~3-4 min; writes package-test/results/*)
 set -euo pipefail
 cd "$(dirname "$0")"
