@@ -107,7 +107,9 @@ describe('two independent consumers of one stream', () => {
     ).rejects.toThrow('invalid module');
     await flush();
 
-    expect(report.lines().join('\n')).toContain('creation FAILED [initAsync] GPUPipelineError');
+    expect(report.lines().join('\n')).toContain(
+      'creation FAILED [initAsync, create] GPUPipelineError',
+    );
     const result = index.index();
     expect(result.failedCompiles).toEqual([
       expect.objectContaining({ label: 'doomed', errorType: 'GPUPipelineError' }),
