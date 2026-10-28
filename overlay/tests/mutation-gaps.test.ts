@@ -209,7 +209,9 @@ describe('enable() and disable()', () => {
 
 describe('device events', () => {
   // M22
-  it('ignores device loss while disabled', async ({ device }) => {
+  it('stays silent about device loss while disabled (it is announced on enable, see A-6)', async ({
+    device,
+  }) => {
     const observable = makeObservableDevice(device);
     const { inst, events } = enabledRoot(device);
 

@@ -1,7 +1,7 @@
 /**
  * Regression tests for defects found by the second independent audit (2026-10-28). Each test was written
  * against the layer as it was before the fix and failed there (A-1 ... A-5 are the audit's ids D-1, D-5,
- * D-7, D-9 and the not-thenable `device.lost` case of D-7).
+ * D-7, D-9 and the not-thenable `device.lost` case of D-7). A-6 is the open deviation "device-lost while disabled".
  */
 import { describe, expect, vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
@@ -176,5 +176,63 @@ describe('options fail early and precisely', () => {
     const mock = mockOf(device) as unknown as Record<string, unknown>;
     mock.lost = {};
     expect(() => enabledRoot(device)).not.toThrow();
+  });
+});
+
+describe('device loss while disabled', () => {
+  it('A-6 a loss that happens while disabled stays silent, and is announced once when the layer is enabled again', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const { inst, events } = enabledRoot(device);
+
+    inst.disable();
+    observable.lose('unknown', 'gone while disabled');
+    await flush();
+    // disable() keeps its promise: nothing is emitted while off
+    expect(events).toEqual([]);
+    expect(inst.history()).toEqual([]);
+
+    inst.enable();
+    expect(typesOf(events)).toEqual(['device-lost']);
+    expect(events[0]).toMatchObject({
+      type: 'device-lost',
+      reason: 'unknown',
+      message: 'gone while disabled',
+    });
+    expect(inst.history().map((e) => e.type)).toEqual(['device-lost']);
+    expect(inst.getSnapshot().retainedFailures.map((e) => e.type)).toEqual(['device-lost']);
+
+    // exactly once, however often the layer is toggled afterwards
+    inst.disable();
+    inst.enable();
+    inst.enable();
+    expect(typesOf(events)).toEqual(['device-lost']);
+  });
+
+  it('A-6b a loss while disabled does not break destroy, and nothing is announced for a root that is gone', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const { root, inst, events } = enabledRoot(device);
+    inst.disable();
+    observable.lose('destroyed', 'bye');
+    await flush();
+    root.destroy();
+    inst.enable();
+    expect(typesOf(events)).not.toContain('device-lost');
+  });
+
+  it('A-6c a loss while enabled is unchanged: reported immediately, and enable() adds nothing', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const { inst, events } = enabledRoot(device);
+    observable.lose('unknown', 'live');
+    await flush();
+    expect(typesOf(events)).toEqual(['device-lost']);
+    inst.disable();
+    inst.enable();
+    expect(typesOf(events)).toEqual(['device-lost']);
   });
 });

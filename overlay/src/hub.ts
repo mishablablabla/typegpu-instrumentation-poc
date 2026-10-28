@@ -117,6 +117,8 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
   #disposed = false;
   /** Set by `root.destroy()` of an owned device: only the device's `lost` notification may still be delivered. */
   #closing = false;
+  /** The device was lost while the layer was disabled; announced by the next `enable()`. */
+  #lostWhileDisabled: { reason: string; message: string } | undefined;
   #rootDestroyedSeen = false;
   #listeners: readonly Listener[] = [];
 
@@ -184,6 +186,7 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
     }
     this.#active = true;
     this.#holder.instrumentation = this;
+    this.#announceLossWhileDisabled();
   }
 
   disable(): void {
@@ -315,6 +318,9 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
 
   handleDeviceLost(info: GPUDeviceLostInfo): void {
     if (!this.#active && !this.#closing) {
+      // Silent while off, like everything else, but not forgotten: a consumer that enables the layer again must
+      // not be left believing the device is healthy. `lost` resolves once, so one slot is enough.
+      this.#lostWhileDisabled = { reason: String(info.reason), message: info.message };
       return;
     }
     try {
@@ -324,6 +330,20 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
     }
     if (this.#closing) {
       this.dispose();
+    }
+  }
+
+  #announceLossWhileDisabled(): void {
+    const lost = this.#lostWhileDisabled;
+    if (lost === undefined) {
+      return;
+    }
+    this.#lostWhileDisabled = undefined;
+    try {
+      // Its `t` is the time of the announcement, not of the loss: the layer was not looking then.
+      this.#emit({ type: 'device-lost', reason: lost.reason, message: lost.message });
+    } catch (error) {
+      this.#fail(error);
     }
   }
 

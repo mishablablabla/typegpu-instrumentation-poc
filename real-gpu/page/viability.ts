@@ -795,6 +795,36 @@ async function abandonedRoots() {
   device.destroy();
 }
 
+async function lostWhileDisabled() {
+  current = 'lost-while-disabled';
+  const device = await (await navigator.gpu.requestAdapter())!.requestDevice();
+  const root = tgpu.initFromDevice({
+    device,
+    unstable_instrumentation: createInstrumentation(),
+  });
+  const inst = root['~unstable'].instrumentation!;
+  const events: Ev[] = [];
+  inst.subscribe((e) => events.push(e));
+
+  inst.disable();
+  device.destroy();
+  const info = await device.lost;
+  await sleep(50);
+  check('nothing is emitted while the layer is disabled', events.length === 0, events);
+
+  inst.enable();
+  const lost = ofType(events, 'device-lost');
+  check(
+    'enabling announces the loss, with the browser reason',
+    lost.length === 1 && lost[0]?.reason === String(info.reason),
+    { lost, browserReason: info.reason },
+  );
+  inst.disable();
+  inst.enable();
+  check('and only once', ofType(events, 'device-lost').length === 1, events.length);
+  root.destroy();
+}
+
 async function neverOptedIn() {
   current = 'never-opted-in';
   const root = await tgpu.init();
@@ -833,6 +863,7 @@ export async function runViability() {
     ['async-failures', asyncFailures],
     ['lifecycle', lifecycle],
     ['abandoned-roots', abandonedRoots],
+    ['lost-while-disabled', lostWhileDisabled],
     ['never-opted-in', neverOptedIn],
   ];
   for (const [name, fn] of all) {
