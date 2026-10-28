@@ -287,11 +287,11 @@
       <table>
         <thead><tr><th scope="col">Environment</th><th scope="col">Result</th><th scope="col">What it is</th></tr></thead>
         <tbody>
-          <tr><th scope="row">Chrome 156, Apple M3 Pro, Metal, hardware adapter</th><td>130 / 130 (headless), 130 / 130 (headed)</td><td>The reference environment; the browser's GPU process is checked as a second source</td></tr>
+          <tr><th scope="row">Chrome 156, Apple M3 Pro, Metal, hardware adapter</th><td>133 / 133 (headless, latest); 130 / 130 (headed, earlier suite)</td><td>The reference environment; the browser's GPU process is checked as a second source</td></tr>
           <tr><th scope="row">Chrome 156 with SwiftShader</th><td>130 / 130</td><td>Software adapter: not real-GPU validation</td></tr>
           <tr><th scope="row">Safari 26.3, same Mac</th><td>128 / 128, one scenario skipped</td><td>No <code>gc()</code>; classified page-only; no <code>device-error</code> for an invalid render pipeline</td></tr>
-          <tr><th scope="row">CI runners, no GPU: Chrome on Linux, Windows (WARP) and macOS, Edge on Windows</th><td>130 / 130 and 20 / 20 in each</td><td>Software or virtualised adapters; the same built page everywhere</td></tr>
-          <tr><th scope="row">Firefox 157 on Linux (software)</th><td>128 / 128, one scenario skipped</td><td>No <code>gc()</code>; classified page-only</td></tr>
+          <tr><th scope="row">CI runners, no GPU: Chrome on Linux, Windows (WARP) and macOS, Edge on Windows</th><td>133 / 133 and 20 / 20 in each</td><td>Software or virtualised adapters; the same built page everywhere</td></tr>
+          <tr><th scope="row">Firefox on Linux (software)</th><td>131 / 131, one scenario skipped</td><td>No <code>gc()</code>; classified page-only</td></tr>
           <tr><th scope="row">Firefox on Windows and macOS, Safari on a runner</th><td>Not run</td><td>No WebGPU adapter on those runners (not a pass)</td></tr>
           <tr><th scope="row">Physical GPUs outside the one Mac, discrete GPUs, Node, React Native</th><td>Not tested</td><td>The harness records the environment, so the run is cheap on a new machine</td></tr>
         </tbody>

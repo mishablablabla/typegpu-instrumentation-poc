@@ -1,5 +1,5 @@
 {
-  "measured": "2026-10-28T00:43:03.708Z",
+  "measured": "2026-10-28T08:29:35.188Z",
   "node": "v24.21.0",
   "data": {
     "vite": {
@@ -42,11 +42,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 548370,
+          "raw": 548920,
           "min": {
-            "bytes": 343854,
-            "gzip": 86929,
-            "brotli": 71969
+            "bytes": 344161,
+            "gzip": 86972,
+            "brotli": 72030
           },
           "markers": {
             "pipeline-created": 1,
@@ -55,7 +55,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -109,11 +109,11 @@
           "instrumentationProp": 25
         },
         "patched/Cb": {
-          "raw": 547946,
+          "raw": 548496,
           "min": {
-            "bytes": 343470,
-            "gzip": 86777,
-            "brotli": 71724
+            "bytes": 343777,
+            "gzip": 86820,
+            "brotli": 71795
           },
           "markers": {
             "pipeline-created": 1,
@@ -122,7 +122,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -199,11 +199,11 @@
           "instrumentationProp": 25
         },
         "patched/Bk": {
-          "raw": 566647,
+          "raw": 567197,
           "min": {
-            "bytes": 355515,
-            "gzip": 89270,
-            "brotli": 73689
+            "bytes": 355822,
+            "gzip": 89318,
+            "brotli": 73732
           },
           "markers": {
             "pipeline-created": 1,
@@ -212,7 +212,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -273,11 +273,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 633589,
+          "raw": 634145,
           "min": {
-            "bytes": 314980,
-            "gzip": 90424,
-            "brotli": 75853
+            "bytes": 315187,
+            "gzip": 90442,
+            "brotli": 76035
           },
           "markers": {
             "pipeline-created": 1,
@@ -286,7 +286,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -340,11 +340,11 @@
           "instrumentationProp": 26
         },
         "patched/Cb": {
-          "raw": 617645,
+          "raw": 618201,
           "min": {
-            "bytes": 307119,
-            "gzip": 88020,
-            "brotli": 74053
+            "bytes": 307326,
+            "gzip": 88061,
+            "brotli": 74120
           },
           "markers": {
             "pipeline-created": 1,
@@ -353,7 +353,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -437,11 +437,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 909960,
+          "raw": 910923,
           "min": {
-            "bytes": 314373,
-            "gzip": 88092,
-            "brotli": 73325
+            "bytes": 314590,
+            "gzip": 88143,
+            "brotli": 73384
           },
           "markers": {
             "pipeline-created": 1,
@@ -450,7 +450,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -504,11 +504,11 @@
           "instrumentationProp": 25
         },
         "patched/Cb": {
-          "raw": 793481,
+          "raw": 794444,
           "min": {
-            "bytes": 299250,
-            "gzip": 83415,
-            "brotli": 69509
+            "bytes": 299467,
+            "gzip": 83463,
+            "brotli": 69553
           },
           "markers": {
             "pipeline-created": 1,
@@ -517,7 +517,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -601,11 +601,11 @@
           "determinism": "identical on rebuild"
         },
         "patched/B": {
-          "raw": 682406,
+          "raw": 683369,
           "min": {
-            "bytes": 273964,
-            "gzip": 77449,
-            "brotli": 65608
+            "bytes": 274182,
+            "gzip": 77493,
+            "brotli": 65672
           },
           "markers": {
             "pipeline-created": 1,
@@ -614,7 +614,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },
@@ -668,11 +668,11 @@
           "instrumentationProp": 25
         },
         "patched/Cb": {
-          "raw": 681962,
+          "raw": 682925,
           "min": {
-            "bytes": 273591,
-            "gzip": 77318,
-            "brotli": 65512
+            "bytes": 273809,
+            "gzip": 77361,
+            "brotli": 65503
           },
           "markers": {
             "pipeline-created": 1,
@@ -681,7 +681,7 @@
             "FinalizationRegistry": 1,
             "resource-materialized": 2,
             "bind-group-created": 1,
-            "device-lost": 5,
+            "device-lost": 6,
             "root-destroyed": 1,
             "gpuExecutionTime": 1
           },

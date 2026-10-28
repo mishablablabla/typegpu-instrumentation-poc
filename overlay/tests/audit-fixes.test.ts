@@ -187,7 +187,7 @@ describe('device loss while disabled', () => {
     const { inst, events } = enabledRoot(device);
 
     inst.disable();
-    observable.lose('unknown', 'gone while disabled');
+    observable.lose('destroyed', 'gone while disabled');
     await flush();
     // disable() keeps its promise: nothing is emitted while off
     expect(events).toEqual([]);
@@ -197,7 +197,7 @@ describe('device loss while disabled', () => {
     expect(typesOf(events)).toEqual(['device-lost']);
     expect(events[0]).toMatchObject({
       type: 'device-lost',
-      reason: 'unknown',
+      reason: 'destroyed',
       message: 'gone while disabled',
     });
     expect(inst.history().map((e) => e.type)).toEqual(['device-lost']);

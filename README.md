@@ -93,7 +93,7 @@ scripts/setup.sh && scripts/setup-pristine.sh          # TypeGPU at the pinned c
 (cd .work/typegpu && pnpm install --frozen-lockfile --filter "treeshake-test..." --filter "@typegpu/noise...")   # webpack/rollup/terser for the bundle matrix
 scripts/check.sh                                       # mock tests, tsc, lint/format (no GPU, no browser) = what CI runs
 node real-gpu/run.mjs                                  # 20 real-device checks (Chrome, CDP)
-node real-gpu/run.mjs --call 'window.runViability()' --out v.json                       # 130 checks, 9 scenarios, Chrome
+node real-gpu/run.mjs --call 'window.runViability()' --out v.json                       # 133 checks, 10 scenarios, Chrome
 node real-gpu/browser-run.mjs --browser Safari --call 'window.runViability()' --out v.json   # any browser via the OS `open` command
 node real-gpu/browser-run.mjs --exe <firefox> --firefox --call 'window.runViability()' --out v.json   # Firefox/any binary (CI uses this); add --query '?forceFallback=1' for a software adapter
 node real-gpu/ci-cell.mjs --cell local --kind chrome --prebuilt .work/real-gpu-dist   # one cell of the CI browser matrix (.github/workflows/browsers.yml)

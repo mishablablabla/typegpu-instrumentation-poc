@@ -1,0 +1,35 @@
+{
+  "cell": "chrome-macos-swiftshader",
+  "kind": "chrome",
+  "os": "darwin",
+  "arch": "arm64",
+  "node": "v24.21.0",
+  "pageDigest": "719a9a4e4790588680ff540e59c9f9b73176b9c6330c555eaf03b38a3af2e43f",
+  "when": "2026-10-28T08:29:11.791Z",
+  "steps": {
+    "viability": {
+      "exit": 0,
+      "status": "pass",
+      "passed": 133,
+      "failed": 0,
+      "skipped": [],
+      "classification": "software",
+      "browser": "Chrome/155.0.8059.40",
+      "adapterRequest": "default",
+      "adapter": {
+        "vendor": "google",
+        "architecture": "swiftshader",
+        "isFallbackAdapter": true
+      },
+      "file": "real-gpu/results/ci/chrome-macos-swiftshader-viability.json"
+    },
+    "suite": {
+      "exit": 0,
+      "status": "pass",
+      "passed": 20,
+      "failed": 0,
+      "classification": "software"
+    }
+  },
+  "status": "pass"
+}

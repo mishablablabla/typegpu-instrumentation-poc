@@ -1,0 +1,28 @@
+{
+  "cell": "safari-macos",
+  "kind": "safari",
+  "os": "darwin",
+  "arch": "arm64",
+  "node": "v24.21.0",
+  "pageDigest": "719a9a4e4790588680ff540e59c9f9b73176b9c6330c555eaf03b38a3af2e43f",
+  "when": "2026-10-28T08:29:37.213Z",
+  "steps": {
+    "viability": {
+      "exit": 2,
+      "status": "not-run",
+      "passed": 0,
+      "failed": 0,
+      "skipped": [],
+      "classification": "page-only",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.6.2 Safari/605.1.15",
+      "adapterRequest": null,
+      "adapter": {
+        "vendor": null,
+        "architecture": null,
+        "isFallbackAdapter": null
+      },
+      "file": "real-gpu/results/ci/safari-macos-viability.json"
+    }
+  },
+  "status": "not-run"
+}

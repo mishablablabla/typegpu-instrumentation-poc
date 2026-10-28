@@ -1,0 +1,28 @@
+{
+  "cell": "firefox-windows-fallback",
+  "kind": "firefox",
+  "os": "win32",
+  "arch": "x64",
+  "node": "v24.22.1",
+  "pageDigest": "719a9a4e4790588680ff540e59c9f9b73176b9c6330c555eaf03b38a3af2e43f",
+  "when": "2026-10-28T08:29:26.542Z",
+  "steps": {
+    "viability": {
+      "exit": 2,
+      "status": "not-run",
+      "passed": 0,
+      "failed": 0,
+      "skipped": [],
+      "classification": "page-only",
+      "browser": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0",
+      "adapterRequest": null,
+      "adapter": {
+        "vendor": null,
+        "architecture": null,
+        "isFallbackAdapter": null
+      },
+      "file": "real-gpu\\results\\ci\\firefox-windows-fallback-viability.json"
+    }
+  },
+  "status": "not-run"
+}

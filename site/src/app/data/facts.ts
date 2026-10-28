@@ -27,7 +27,7 @@ export const STATUS_FACTS: readonly Fact[] = [
   },
   {
     label: 'Validation',
-    value: '219 instrumentation tests; 130 / 130 real-device checks',
+    value: '222 instrumentation tests; 133 / 133 real-device checks',
     note: 'Mock-device tests plus a real-GPU suite; mutation score 93.6 % to 95.5 % (see report).',
     source: 'docs/PRODUCTION-READINESS.md',
   },
@@ -241,7 +241,7 @@ export const EVENT_MEANINGS: readonly EventMeaning[] = [
   {
     type: 'device-lost',
     means: 'The device\'s lost promise resolved (once per device).',
-    notProof: 'Only the owned-device destroyed reason was captured on hardware. A real GPU reset was never observed. Not recorded while the layer is disabled.',
+    notProof: 'Only the owned-device destroyed reason was captured on hardware. A real GPU reset was never observed. A loss while the layer is disabled is announced once by the next enable().',
   },
 ];
 
@@ -264,7 +264,7 @@ export const LIMITATIONS: readonly { title: string; body: string }[] = [
   },
   {
     title: 'disable() is a blind spot, not a pause',
-    body: 'Objects created while disabled stay untracked, and a device loss during that time is never announced.',
+    body: 'Objects created while disabled stay untracked. (A device loss during that time is announced once by the next enable().)',
   },
   {
     title: 'Memory is bounded by an estimate',
@@ -306,7 +306,7 @@ export const ROADMAP: readonly RoadmapStep[] = [
     items: [
       'Maintainers decide: keep the hooks in core, shrink them, or move payload building into the hub (estimated −100 to −150 B gzip).',
       'Run the real-GPU suite on physical Windows and Linux GPUs, a discrete GPU and Firefox or Safari with an adapter (a GPU runner); the harness records the environment.',
-      'Decide the retry-flood and device-lost-while-disabled behaviour.',
+      'Decide the retry-flood behaviour.',
     ],
   },
   {
