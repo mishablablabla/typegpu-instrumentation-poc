@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-// Checks that every relative link in the repository's Markdown (README.md and docs/*.md) resolves to a file, and
+// Checks that every relative link in README.md resolves to a file, and
 // that `#anchor` fragments match a heading of the target (GitHub's slug rules, approximated). External links are not fetched.
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const files = ['README.md', ...readdirSync(join(root, 'docs')).filter((f) => f.endsWith('.md')).map((f) => `docs/${f}`)];
+const files = ['README.md'];
 
 const slug = (heading) =>
   heading

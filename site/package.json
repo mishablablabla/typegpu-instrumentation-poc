@@ -22,8 +22,7 @@
     "@angular/router": "22.2.3",
     "@fontsource-variable/jetbrains-mono": "5.3.0",
     "rxjs": "7.8.2",
-    "tslib": "2.8.1",
-    "typegpu": "file:../package-test/tarballs/patched/typegpu-0.12.8.tgz"
+    "tslib": "2.8.1"
   },
   "devDependencies": {
     "@angular/build": "22.2.4",
@@ -31,12 +30,6 @@
     "@angular/compiler-cli": "22.2.3",
     "prettier": "3.9.10",
     "shiki": "4.5.0",
-    "typescript": "6.0.3",
-    "@webgpu/types": "file:../package-test/tarballs/webgpu-types-0.1.71.tgz"
-  },
-  "overrides": {
-    "tinyest": "file:../package-test/tarballs/tinyest-0.3.4.tgz",
-    "typed-binary": "file:../package-test/tarballs/typed-binary-4.3.4.tgz",
-    "tsover-runtime": "file:../package-test/tarballs/tsover-runtime-0.0.7.tgz"
+    "typescript": "6.0.3"
   }
 }

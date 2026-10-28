@@ -3,7 +3,7 @@
 // 127.0.0.1, the browser is opened on it with the OS `open` command, and the page posts its result back.
 // Use it where run.mjs (Chrome over CDP) cannot: Safari, Firefox, another Chromium channel.
 //
-//   node real-gpu/browser-run.mjs --browser Safari --call 'window.runViability()' --out real-gpu/results/viability-safari.json
+//   node real-gpu/browser-run.mjs --browser Safari --call 'window.runViability()' --out viability-safari.json
 //   node real-gpu/browser-run.mjs --browser Safari --call 'window.runBench({...})' --page real-gpu-bench --dist <dist> --skip-build
 //
 // Options: --browser <macOS app name>  --exe <path to a browser binary> (instead of `open -a`; used on Windows/Linux and in CI)

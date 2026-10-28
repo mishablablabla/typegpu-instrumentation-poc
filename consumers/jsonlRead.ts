@@ -1,6 +1,6 @@
 /**
  * Reader for the JSON Lines produced by `jsonlExport.ts`, with the compatibility policy of
- * docs/EVENT-CONTRACT.md: a file or event whose version this reader does not know is rejected, not guessed at;
+ * the event contract in README.md: a file or event whose version this reader does not know is rejected, not guessed at;
  * unknown record kinds and unknown fields are kept untouched.
  */
 import { JSONL_FORMAT, JSONL_VERSION } from './jsonlExport.ts';

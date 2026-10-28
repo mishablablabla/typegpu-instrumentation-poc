@@ -23,7 +23,7 @@ export function fromStore(dirPrefix, name) {
   return p;
 }
 
-import { cpSync, mkdirSync } from 'node:fs';
+import { cpSync, mkdirSync, readFileSync, readdirSync as readDir, writeFileSync } from 'node:fs';
 export const tsc = () => join(fromStore('tsover@', 'tsover'), 'bin/tsc');
 export const tsLib = () => join(fromStore('tsover@', 'tsover'), 'lib/typescript.js');
 
@@ -33,6 +33,14 @@ export function syncConsumer(tree) {
   mkdirSync(dst, { recursive: true });
   for (const f of ['src', 'apps', 'tsconfig.base.json', 'tsconfig.bundler.json', 'tsconfig.node10.json', 'tsconfig.node16.json', 'tsconfig.nodenext.json']) {
     cpSync(join(here, 'consumer', f), join(dst, f), { recursive: true });
+  }
+  // The ready-made consumers (consumers/) are written against the patched work tree; outside it they import the
+  // same types from the package entry point. The documentation snippets import them from `src/consumers/`.
+  const consumersDst = join(dst, 'src/consumers');
+  mkdirSync(consumersDst, { recursive: true });
+  for (const f of readDir(join(root, 'consumers')).filter((name) => name.endsWith('.ts'))) {
+    const source = readFileSync(join(root, 'consumers', f), 'utf8');
+    writeFileSync(join(consumersDst, f), source.replaceAll("'../../../src/core/instrumentation/types.ts'", "'typegpu/unstable-instrumentation'"));
   }
   return dst;
 }

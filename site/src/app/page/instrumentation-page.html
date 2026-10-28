@@ -1,347 +1,160 @@
 <article class="prose page">
-  <!-- A. hero -->
   <section id="overview" aria-labelledby="h-overview">
-    <p class="eyebrow">Tooling <app-status status="prototype" label="Experimental · unstable API" /></p>
-    <h1 id="h-overview">See what your TypeGPU application is doing.</h1>
+    <p class="eyebrow">Tooling · Experimental</p>
+    <h1 id="h-overview">Instrumentation</h1>
     <p class="lede">
-      The instrumentation layer turns a running TypeGPU program into a stream of plain-data events (resources, bind groups,
-      pipelines, shader diagnostics, device errors, teardown) and a snapshot of what is alive. It has no UI and no framework
-      dependency: it is a reusable foundation that consoles, reports, test helpers and developer tools can be built on.
+      Instrumentation reports what TypeGPU does on your behalf: the buffers and textures it creates, bind groups, pipeline
+      compilation with the generated WGSL, shader compiler messages, device errors and teardown. You get them as plain-data events
+      and as a snapshot of what is alive.
     </p>
     <p>
-      It observes what goes through TypeGPU's own paths. It does <strong>not</strong> observe everything that happens inside
-      WebGPU, GPU execution time, or raw WebGPU calls you make yourself.
+      It is opt-in per root and has no UI. Print the events, assert on them in a test, or write them to a file.
+      It does not report GPU execution time or raw WebGPU calls.
     </p>
-
-    <dl class="facts">
-      @for (f of statusFacts; track f.label) {
-        <div class="fact">
-          <dt>{{ f.label }}</dt>
-          <dd>
-            <strong>{{ f.value }}</strong>
-            <span>{{ f.note }}</span>
-            <a [href]="repoFile(f.source)" target="_blank" rel="noopener" class="src">{{ f.source }}</a>
-          </dd>
-        </div>
-      }
-    </dl>
-
-    <app-aside kind="caution" title="Proof of concept, not an official TypeGPU feature">
+    <app-aside kind="caution" title="Experimental">
       <p>
-        This works only with a TypeGPU build that contains the hook patch in this repository; it is not on npm and not upstream.
-        Everything is <code>unstable_</code>. The evidence below says where it holds and where it does not.
+        This needs a TypeGPU build that contains the hook patch from this repository; it is not in the published package.
+        The API is <code>unstable_</code> and can change.
       </p>
     </app-aside>
   </section>
 
-  <!-- status -->
-  <section id="status" aria-labelledby="h-status">
-    <h2 id="h-status">Status and verdict<a class="anchor" href="#status" (click)="jump('status', $event)" aria-label="Link to this section">#</a></h2>
+  <section id="setup" aria-labelledby="h-setup">
+    <h2 id="h-setup">Setup<a class="anchor" href="#setup" (click)="jump('setup', $event)" aria-label="Link to this section">#</a></h2>
+    <p>Build the patched package from a clone of the repository:</p>
+    <app-code [html]="code.setup.html" title="shell" [copyText]="code.setup.plain" />
+    <p>Then install the tarball in your app:</p>
+    <app-code [html]="code.install.html" title="shell" [copyText]="code.install.plain" />
     <p>
-      One verdict per scope, not one label for everything. The full acceptance matrix, the defects found and the open items are in the
-      <a [href]="repoFile('docs/PRODUCTION-READINESS.md')" target="_blank" rel="noopener">readiness report</a>.
-    </p>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="Verdict per scope">
-      <table>
-        <thead><tr><th scope="col">Scope</th><th scope="col">Verdict</th><th scope="col">Why</th></tr></thead>
-        <tbody>
-          @for (v of verdicts; track v.scope) {
-            <tr>
-              <th scope="row">{{ v.scope }}</th>
-              <td><span class="verdict" [attr.data-tone]="v.tone">{{ v.verdict }}</span></td>
-              <td>{{ v.why }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-    <p class="legend">
-      Labels used on this page:
-      <app-status status="verified" /> exists, is tested, and the claim is backed by an artifact in the repository ·
-      <app-status status="prototype" /> exists, but narrower than the name suggests ·
-      <app-status status="proposed" /> an idea; no code ·
-      <app-status status="unverified" /> stated by someone else, or not checked by us.
+      The instrumentation lives in its own entry point, <code>typegpu/unstable-instrumentation</code>. An application that does not import it
+      contains none of its code.
     </p>
   </section>
 
-  <!-- B. the debugging problem -->
-  <section id="problem" aria-labelledby="h-problem">
-    <h2 id="h-problem">The debugging problem<a class="anchor" href="#problem" (click)="jump('problem', $event)" aria-label="Link to this section">#</a></h2>
-    <p>
-      A TypeGPU program can fail in two different layers. A <strong>TypeGPU failure</strong> happens while TypeGPU builds the shader:
-      a slot without a value, a missing bind group. The browser never sees it. A <strong>WebGPU failure</strong> happens after: the
-      generated WGSL is rejected, a pipeline is invalid, the device is lost. The browser reports it as text about code you did not
-      write. TypeGPU itself installs no error scopes, no <code>uncapturederror</code> listener and no device-loss handler, so that
-      context is left to you.
-    </p>
-    <p>
-      Chrome is already good at the second case, so the point is not "the browser says nothing". The two panes below are real captures of the
-      <em>same</em> program, <code>examples/broken-shader.ts</code>, on an Apple M3 Pro in Chrome 156.
-    </p>
-    <div class="ba">
-      <section aria-labelledby="h-before">
-        <h3 id="h-before" class="ba-h">Before: what the browser showed <span class="src">layer off</span></h3>
-        <ol class="capture" aria-label="Control run output">
-          @for (line of broken.control.lines; track $index) {
-            <li><span class="tag">{{ line.source === 'browser-log' ? 'browser ' + line.level : 'page console' }}</span><pre>{{ line.text }}</pre></li>
-          }
-        </ol>
-        <p class="cap">Captured in <code>real-gpu/results/control/broken-shader.json</code>. Good compiler detail, but nothing says <em>which TypeGPU pipeline</em>, <em>how it was created</em> or <em>what else was going on</em>.</p>
-      </section>
-      <section aria-labelledby="h-after">
-        <h3 id="h-after" class="ba-h">After: one event for the same failure <span class="src">layer on</span></h3>
-        <app-code [html]="failedCreate.html" [title]="failedCreate.type + ' · seq ' + failedCreate.seq" />
-        <p class="cap">Pipeline label, trigger, phase and the generated WGSL in one record; the compiler position arrives next as <code>shader-diagnostics</code> (see the explorer).</p>
-      </section>
-    </div>
-    <app-aside kind="note" title="Be careful with 'it compiled'">
-      <p>
-        <code>pipeline-created</code> with <code>validation: 'deferred'</code> means the creation call returned. It is
-        <strong>not</strong> proof that the pipeline is valid: for a synchronous creation WebGPU reports validity later, as
-        <code>shader-diagnostics</code> or <code>device-error</code>.
-      </p>
-    </app-aside>
-  </section>
-
-  <!-- C. scenario explorer -->
-  <section id="scenarios" aria-labelledby="h-scenarios">
-    <h2 id="h-scenarios">Scenario explorer<a class="anchor" href="#scenarios" (click)="jump('scenarios', $event)" aria-label="Link to this section">#</a></h2>
-    <p>
-      Three reproducible programs, each answering one question. Every pane is <strong>recorded data</strong> from the repository, not a
-      run that happens in your browser while you read: the layer-on trace is
-      <code>real-gpu/results/scenarios/*.jsonl</code> and the layer-off capture is <code>real-gpu/results/control/*.json</code>. Select an
-      event to see its exact JSON. A live run of two scenarios is further down.
-    </p>
-    <app-scenario-explorer />
-    <p class="small">
-      Reproduce: <code>node real-gpu/run.mjs --example examples/per-frame-churn.ts --jsonl out.jsonl</code> (needs Chrome and a GPU; exits with
-      status 2 when the adapter is software and says so).
-    </p>
-  </section>
-
-  <!-- live: filled in by the live feed component when present -->
-  <section id="live" aria-labelledby="h-live">
-    <h2 id="h-live">Live event feed<a class="anchor" href="#live" (click)="jump('live', $event)" aria-label="Link to this section">#</a></h2>
-    <p>
-      This section is a second consumer of the same contract, written as an Angular component. It runs small programs in
-      <em>your</em> browser and shows the events as they are emitted.
-    </p>
-    <app-live-feed />
-  </section>
-
-  <!-- D. architecture -->
-  <section id="architecture" aria-labelledby="h-arch">
-    <h2 id="h-arch">Architecture<a class="anchor" href="#architecture" (click)="jump('architecture', $event)" aria-label="Link to this section">#</a></h2>
-    <p>
-      Hooks inside TypeGPU's core report what happened; an optional hub keeps a bounded history and a snapshot; everything above the
-      <strong>event contract</strong> is an independent consumer. The contract is the integration boundary, so the core carries no UI, DOM,
-      framework, extension or MCP code.
-    </p>
-    <app-architecture-diagram />
-    <h3>What must stay framework-independent</h3>
-    <ul>
-      <li>The hook sites and the sink contract (types only in core), the hub, the history, the snapshot and the event schema.</li>
-      <li>Anything that turns events into text, files or pixels belongs to an adapter or consumer, outside the package. The "named repeatedly" notes in the churn scenario are a consumer's interpretation, not the core's.</li>
-    </ul>
-    <p>
-      Details: <a [href]="repoFile('docs/ARCHITECTURE-DECISION.md')" target="_blank" rel="noopener">architecture and lifecycle</a>, including the alternatives that were evaluated
-      (device-scoped registry, lazy <code>import()</code>, a separate entry point, a device-level tap, a global hook).
-    </p>
-  </section>
-
-  <!-- E. quick start -->
   <section id="quick-start" aria-labelledby="h-qs">
     <h2 id="h-qs">Quick start<a class="anchor" href="#quick-start" (click)="jump('quick-start', $event)" aria-label="Link to this section">#</a></h2>
-    <ol class="steps">
-      <li>
-        <p><strong>Get a TypeGPU that has the hooks.</strong> The patch is in this repository, so you build the patched tree locally:</p>
-        <app-code [html]="setupHtml" title="shell" [copyText]="setupPlain" />
-      </li>
-      <li>
-        <p><strong>Opt in, subscribe, read, clean up.</strong> Import the explicit entry point and pass the provider to <code>tgpu.init</code>:</p>
-        <app-code [html]="quickstartHtml" title="main.ts" [copyText]="quickstartPlain" />
-      </li>
-    </ol>
-    <p class="small">
-      This exact code is type-checked against the <em>packed</em> package's shipped declarations under three module resolutions
-      (<code>package-test/consumer/src/quickstart.ts</code>; the page extracts it from that file). <code>tgpu.initFromDevice</code> accepts the same
-      option. An invalid option throws from <code>createInstrumentation()</code>, before a device is requested.
+    <p>
+      Pass <code>createInstrumentation()</code> as <code>unstable_instrumentation</code> to <code>tgpu.init</code> or
+      <code>tgpu.initFromDevice</code>, then read it from the root.
+    </p>
+    <app-code [html]="code.quickstart.html" title="main.ts" [copyText]="code.quickstart.plain" />
+    <p>
+      <code>root['~unstable'].instrumentation</code> is <code>undefined</code> when the option was not passed. A TypeGPU build without the
+      patch ignores the option, so the check also catches a wrong build.
     </p>
   </section>
 
-  <!-- F. event contract -->
+  <section id="how-it-works" aria-labelledby="h-how">
+    <h2 id="h-how">How it works<a class="anchor" href="#how-it-works" (click)="jump('how-it-works', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      Hooks inside TypeGPU's core report what happened. A hub keeps a bounded history and a snapshot. Everything above the event contract is a
+      consumer, so the core has no UI, DOM or framework code.
+    </p>
+    <app-architecture-diagram [call]="code.archCall" [hook]="code.archHook" [event]="code.archEvent" [line]="code.archLine" />
+  </section>
+
+  <section id="options" aria-labelledby="h-options">
+    <h2 id="h-options">Options<a class="anchor" href="#options" (click)="jump('options', $event)" aria-label="Link to this section">#</a></h2>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Options">
+      <table>
+        <thead><tr><th scope="col">Option</th><th scope="col">Default</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr data-option="historySize"><th scope="row"><code>historySize</code></th><td><code>256</code></td><td>Events kept for subscribers that attach late. <code>0</code> keeps none.</td></tr>
+          <tr data-option="historyMaxBytes"><th scope="row"><code>historyMaxBytes</code></th><td><code>4 MiB</code></td><td>Cap on the <em>estimated</em> size of the kept history, in bytes. The newest event is always kept.</td></tr>
+          <tr data-option="captureSource"><th scope="row"><code>captureSource</code></th><td><code>true</code></td><td>Keep the generated WGSL in pipeline events and snapshots. <code>false</code> keeps only its length (<code>wgsl: null</code>).</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>An invalid value throws from <code>createInstrumentation()</code>, before a device is requested.</p>
+  </section>
+
   <section id="events" aria-labelledby="h-events">
-    <h2 id="h-events">Event contract<a class="anchor" href="#events" (click)="jump('events', $event)" aria-label="Link to this section">#</a></h2>
+    <h2 id="h-events">Reading events<a class="anchor" href="#events" (click)="jump('events', $event)" aria-label="Link to this section">#</a></h2>
     <p>
-      Nine event types, schema version 2. These are verbatim events from the recorded runs above (the page extracts them from the JSONL files):
+      Every event has <code>v</code> (schema version, currently <code>2</code>), <code>seq</code> (1, 2, 3, … per root) and <code>t</code>
+      (<code>performance.now()</code> at emission). Listeners run synchronously, in <code>seq</code> order.
     </p>
-    <app-event-explorer />
-    <h3>What an event does and does not prove</h3>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="What events prove">
+    <app-code [html]="code.events.html" title="events.ts" [copyText]="code.events.plain" />
+
+    <h3>Event types</h3>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Event types">
       <table>
-        <thead><tr><th scope="col">Event</th><th scope="col">Means</th><th scope="col">Does not prove</th></tr></thead>
+        <thead><tr><th scope="col"><code>type</code></th><th scope="col">Emitted when</th><th scope="col">Useful fields</th></tr></thead>
         <tbody>
-          @for (m of eventMeanings; track m.type) {
-            <tr><th scope="row"><code>{{ m.type }}</code></th><td>{{ m.means }}</td><td>{{ m.notProof }}</td></tr>
-          }
+          <tr data-event="resource-materialized"><th scope="row"><code>resource-materialized</code></th><td>A buffer or texture gets its GPU object.</td><td><code>resource</code>, <code>id</code>, <code>label</code>, <code>sizeBytes</code> (buffer), <code>format</code> and <code>size</code> (texture)</td></tr>
+          <tr data-event="resource-destroyed"><th scope="row"><code>resource-destroyed</code></th><td>A tracked buffer or texture is destroyed.</td><td><code>resource</code>, <code>id</code>, <code>label</code></td></tr>
+          <tr data-event="bind-group-created"><th scope="row"><code>bind-group-created</code></th><td>A bind group is created, or wraps one you created.</td><td><code>origin</code>, <code>entries[].resourceId</code> (<code>null</code>: not tracked)</td></tr>
+          <tr data-event="pipeline-created"><th scope="row"><code>pipeline-created</code></th><td>TypeGPU generated WGSL and the pipeline-creation call returned.</td><td><code>pipeline</code>, <code>trigger</code>, <code>validation</code>, <code>resolveMs</code>, <code>createMs</code>, <code>wgsl</code></td></tr>
+          <tr data-event="pipeline-creation-failed"><th scope="row"><code>pipeline-creation-failed</code></th><td>Creating a pipeline failed, so none exists.</td><td><code>phase</code> (<code>resolve</code>: TypeGPU, before WebGPU; <code>create</code>: WebGPU rejected it), <code>errorType</code>, <code>message</code>, <code>wgsl</code></td></tr>
+          <tr data-event="shader-diagnostics"><th scope="row"><code>shader-diagnostics</code></th><td>The compiler reported on a pipeline's shader.</td><td><code>pipelineId</code>, <code>messages[]</code> with <code>lineNum</code> and <code>linePos</code> in the generated WGSL</td></tr>
+          <tr data-event="device-error"><th scope="row"><code>device-error</code></th><td>WebGPU reported an uncaptured error.</td><td><code>errorType</code>, <code>message</code></td></tr>
+          <tr data-event="device-lost"><th scope="row"><code>device-lost</code></th><td>The device was lost or destroyed.</td><td><code>reason</code>, <code>message</code></td></tr>
+          <tr data-event="root-destroyed"><th scope="row"><code>root-destroyed</code></th><td><code>root.destroy()</code> was called.</td><td><code>ownDevice</code>, <code>liveBuffers</code>, <code>liveTextures</code></td></tr>
         </tbody>
       </table>
     </div>
-    <h3>Ordering, identifiers, errors, limits</h3>
-    <ul>
-      <li><strong>Order.</strong> <code>seq</code> is contiguous per root, starting at 1. Every listener receives events in <code>seq</code> order, even when a listener calls back into TypeGPU (nested events are queued). Order <em>between asynchronous events</em> is not promised beyond: <code>shader-diagnostics</code> follows its creation event; a <code>device-error</code> may come before or after it.</li>
-      <li><strong>Correlation.</strong> A pipeline's <code>id</code> names its core, so all <code>with()</code> handles share it and a retry after a failure keeps it. <code>shader-diagnostics.pipelineId</code> points to it. A <code>device-error</code> carries no pipeline id: browsers give text, not an object.</li>
-      <li><strong>Errors.</strong> Failures are events with <code>errorType</code> and <code>message</code>; the application still receives the identical error. A subscriber that throws, even an unprintable value, never reaches the app or other subscribers.</li>
-      <li><strong>History.</strong> Bounded by count (default 256) and by an <em>estimate</em> of bytes (default 4 MiB), newest always kept; the last 16 creation failures and the device-loss event are pinned in <code>snapshot.retainedFailures</code>.</li>
-    </ul>
-    <p>Full definition, the guarantee-to-test table and the deviations found by audit: <a [href]="repoFile('docs/EVENT-CONTRACT.md')" target="_blank" rel="noopener">EVENT-CONTRACT.md</a>.</p>
-  </section>
-
-  <!-- G. core vs UI -->
-  <section id="consumers" aria-labelledby="h-consumers">
-    <h2 id="h-consumers">Core versus UI<a class="anchor" href="#consumers" (click)="jump('consumers', $event)" aria-label="Link to this section">#</a></h2>
-    <p>
-      The core has no UI on purpose. Several different consumers can branch from the same contract, and the status of each is stated.
-      <strong>Only the first three are implemented and verified; the two Angular rows are prototypes with the limits shown; the rest are proposals, and no code
-      for them exists.</strong>
-    </p>
-    <ul class="paths" aria-label="Integration paths">
-      @for (i of integrations; track i.name) {
-        <li class="path">
-          <div class="path-head">
-            <strong>{{ i.name }}</strong>
-            <app-status [status]="i.status" />
-          </div>
-          <dl>
-            <div><dt>Consumes</dt><dd>{{ i.consumes }}</dd></div>
-            <div><dt>Needs</dt><dd>{{ i.needs }}</dd></div>
-            <div><dt>Limits</dt><dd>{{ i.limits }}</dd></div>
-          </dl>
-        </li>
-      }
-    </ul>
-  </section>
-
-  <!-- gap -->
-  <section id="gap" aria-labelledby="h-gap">
-    <h2 id="h-gap">Is there a gap?<a class="anchor" href="#gap" (click)="jump('gap', $event)" aria-label="Link to this section">#</a></h2>
-    <p>
-      Short answer, from primary sources and a control experiment (<a [href]="repoFile('docs/ECOSYSTEM-RESEARCH.md')" target="_blank" rel="noopener">full research</a>): a
-      <strong>narrow</strong> one. Nothing in the three scenarios is unique at the level of information. What is unique is who can know it from where:
-      TypeGPU's own facts (when a pipeline was created and how, failures that never reach WebGPU, per-pipeline counts) exist only inside TypeGPU.
-    </p>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="What the layer adds per scenario">
-      <table>
-        <thead><tr><th scope="col">Scenario</th><th scope="col">What the layer adds</th><th scope="col">Honest classification</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Broken shader</th><td>Attribution to the TypeGPU pipeline and trigger; structured compiler position; retention</td><td>{{ info['broken-shader'].classificationLabel }}</td></tr>
-          <tr><th scope="row">Resolution error</th><td>An event for something the browser never sees; survives a swallowed exception</td><td>{{ info['resolve-error'].classificationLabel }}</td></tr>
-          <tr><th scope="row">Per-frame churn</th><td>Grouping by TypeGPU label, CPU resolve time, teardown leftovers</td><td>{{ info['per-frame-churn'].classificationLabel }}</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <h3>Against existing tools</h3>
-    <ul>
-      <li><strong>Runtime Inspector MCP</strong> is not a duplicate. It is an offline, one-shot validator: it runs your module in its own headless Chromium with frame loops, submits and pipeline initialisation stubbed, so it does not observe a live app. Complement or unrelated on the evidence read; whether it could consume this stream is unproven.</li>
-      <li><strong>WebGPU Inspector</strong> is the real competitor for raw WebGPU (frame capture, object list, memory, GPU time). The layer must not claim any of that; GPU labels are the join key.</li>
-      <li><strong>Upstream</strong> has open work on source maps and a device-error item (issue 2935) that may make <code>shader-diagnostics</code> and <code>device-error</code> partly redundant. No demand signal was found in upstream issues or discussions.</li>
-    </ul>
-    <app-aside kind="tip" title="The strongest use case today">
+    <app-aside kind="note" title="'Created' is not 'valid'">
       <p>
-        <strong>Assertions as data</strong>: "no <code>pipeline-creation-failed</code>, no <code>device-error</code>, nothing alive at teardown" in a test or CI run, without hand-wiring error
-        scopes or reaching TypeGPU's internal shader modules. That is a reasoned claim, not a measured demand.
+        With <code>validation: 'deferred'</code> (<code>trigger</code> <code>lazy</code> or <code>initSync</code>), <code>pipeline-created</code>
+        only says that the call returned. An invalid shader still produces it; the problem arrives afterwards as
+        <code>shader-diagnostics</code> or <code>device-error</code>. Only <code>initAsync</code> reports <code>validation: 'passed'</code>.
       </p>
     </app-aside>
-  </section>
 
-  <!-- H. performance -->
-  <section id="performance" aria-labelledby="h-perf">
-    <h2 id="h-perf">Performance and compatibility<a class="anchor" href="#performance" (click)="jump('performance', $event)" aria-label="Link to this section">#</a></h2>
+    <h3>Snapshot</h3>
     <p>
-      CPU time of the JavaScript calls only; <strong>no GPU time is measured or claimed</strong>. One machine (Apple M3 Pro, macOS 26.3, Chrome 156 headless),
-      fresh browser process per sample, paired bootstrap intervals, rebuilt A/A copies as noise control.
-      <a [href]="repoFile('docs/PERFORMANCE.md')" target="_blank" rel="noopener">Method, raw-data names and corrections to earlier reports</a>.
+      <code>history()</code> returns the most recent events, oldest first. <code>getSnapshot()</code> describes what is alive right now and
+      can be cloned with <code>structuredClone</code>.
     </p>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="Measurements">
-      <table class="perf">
-        <thead><tr><th scope="col">What</th><th scope="col">Value</th><th scope="col">How to read it</th></tr></thead>
-        <tbody>
-          @for (r of perfRows; track r.what) {
-            <tr>
-              <th scope="row">{{ r.what }}</th>
-              <td><span class="kind" [attr.data-kind]="r.kind">{{ r.value }}</span><span class="kind-label">{{ r.kind === 'derived' ? 'derived, not measured' : r.kind === 'missed' ? 'budget missed' : 'measured' }}</span></td>
-              <td>{{ r.detail }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-    <app-aside kind="caution" title="Opting in is not the only cost">
-      <p>
-        The hub is bundled only when you import the entry. The <strong>hooks stay in the core for everyone</strong> and cost 0.7 to 0.83 KB gzip; the
-        provisional budget was 0.5 KB and was missed. "Zero hub bytes" is not "zero cost".
-      </p>
-    </app-aside>
-    <h3>Where it was run</h3>
-    <div class="table-wrap" tabindex="0" role="region" aria-label="Environment matrix">
-      <table>
-        <thead><tr><th scope="col">Environment</th><th scope="col">Result</th><th scope="col">What it is</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Chrome 156, Apple M3 Pro, Metal, hardware adapter</th><td>133 / 133 (headless, latest); 130 / 130 (headed, earlier suite)</td><td>The reference environment; the browser's GPU process is checked as a second source</td></tr>
-          <tr><th scope="row">Chrome 156 with SwiftShader</th><td>130 / 130</td><td>Software adapter: not real-GPU validation</td></tr>
-          <tr><th scope="row">Safari 26.3, same Mac</th><td>128 / 128, one scenario skipped</td><td>No <code>gc()</code>; classified page-only; no <code>device-error</code> for an invalid render pipeline</td></tr>
-          <tr><th scope="row">CI runners, no GPU: Chrome on Linux, Windows (WARP) and macOS, Edge on Windows</th><td>133 / 133 and 20 / 20 in each</td><td>Software or virtualised adapters; the same built page everywhere</td></tr>
-          <tr><th scope="row">Firefox on Linux (software)</th><td>131 / 131, one scenario skipped</td><td>No <code>gc()</code>; classified page-only</td></tr>
-          <tr><th scope="row">Firefox on Windows and macOS, Safari on a runner</th><td>Not run</td><td>No WebGPU adapter on those runners (not a pass)</td></tr>
-          <tr><th scope="row">Physical GPUs outside the one Mac, discrete GPUs, Node, React Native</th><td>Not tested</td><td>The harness records the environment, so the run is cheap on a new machine</td></tr>
-        </tbody>
-      </table>
-    </div>
+    <app-code [html]="code.snapshot.html" title="snapshot.ts" [copyText]="code.snapshot.plain" />
   </section>
 
-  <!-- I. limitations -->
-  <section id="limits" aria-labelledby="h-limits">
-    <h2 id="h-limits">Limitations and known blind spots<a class="anchor" href="#limits" (click)="jump('limits', $event)" aria-label="Link to this section">#</a></h2>
-    <app-aside kind="caution" title="Known limitations">
-      <ul class="tight">
-        @for (l of limitations; track l.title) {
-          <li><strong>{{ l.title }}.</strong> {{ l.body }}</li>
-        }
-      </ul>
-    </app-aside>
-    <p>The audit that found the open items is summarised in the contract's <a [href]="repoFile('docs/EVENT-CONTRACT.md')" target="_blank" rel="noopener">known deviations</a>; fixed items there have regression tests.</p>
-  </section>
-
-  <!-- J. roadmap -->
-  <section id="roadmap" aria-labelledby="h-roadmap">
-    <h2 id="h-roadmap">Roadmap<a class="anchor" href="#roadmap" (click)="jump('roadmap', $event)" aria-label="Link to this section">#</a></h2>
-    <p>Ordered by what would change the decision, not by effort. No dates: they depend on the first step.</p>
-    <ol class="steps road">
-      @for (r of roadmap; track r.phase) {
-        <li>
-          <p><span class="phase">{{ r.phase }}</span> <strong>{{ r.title }}</strong></p>
-          <ul>
-            @for (i of r.items; track i) { <li>{{ i }}</li> }
-          </ul>
-        </li>
-      }
-    </ol>
-  </section>
-
-  <!-- K. references -->
-  <section id="references" aria-labelledby="h-refs">
-    <h2 id="h-refs">References and implementation status<a class="anchor" href="#references" (click)="jump('references', $event)" aria-label="Link to this section">#</a></h2>
-    <ul class="cards">
-      @for (r of references; track r.path) {
-        <li><a [href]="repoFile(r.path)" target="_blank" rel="noopener"><strong>{{ r.label }}</strong><span>{{ r.what }}</span></a></li>
-      }
-    </ul>
-    <h3>Implementation status in one place</h3>
+  <section id="output" aria-labelledby="h-output">
+    <h2 id="h-output">Console and JSON Lines<a class="anchor" href="#output" (click)="jump('output', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      <a [href]="repoDir('consumers')" target="_blank" rel="noopener"><code>consumers/</code></a> has small, dependency-free helpers that turn the stream into text. They only
+      build strings; where the text goes is up to you. They are plain files, not part of the package: copy them into your project and change
+      their type import from TypeGPU's source tree to <code>typegpu/unstable-instrumentation</code>.
+    </p>
+    <app-code [html]="code.consumers.html" title="consumers.ts" [copyText]="code.consumers.plain" />
     <ul>
-      <li><app-status status="verified" /> opt-in entry point, event contract v2, bounded history and snapshot, failure isolation, console / JSONL / text consumers, the real-GPU harness, packaging in four bundlers.</li>
-      <li><app-status status="prototype" /> this page: the recorded trace explorer (recorded data) and the live feed (small scenarios).</li>
-      <li><app-status status="proposed" /> React, React Native, a browser extension, an MCP server, a global-hook activation, a test helper.</li>
-      <li><app-status status="unverified" /> everything said about other tools is from their documentation; we did not run them. See the research for the list.</li>
+      <li><code>attachConsoleReporter</code>: one line per event, replaying history first. <code>formatEvent</code> and <code>formatSnapshot</code> in <code>textReport.ts</code> give you the same lines without a subscription.</li>
+      <li><code>createJsonlExport</code>: one JSON object per line, each with a <code>record</code> field: <code>header</code>, <code>event</code> (exactly what was emitted) or <code>snapshot</code>.</li>
+      <li><code>parseJsonl</code>: reads that text back and rejects a file or event whose schema version it does not know.</li>
     </ul>
+  </section>
+
+  <section id="cleanup" aria-labelledby="h-cleanup">
+    <h2 id="h-cleanup">Cleanup<a class="anchor" href="#cleanup" (click)="jump('cleanup', $event)" aria-label="Link to this section">#</a></h2>
+    <app-code [html]="code.cleanup.html" title="cleanup.ts" [copyText]="code.cleanup.plain" />
+    <p>
+      <code>root-destroyed</code> counts the buffers and textures that were still alive at that moment (created, not destroyed, not yet
+      garbage-collected). A non-zero count points at resources you never destroyed.
+    </p>
+    <p>
+      While <code>disable()</code>d, nothing is recorded, and a buffer created in that time stays untracked for good:
+      bind-group entries that use it show <code>resourceId: null</code>.
+    </p>
+  </section>
+
+  <section id="debugging" aria-labelledby="h-debug">
+    <h2 id="h-debug">Debugging a failed pipeline<a class="anchor" href="#debugging" (click)="jump('debugging', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      A compute pipeline calls a function that does not exist. Print the events with the console reporter, then read the WGSL TypeGPU generated
+      from the failure the snapshot keeps.
+    </p>
+    <app-code [html]="code.debug.html" title="debug.ts" [copyText]="code.debug.plain" />
+    <p>Output in Chrome:</p>
+    <app-code [html]="code.debugOutput.html" title="output" />
+    <app-code [html]="code.debugWgsl.html" title="failure.wgsl" />
+    <p>
+      Line 1 is the browser's validation error, delivered as a <code>device-error</code>. Line 2 names the TypeGPU pipeline (<code>broken</code>), how it was created
+      (<code>initAsync</code>) and that WebGPU rejected it (<code>create</code>). Line 3 is the compiler message, positioned in the
+      <em>generated</em> WGSL: <code>1:51</code> is the call to <code>definitelyUndeclared</code>.
+    </p>
+    <p class="small">
+      Reproduce it in Chrome with <code>node real-gpu/run.mjs --example examples/broken-shader.ts</code>. The repository's
+      <a [href]="repoDir('examples')" target="_blank" rel="noopener"><code>examples/</code></a> contain four more scenarios.
+    </p>
   </section>
 </article>

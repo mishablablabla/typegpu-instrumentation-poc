@@ -3,7 +3,7 @@
  * methods of a GPUDevice / its GPUQueue / the objects it creates, so it works with anything that uses
  * that device (TypeGPU via `tgpu.initFromDevice({ device })`, raw WebGPU, other libraries).
  *
- * Properties of the design (all checked by alt/page/*.ts, see alt/RESULTS.md):
+ * Properties of the design (all checked by alt/page/*.ts):
  *  - every wrapper calls the native method with the original `this` and returns the native result
  *    unchanged (object identity is preserved); async pipeline creation returns a derived promise;
  *  - everything is installed as an own, non-enumerable property and removed again by `restore()`;

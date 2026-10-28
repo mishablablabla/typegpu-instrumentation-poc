@@ -1,5 +1,5 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": { "module": "nodenext", "moduleResolution": "nodenext" },
-  "include": ["src/ok.ts", "src/quickstart.ts"]
+  "include": ["src/ok.ts", "src/quickstart.ts", "src/docs/*.ts"]
 }

@@ -1,26 +1,47 @@
 :host { display: block; margin-top: 1rem; }
-.arch { margin: 0; display: grid; gap: 0; }
-.lane { display: grid; gap: 0.4rem; }
-.lane-label { font-family: var(--tg-font-mono); font-size: 0.75rem; font-weight: 600; color: var(--tg-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
-.note { text-transform: none; font-weight: 400; letter-spacing: 0; margin-inline-start: 0.5rem; }
-.box { display: grid; gap: 0.25rem; padding: 0.65rem 0.85rem; border: 1px solid var(--tg-border); background: var(--tg-surface); color: var(--tg-text); font-size: var(--tg-text-sm); line-height: 1.45; min-width: 0; align-content: start; }
-.box strong { color: var(--tg-text-strong); }
-.box span { color: var(--tg-text); overflow-wrap: anywhere; }
-.box code, .boundary code { font-family: var(--tg-font-mono); font-size: 0.75rem; background: var(--tg-inline-code-bg); padding: 0.05rem 0.25rem; overflow-wrap: anywhere; }
-.existing { border-color: var(--tg-link); }
-.proto { border-style: dashed; border-color: var(--tg-caution-border); }
-.future { border-style: dotted; opacity: 0.92; }
-.hub { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); }
-.consumers { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
-.consumers .box { align-content: space-between; }
-.arrow { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0 0.35rem 0.9rem; color: var(--tg-text-muted); font-size: var(--tg-text-xs); }
-.arrow::before { content: ''; width: 1px; height: 1.4rem; background: var(--tg-text-muted); }
-.arrow::after { content: none; }
-.boundary { margin: 0.6rem 0; padding: 0.6rem 0.85rem; display: grid; gap: 0.25rem; font-size: var(--tg-text-sm); line-height: 1.45; min-width: 0; }
-.boundary strong { color: var(--tg-text-strong); }
-.optin { border: 2px dashed var(--tg-caution-border); background: var(--tg-caution-bg); }
-.contract { border: 2px solid var(--tg-link); background: var(--tg-accent-low); color: var(--tg-text-strong); }
-:root[data-theme='light'] .contract { background: color-mix(in srgb, var(--tg-accent-low) 45%, var(--tg-bg)); }
-.boundary span { overflow-wrap: anywhere; }
+.arch { margin: 0; padding: 1rem; border: 1px solid var(--tg-border); background: var(--tg-surface); }
+.bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.bar-title { font-size: var(--tg-text-sm); font-weight: 600; color: var(--tg-text-strong); }
+.bar-title code { font-family: var(--tg-font-mono); font-size: 0.78rem; background: var(--tg-inline-code-bg); padding: 0.05rem 0.3rem; }
+.play { font: inherit; font-size: var(--tg-text-xs); font-weight: 600; padding: 0.2rem 0.7rem; border: 1px solid var(--tg-border); background: var(--tg-bg); color: var(--tg-text-strong); cursor: pointer; }
+.play:hover { border-color: var(--tg-link); }
+
+.stages { list-style: none; margin: 0; padding: 0; }
+.stage { position: relative; padding: 0 0 1.1rem 2.75rem; margin: 0; --seg: var(--tg-border); }
+.stage:last-child { padding-bottom: 0; }
+/* the rail: a segment from this node to the next one, filled once the event has passed */
+.stage::before { content: ''; position: absolute; inset-inline-start: 0.9rem; top: 1.8rem; bottom: -0.1rem; width: 2px; background: linear-gradient(to bottom, var(--tg-link) var(--fill, 0%), var(--seg) var(--fill, 0%)); transition: --fill 0.6s; }
+.stage:last-child::before { display: none; }
+.stage.done::before { --fill: 100%; }
+@property --fill { syntax: '<percentage>'; inherits: false; initial-value: 0%; }
+
+.node { position: absolute; inset-inline-start: 0; top: 0.35rem; width: 1.85rem; height: 1.85rem; display: grid; place-items: center; border-radius: 99rem; font-size: 0.8125rem; font-weight: 600; background: var(--tg-bg); color: var(--tg-text-muted); box-shadow: inset 0 0 0 2px var(--tg-border); transition: background 0.3s, color 0.3s, box-shadow 0.3s; }
+.done .node { box-shadow: inset 0 0 0 2px var(--tg-link); color: var(--tg-link); }
+.on .node { background: var(--tg-link); color: var(--tg-on-accent); box-shadow: 0 0 0 4px color-mix(in srgb, var(--tg-link) 28%, transparent); }
+
+.card { border: 1px solid var(--tg-border); background: var(--tg-bg); transition: border-color 0.3s, box-shadow 0.3s; min-width: 0; }
+.on .card { border-color: var(--tg-link); box-shadow: 0 0 0 1px var(--tg-link); }
+.head { display: grid; gap: 0.1rem; width: 100%; padding: 0.6rem 0.85rem; border: 0; background: none; font: inherit; text-align: start; color: var(--tg-text); cursor: pointer; }
+.head strong { font-size: 1rem; color: var(--tg-text-strong); }
+.head span { font-size: var(--tg-text-sm); color: var(--tg-text-muted); }
+.head:hover strong { color: var(--tg-link); }
+
+.chips { list-style: none; margin: 0; padding: 0 0.85rem 0.7rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chips li { margin: 0; padding: 0.1rem 0.55rem; font-family: var(--tg-font-mono); font-size: 0.72rem; border: 1px solid var(--tg-border); background: var(--tg-surface); color: var(--tg-text); }
+.on .chips li { border-color: var(--tg-link); }
+
+.detail { padding: 0.15rem 0.85rem 0.85rem; animation: reveal 0.35s ease-out; }
+.detail[hidden] { display: none; }
+.detail p { margin: 0 0 0.6rem; font-size: var(--tg-text-sm); line-height: 1.55; }
+@keyframes reveal { from { opacity: 0; transform: translateY(-0.25rem); } to { opacity: 1; transform: none; } }
+
+.gate { margin: 0.7rem 0 -0.1rem; padding: 0.4rem 0.75rem; display: grid; gap: 0.15rem; font-size: var(--tg-text-xs); color: var(--tg-text-muted); border-block: 2px dashed var(--tg-caution-border); background: color-mix(in srgb, var(--tg-caution-border) 10%, transparent); }
+.gate code { font-family: var(--tg-font-mono); font-size: 0.75rem; color: var(--tg-text-strong); overflow-wrap: anywhere; }
+.contract-gate { border-color: var(--tg-link); background: color-mix(in srgb, var(--tg-link) 12%, transparent); }
+
 figcaption { margin-top: 0.9rem; font-size: var(--tg-text-xs); color: var(--tg-text-muted); line-height: 1.55; }
-figcaption code { font-family: var(--tg-font-mono); }
+
+@media (prefers-reduced-motion: reduce) {
+  .stage::before, .node, .card { transition: none; }
+  .detail { animation: none; }
+}

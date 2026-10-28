@@ -1,6 +1,6 @@
 /**
  * What the layer does NOT see, pinned as characterisation tests. Each one is a blind spot listed in
- * `snapshot.unavailable` / docs/EVENT-CONTRACT.md. If one starts failing because a hook was added, that is
+ * `snapshot.unavailable` and the event contract in README.md. If one starts failing because a hook was added, that is
  * good news: update the contract and the `unavailable` list in the same change.
  */
 import { describe, expect } from 'vitest';

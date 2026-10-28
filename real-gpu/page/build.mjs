@@ -1,5 +1,5 @@
 // Bundles the validation page with the same unplugin and Vite that TypeGPU's own Vitest setup uses.
-// Runs with cwd = packages/typegpu of the patched checkout (scripts/real-gpu.sh arranges that).
+// Runs with cwd = packages/typegpu of the patched checkout (real-gpu/run.mjs arranges that).
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';

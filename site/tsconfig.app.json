@@ -3,7 +3,7 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "types": ["@webgpu/types"]
+    "types": []
   },
   "include": [
     "src/**/*.ts"

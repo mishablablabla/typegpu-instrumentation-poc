@@ -24,7 +24,6 @@
   </div>
   <nav class="top-links" aria-label="Main navigation">
     <a [href]="repo" target="_blank" rel="noopener">Repository</a>
-    <a [href]="repoFile('docs/PRODUCTION-READINESS.md')" target="_blank" rel="noopener">Readiness report</a>
   </nav>
   <div class="theme" role="group" aria-label="Color theme">
     <button type="button" [attr.aria-pressed]="themeService.theme() === 'light'" aria-label="Switch to light theme" (click)="themeService.set('light')">
@@ -41,31 +40,20 @@
     <button type="button" class="scrim" aria-label="Close navigation menu" (click)="nav.menuOpen.set(false)"></button>
   }
   <nav id="sidebar" class="sidebar" [class.open]="nav.menuOpen()" aria-label="Page sections">
-    @for (g of groups; track g.label) {
-      <section>
-        <h2 class="group-label">{{ g.label }}</h2>
-        <ul>
-          @for (item of g.items; track item.id) {
-            <li>
-              <a
-                [href]="'#' + item.id"
-                [class.current]="nav.active() === item.id"
-                [attr.aria-current]="nav.active() === item.id ? 'location' : null"
-                (click)="go(item.id, $event)"
-              >
-                {{ item.label }}
-                @if (item.badge) { <span class="nav-badge">{{ item.badge }}</span> }
-              </a>
-            </li>
-          }
-        </ul>
-      </section>
-    }
     <section>
-      <h2 class="group-label">Documents in the repository</h2>
+      <h2 class="group-label">On this page</h2>
       <ul>
-        @for (d of docs; track d.path) {
-          <li><a [href]="repoFile(d.path)" target="_blank" rel="noopener">{{ d.label }}<span class="visually-hidden"> (opens GitHub)</span></a></li>
+        @for (item of sections; track item.id) {
+          <li>
+            <a
+              [href]="'#' + item.id"
+              [class.current]="nav.active() === item.id"
+              [attr.aria-current]="nav.active() === item.id ? 'location' : null"
+              (click)="go(item.id, $event)"
+            >
+              {{ item.label }}
+            </a>
+          </li>
         }
       </ul>
     </section>
@@ -74,10 +62,8 @@
   <main id="main" class="main">
     <router-outlet />
     <footer class="footer">
-      Proof-of-concept documentation for an unofficial, unstable instrumentation layer; not published by or endorsed by
-      Software Mansion. Visual language follows the official TypeGPU documentation. Source of every number on this page:
-      <a [href]="repoFile('docs/PRODUCTION-READINESS.md')" target="_blank" rel="noopener">the readiness report</a>
-      and the linked raw results.
+      Documentation of an unofficial, unstable instrumentation layer for TypeGPU; not published by Software Mansion.
+      Source and tests: <a [href]="repo" target="_blank" rel="noopener">the repository</a>.
     </footer>
   </main>
 </div>

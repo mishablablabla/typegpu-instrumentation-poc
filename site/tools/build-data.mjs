@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Generates src/app/data/generated.ts from the repository's own artifacts, so that nothing on the page is
-// retyped by hand: recorded scenario output (real-gpu/results/scenarios), scenario sources (examples/), the
-// type-checked quick start (package-test/consumer/src/quickstart.ts) and the contract's event list.
+// Generates src/app/data/generated.ts from the repository's own files, so that no code sample or output on the page is
+// retyped by hand: the snippets are the `#region`s of the files that package-test type-checks against the packed package,
+// the debugging output is the recorded run of examples/broken-shader.ts.
 // Syntax highlighting happens here (shiki, devDependency); the app ships no highlighter.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -14,7 +14,7 @@ const read = (p) => readFileSync(join(repo, p), 'utf8');
 
 const highlighter = await createHighlighter({
   themes: ['night-owl-light', 'night-owl'],
-  langs: ['ts', 'json', 'wgsl', 'bash', 'text'],
+  langs: ['ts', 'json', 'bash', 'text'],
 });
 const html = (code, lang) =>
   highlighter.codeToHtml(code, {
@@ -22,126 +22,86 @@ const html = (code, lang) =>
     themes: { light: 'night-owl-light', dark: 'night-owl' },
     defaultColor: false,
   });
+const block = (code, lang) => ({ plain: code, html: html(code, lang) });
 
-// ---- quick start: the region between the markers of the type-checked consumer file
-const qsSource = read('package-test/consumer/src/quickstart.ts');
-const region = qsSource.match(/\/\/ #region quickstart\n([\s\S]*?)\/\/ #endregion quickstart/);
-if (!region) throw new Error('quickstart region markers not found');
-const quickstart = region[1].trimEnd();
-
-// ---- scenarios
-const scenarioIds = ['broken-shader', 'resolve-error', 'per-frame-churn'];
-const scenarios = {};
-for (const id of scenarioIds) {
-  const base = `real-gpu/results/scenarios/${id}`;
-  const lines = read(`${base}.jsonl`).trim().split('\n').map((l) => JSON.parse(l));
-  const env = lines.find((l) => l.record === 'environment');
-  const events = lines.filter((l) => l.record === 'event').map((l) => l.event);
-  const snapshot = lines.find((l) => l.record === 'snapshot')?.snapshot ?? null;
-  const txt = read(`${base}.txt`);
-  // the printed trace = everything between the blank line after the header block and the JSONL footer
-  const body = txt.split('\n\n')[1] ?? '';
-  const trace = body.split('\n').filter((l) => !l.startsWith('JSONL written'));
-  const source = read(`examples/${id}.ts`).trimEnd();
-  const controlJson = JSON.parse(read(`real-gpu/results/control/${id}.json`));
-  scenarios[id] = {
-    id,
-    control: {
-      file: `real-gpu/results/control/${id}.json`,
-      browser: controlJson.environment.chrome,
-      lines: controlJson.browserConsole.map((e) => ({ source: e.source, level: e.level, text: e.text })),
-      threw: controlJson.error,
-    },
-    recordedAt: env.when,
-    environment: {
-      browser: env.chrome,
-      headless: env.headless,
-      classification: env.classification,
-      adapter: `${env.adapter.vendor} / ${env.adapter.architecture}`,
-      isFallbackAdapter: env.adapter.isFallbackAdapter,
-      gpuProcess: env.gpuProcess,
-    },
-    sourceHtml: html(source, 'ts'),
-    sourceFile: `examples/${id}.ts`,
-    traceFile: `${base}.txt`,
-    jsonlFile: `${base}.jsonl`,
-    trace,
-    events: events.map((e) => ({ seq: e.seq, type: e.type, json: JSON.stringify(e, null, 2) })),
-    eventTypes: events.map((e) => e.type),
-    eventCount: events.length,
-    snapshotCounters: snapshot?.counters ?? null,
-  };
+/** The text between `// #region <name>` and `// #endregion <name>` of a repository file. */
+function region(file, name) {
+  const match = read(file).match(
+    new RegExp(`// #region ${name}\\n([\\s\\S]*?)// #endregion ${name}`),
+  );
+  if (!match) throw new Error(`${file}: region "${name}" not found`);
+  return match[1].trimEnd();
 }
+const snippet = (file, name) => block(region(file, name), 'ts');
+const consumerSrc = 'package-test/consumer/src';
 
-// ---- representative events, verbatim from the recorded JSONL (found by predicate, never retyped)
-const allEvents = (id) =>
-  read(`real-gpu/results/scenarios/${id}.jsonl`)
-    .trim()
-    .split('\n')
-    .map((l) => JSON.parse(l))
-    .filter((l) => l.record === 'event')
-    .map((l) => l.event);
-const pick = (id, predicate, why) => {
-  const e = allEvents(id).find(predicate);
-  if (!e) throw new Error(`no event for: ${why}`);
-  return { event: e, fromFile: `real-gpu/results/scenarios/${id}.jsonl`, json: JSON.stringify(e, null, 2) };
-};
-const examples = {
-  'pipeline-created': pick('per-frame-churn', (e) => e.type === 'pipeline-created', 'pipeline-created'),
-  'pipeline-creation-failed (resolve)': pick('resolve-error', (e) => e.type === 'pipeline-creation-failed' && e.phase === 'resolve', 'resolve failure'),
-  'pipeline-creation-failed (create)': pick('broken-shader', (e) => e.type === 'pipeline-creation-failed' && e.phase === 'create', 'create failure'),
-  'shader-diagnostics': pick('broken-shader', (e) => e.type === 'shader-diagnostics', 'shader-diagnostics'),
-  'device-error': pick('broken-shader', (e) => e.type === 'device-error', 'device-error'),
-  'device-lost': pick('broken-shader', (e) => e.type === 'device-lost', 'device-lost'),
-};
-const eventExamples = Object.entries(examples).map(([name, v]) => ({
-  name,
-  fromFile: v.fromFile,
-  type: v.event.type,
-  seq: v.event.seq,
-  html: html(v.json, 'json'),
-}));
+// ---- the recorded run of the debugging example
+const recorded = 'real-gpu/results/scenarios/broken-shader';
+const printedLines = read(`${recorded}.txt`)
+  .split('\n')
+  .filter((line) => /^\[\d{3}\] /.test(line))
+  .slice(0, 3);
+if (printedLines.length !== 3)
+  throw new Error(`${recorded}.txt: expected three numbered event lines`);
+const failure = read(`${recorded}.jsonl`)
+  .trim()
+  .split('\n')
+  .map((line) => JSON.parse(line))
+  .find(
+    (record) => record.record === 'event' && record.event.type === 'pipeline-creation-failed',
+  )?.event;
+if (!failure?.wgsl)
+  throw new Error(`${recorded}.jsonl: no pipeline-creation-failed event with WGSL`);
 
-// ---- the documented event types, parsed from the contract table (a drift between page and contract fails the build)
-const contract = read('docs/EVENT-CONTRACT.md');
-const documentedTypes = [...contract.matchAll(/^\| `([a-z-]+)` \| /gm)].map((m) => m[1]);
+// ---- the event followed through the architecture diagram: the failed initAsync of the same recorded run
+const call = region(`${consumerSrc}/docs/debug.ts`, 'debug')
+  .split('\n')
+  .find((line) => line.includes('.initAsync()'))
+  ?.trim();
+if (!call) throw new Error('debug.ts: no initAsync() call found');
+const patch = read('patches/0001-instrumentation-hooks.patch');
+if (!patch.includes('instrumentation?.pipelineCreationFailed('))
+  throw new Error('the patch has no pipelineCreationFailed hook');
+const abridged = Object.fromEntries(
+  ['v', 'seq', 'type', 'pipeline', 'label', 'trigger', 'phase', 'errorType'].map((key) => [
+    key,
+    failure[key],
+  ]),
+);
+abridged.message = failure.message.split('\n')[0];
 
-// ---- setup commands: the two lines the README documents for a fresh clone
-const setupPlain = [
-  '# in a clone of this repository (pnpm 11, Node >= 24):',
-  'scripts/setup.sh     # upstream TypeGPU at the pinned commit, hook patch applied, overlay copied in',
-  'scripts/check.sh     # mock-device tests, type check, lint (no GPU, no browser)',
+const setup = [
+  '# Node 24 and pnpm. Builds upstream TypeGPU at the pinned commit with the hook patch applied, and packs it.',
+  'git clone https://github.com/mishablablabla/typegpu-instrumentation-poc',
+  'cd typegpu-instrumentation-poc',
+  'scripts/setup.sh && scripts/setup-pristine.sh',
+  'node package-test/stage.mjs',
 ].join('\n');
+const install =
+  '# in your app\nnpm install /path/to/typegpu-instrumentation-poc/package-test/tarballs/patched/typegpu-*.tgz';
 
 const out = {
-  setupHtml: html(setupPlain, 'bash'),
-  setupPlain,
-  generatedFrom: [
-    'real-gpu/results/scenarios/*.jsonl|txt',
-    'examples/*.ts',
-    'package-test/consumer/src/quickstart.ts',
-    'docs/EVENT-CONTRACT.md',
-  ],
-  quickstartHtml: html(quickstart, 'ts'),
-  quickstartPlain: quickstart,
-  scenarios,
-  eventExamples,
-  documentedTypes,
-  highlightedBash: (code) => undefined,
+  setup: block(setup, 'bash'),
+  install: block(install, 'bash'),
+  quickstart: snippet(`${consumerSrc}/quickstart.ts`, 'quickstart'),
+  events: snippet(`${consumerSrc}/docs/events.ts`, 'events'),
+  snapshot: snippet(`${consumerSrc}/docs/events.ts`, 'snapshot'),
+  consumers: snippet(`${consumerSrc}/docs/consumers.ts`, 'consumers'),
+  cleanup: snippet(`${consumerSrc}/docs/cleanup.ts`, 'cleanup'),
+  debug: snippet(`${consumerSrc}/docs/debug.ts`, 'debug'),
+  debugOutput: block(printedLines.join('\n'), 'text'),
+  debugWgsl: block(failure.wgsl, 'text'),
+  archCall: block(call, 'ts'),
+  archHook: block('instrumentation?.pipelineCreationFailed(core, info, error);', 'ts'),
+  archEvent: block(JSON.stringify(abridged, null, 2), 'json'),
+  archLine: block(printedLines[1], 'text'),
+  archEventFields: abridged,
+  debugOutputFile: `${recorded}.txt`,
 };
-delete out.highlightedBash;
 
-// ---- the live feed reuses the repository's own consumers and the broken-shader scenario unchanged (only the type
-// import path differs, because the consumers are written against the patched work tree)
-const liveDir = join(here, '../src/app/live/generated');
-mkdirSync(liveDir, { recursive: true });
-const banner = (from) => `// GENERATED by tools/build-data.mjs from ${from}. Do not edit.\n/* eslint-disable */\n// @ts-nocheck\n`;
-for (const f of ['textReport.ts', 'jsonlExport.ts']) {
-  const src = read(`consumers/${f}`).replaceAll("'../../../src/core/instrumentation/types.ts'", "'typegpu/unstable-instrumentation'");
-  writeFileSync(join(liveDir, f), banner(`consumers/${f}`) + src);
-}
-writeFileSync(join(liveDir, 'broken-shader.ts'), banner('examples/broken-shader.ts') + read('examples/broken-shader.ts'));
-
-const ts = `// GENERATED by tools/build-data.mjs from repository artifacts. Do not edit.\n/* eslint-disable */\nexport const generated = ${JSON.stringify(out, null, 2)} as const;\n`;
-writeFileSync(join(here, '../src/app/data/generated.ts'), ts);
-console.log(`generated.ts: ${scenarioIds.length} scenarios, ${eventExamples.length} event examples, ${documentedTypes.length} documented types`);
+mkdirSync(join(here, '../src/app/data'), { recursive: true });
+writeFileSync(
+  join(here, '../src/app/data/generated.ts'),
+  `// GENERATED by tools/build-data.mjs from repository files. Do not edit.\n/* eslint-disable */\nexport const generated = ${JSON.stringify(out, null, 2)} as const;\n`,
+);
+console.log(`generated.ts: ${Object.keys(out).length - 2} entries`);
