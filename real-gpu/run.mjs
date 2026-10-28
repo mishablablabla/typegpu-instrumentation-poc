@@ -145,9 +145,17 @@ async function waitFor(fn, what, timeoutMs = 20000) {
 }
 
 const portFile = join(profile, 'DevToolsActivePort');
-// The file appears before Chrome has finished writing it: wait for both lines.
-await waitFor(() => existsSync(portFile) && readFileSync(portFile, 'utf8').trim().split('\n').length >= 2, 'Chrome DevTools port');
-const [port, wsPath] = readFileSync(portFile, 'utf8').trim().split('\n');
+// The file appears before Chrome has finished writing it: wait for both lines. On Windows the read can also fail
+// with EBUSY while Chrome still holds the file, so a failed read just means "not yet".
+const readPortFile = () => {
+  try {
+    return existsSync(portFile) ? readFileSync(portFile, 'utf8') : '';
+  } catch {
+    return '';
+  }
+};
+await waitFor(() => readPortFile().trim().split('\n').length >= 2, 'Chrome DevTools port');
+const [port, wsPath] = readPortFile().trim().split('\n');
 const ws = new WebSocket(`ws://127.0.0.1:${port}${wsPath}`);
 await new Promise((ok, no) => {
   ws.onopen = ok;

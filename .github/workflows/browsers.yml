@@ -177,7 +177,7 @@ jobs:
         if: always()
         with:
           name: cell-${{ matrix.cell }}
-          path: real-gpu/results/ci
+          path: real-gpu/results/ci/*.json
 
   summary:
     name: results table
