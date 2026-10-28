@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <title>TypeGPU Instrumentation (PoC)</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Documentation and recorded demonstration of an experimental, opt-in instrumentation layer for TypeGPU: structured runtime events and snapshots as a foundation for diagnostic tools.">
+  <link rel="icon" href="data:,">
+  <script>
+    // Set the theme before first paint (same rule as the official docs: stored choice, else system, light only if the system is light).
+    try {
+      var t = localStorage.getItem('tg-instrumentation-theme');
+      if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      document.documentElement.dataset.theme = t;
+    } catch (e) { document.documentElement.dataset.theme = 'dark'; }
+  </script>
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>

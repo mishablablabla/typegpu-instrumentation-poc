@@ -1,0 +1,474 @@
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/buffer/buffer.js work/patched/node_modules/typegpu/core/buffer/buffer.js
+--- work/pristine/node_modules/typegpu/core/buffer/buffer.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/buffer/buffer.js	2026-10-28 09:28:47
+@@ -84,12 +84,14 @@
+                 }
+                 const soul = this[$soul];
+                 if (!soul.raw) {
+-                    soul.raw = soul.device.createBuffer({
++                    const descriptor = {
+                         size: physicalSizeOf(soul.dataType),
+                         usage: soul.flags,
+                         mappedAtCreation: !!this.initial || !!this.#initialCallback,
+                         label: getName(this) ?? '<unnamed>',
+-                    });
++                    };
++                    soul.raw = soul.device.createBuffer(descriptor);
++                    root[$internal].instrumentation?.bufferMaterialized(this, descriptor);
+                     if (this.initial || this.#initialCallback) {
+                         if (this.#initialCallback) {
+                             this.#initialCallback(this);
+@@ -212,6 +214,7 @@
+             writeToArrayBuffer(this.#hostBuffer, this.dataType, data, options);
+         }
+         this[$soul].device.queue.writeBuffer(gpuBuffer, startOffset, this.#hostBuffer, startOffset, size);
++        this[$internal].root[$internal].instrumentation?.bufferWritten(this, size);
+     }
+     /**
+      * Returns the number of bytes to upload when writing to `[startOffset, endOffset)`.
+@@ -252,6 +255,7 @@
+                     padded.set(data);
+                     this[$soul].device.queue.writeBuffer(gpuBuffer, gpuOffset, padded);
+                 }
++                this[$internal].root[$internal].instrumentation?.bufferWritten(this, uploadSize);
+             }
+         }
+     }
+@@ -319,6 +323,7 @@
+         if (this.#ownBuffer) {
+             this[$soul].raw?.destroy();
+         }
++        this[$internal].root[$internal].instrumentation?.resourceDestroyed(this);
+     }
+     toString() {
+         return `buffer:${getName(this) ?? '<unnamed>'}`;
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/commandEncoder/commandEncoder.js work/patched/node_modules/typegpu/core/commandEncoder/commandEncoder.js
+--- work/pristine/node_modules/typegpu/core/commandEncoder/commandEncoder.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/commandEncoder/commandEncoder.js	2026-10-28 09:28:47
+@@ -40,6 +40,7 @@
+         const { rawEncoder, root, afterSubmit } = this[$internal];
+         this.#recordPendingCommands();
+         root.device.queue.submit([rawEncoder.finish()]);
++        root[$internal].instrumentation?.submitted();
+         for (const hook of afterSubmit.values()) {
+             hook();
+         }
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/commandEncoder/computePass.js work/patched/node_modules/typegpu/core/commandEncoder/computePass.js
+--- work/pristine/node_modules/typegpu/core/commandEncoder/computePass.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/commandEncoder/computePass.js	2026-10-28 09:28:47
+@@ -33,6 +33,7 @@
+             state: new ComputeDrawState(),
+             owner,
+             appliedVersion: undefined,
++            instrumentation: root[$internal].instrumentation,
+         };
+     }
+     #emit(emit) {
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.js work/patched/node_modules/typegpu/core/commandEncoder/renderPass.js
+--- work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/commandEncoder/renderPass.js	2026-10-28 09:28:47
+@@ -114,6 +114,7 @@
+             state: new RenderDrawState(),
+             owner,
+             appliedVersion: undefined,
++            instrumentation: root[$internal].instrumentation,
+         };
+     }
+     #emit(usesIndexBuffer, emit) {
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/pipeline/computePipeline.js work/patched/node_modules/typegpu/core/pipeline/computePipeline.js
+--- work/pristine/node_modules/typegpu/core/pipeline/computePipeline.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/pipeline/computePipeline.js	2026-10-28 09:28:47
+@@ -230,8 +230,10 @@
+         if (this.#initAsyncPromise === undefined) {
+             // the pipeline did not start resolution & compilation
+             const device = this.root.device;
+-            const { resolutionResult, module, immediateSize } = this.resolveAndCreateShaderModule();
++            const instrumentation = this.root[$internal].instrumentation;
++            const { resolutionResult, module, immediateSize, resolveMs } = this.#resolveObserved(instrumentation, 'initAsync');
+             const { usedBindGroupLayouts, catchall, logResources, usedImmediate } = resolutionResult;
++            const createStart = instrumentation?.now() ?? 0;
+             this.#initAsyncPromise = device
+                 .createComputePipelineAsync({
+                 label: getName(this) ?? '<unnamed>',
+@@ -244,7 +246,27 @@
+             })
+                 .then((pipeline) => {
+                 this.#memo = { pipeline, usedBindGroupLayouts, catchall, logResources, usedImmediate };
++                instrumentation?.pipelineCreated(this, {
++                    pipeline: 'compute',
++                    trigger: 'initAsync',
++                    resolveMs,
++                    createMs: instrumentation.now() - createStart,
++                    wgsl: resolutionResult.code,
++                    layouts: usedBindGroupLayouts,
++                    module,
++                });
+                 this.#performanceTracker.measureCompile(device);
++            }, (error) => {
++                instrumentation?.pipelineCreationFailed(this, {
++                    pipeline: 'compute',
++                    trigger: 'initAsync',
++                    resolveMs,
++                    createMs: instrumentation.now() - createStart,
++                    wgsl: resolutionResult.code,
++                    layouts: usedBindGroupLayouts,
++                    module,
++                }, error);
++                throw error;
+             })
+                 .finally(() => {
+                 this.#initAsyncPromise = undefined;
+@@ -252,7 +274,7 @@
+         }
+         return this.#initAsyncPromise;
+     }
+-    initSync() {
++    initSync(trigger = 'initSync') {
+         if (this.#memo !== undefined) {
+             return;
+         }
+@@ -260,8 +282,10 @@
+             throw new Error("'pipeline.initAsync()' was called and is not yet resolved.");
+         }
+         const device = this.root.device;
+-        const { resolutionResult, module, immediateSize } = this.resolveAndCreateShaderModule();
++        const instrumentation = this.root[$internal].instrumentation;
++        const { resolutionResult, module, immediateSize, resolveMs } = this.#resolveObserved(instrumentation, trigger);
+         const { usedBindGroupLayouts, catchall, logResources, usedImmediate } = resolutionResult;
++        const createStart = instrumentation?.now() ?? 0;
+         this.#memo = {
+             pipeline: device.createComputePipeline({
+                 label: getName(this) ?? '<unnamed>',
+@@ -277,16 +301,40 @@
+             logResources,
+             usedImmediate,
+         };
++        instrumentation?.pipelineCreated(this, {
++            pipeline: 'compute',
++            trigger,
++            resolveMs,
++            createMs: instrumentation.now() - createStart,
++            wgsl: resolutionResult.code,
++            layouts: usedBindGroupLayouts,
++            module,
++        });
+         this.#performanceTracker.measureCompile(device);
+     }
+     unwrap() {
+-        this.initSync();
++        // Checked here so the hot path (already compiled) does not call into the larger `initSync`.
++        if (this.#memo === undefined) {
++            this.initSync('lazy');
++        }
+         return this.#memo;
+     }
++    /** Reports a failure of WGSL generation (the most common developer error) before it propagates unchanged. */
++    #resolveObserved(instrumentation, trigger) {
++        try {
++            return this.resolveAndCreateShaderModule();
++        }
++        catch (error) {
++            instrumentation?.pipelineResolutionFailed(this, 'compute', trigger, error);
++            throw error;
++        }
++    }
+     resolveAndCreateShaderModule() {
+         const device = this.root.device;
+         const enableExtensions = wgslEnableExtensions.filter((extension) => this.root.enabledFeatures.has(wgslEnableExtensionToFeatureName[extension]));
+         // Resolving code
++        const instrumentation = this.root[$internal].instrumentation;
++        const resolveStart = instrumentation?.now() ?? 0;
+         const ns = namespace({ names: this.root.nameRegistrySetting });
+         const resolutionResult = this.#performanceTracker.measureResolve(() => resolve(this, {
+             namespace: ns,
+@@ -297,6 +345,7 @@
+                 : undefined,
+             root: this.root,
+         }));
++        const resolveMs = instrumentation ? instrumentation.now() - resolveStart : 0;
+         const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
+         if (catchall !== undefined) {
+             usedBindGroupLayouts[catchall[0]]?.$name(`${getName(this) ?? '<unnamed>'} - Automatic Bind Group & Layout`);
+@@ -307,6 +356,6 @@
+             label: `${getName(this) ?? '<unnamed>'} - Shader`,
+             code,
+         });
+-        return { resolutionResult, module, immediateSize };
++        return { resolutionResult, module, immediateSize, resolveMs };
+     }
+ }
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/pipeline/drawState.js work/patched/node_modules/typegpu/core/pipeline/drawState.js
+--- work/pristine/node_modules/typegpu/core/pipeline/drawState.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/pipeline/drawState.js	2026-10-28 09:28:47
+@@ -195,6 +195,7 @@
+         state.immediates.write(rawPass, memo.usedImmediate, priors.immediatesMap, !state.rawAccessed);
+     }
+     emit(rawPass);
++    passInternals.instrumentation?.drew(core);
+ }
+ export function emitComputeDispatch(root, passInternals, pipeline, emit, ownsPass = false) {
+     const { state, rawPass } = passInternals;
+@@ -212,4 +213,5 @@
+         state.immediates.write(rawPass, memo.usedImmediate, priors.immediatesMap, !state.rawAccessed);
+     }
+     emit(rawPass);
++    passInternals.instrumentation?.dispatched(core);
+ }
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.js work/patched/node_modules/typegpu/core/pipeline/renderPipeline.js
+--- work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/pipeline/renderPipeline.js	2026-10-28 09:28:47
+@@ -343,8 +343,10 @@
+         if (this.#initAsyncPromise === undefined) {
+             // the pipeline did not start resolution & compilation
+             const device = this.options.root.device;
+-            const { resolutionResult, descriptor, connectedTargets, connectedAttribs } = this.resolveAndCreateShaderModule();
++            const instrumentation = this.options.root[$internal].instrumentation;
++            const { resolutionResult, descriptor, connectedTargets, connectedAttribs, module, resolveMs, } = this.#resolveObserved(instrumentation, 'initAsync');
+             const { usedBindGroupLayouts, catchall, logResources } = resolutionResult;
++            const createStart = instrumentation?.now() ?? 0;
+             this.#initAsyncPromise = device
+                 .createRenderPipelineAsync(descriptor)
+                 .then((pipeline) => {
+@@ -357,7 +359,27 @@
+                     connectedTargets,
+                     usedImmediate: resolutionResult.usedImmediate,
+                 };
++                instrumentation?.pipelineCreated(this, {
++                    pipeline: 'render',
++                    trigger: 'initAsync',
++                    resolveMs,
++                    createMs: instrumentation.now() - createStart,
++                    wgsl: resolutionResult.code,
++                    layouts: usedBindGroupLayouts,
++                    module,
++                });
+                 this.#performanceTracker.measureCompile(device);
++            }, (error) => {
++                instrumentation?.pipelineCreationFailed(this, {
++                    pipeline: 'render',
++                    trigger: 'initAsync',
++                    resolveMs,
++                    createMs: instrumentation.now() - createStart,
++                    wgsl: resolutionResult.code,
++                    layouts: usedBindGroupLayouts,
++                    module,
++                }, error);
++                throw error;
+             })
+                 .finally(() => {
+                 this.#initAsyncPromise = undefined;
+@@ -365,7 +387,7 @@
+         }
+         return this.#initAsyncPromise;
+     }
+-    initSync() {
++    initSync(trigger = 'initSync') {
+         if (this.#memo !== undefined) {
+             return;
+         }
+@@ -373,8 +395,10 @@
+             throw new Error("'pipeline.initAsync()' was called and is not yet resolved.");
+         }
+         const device = this.options.root.device;
+-        const { resolutionResult, descriptor, connectedTargets, connectedAttribs } = this.resolveAndCreateShaderModule();
++        const instrumentation = this.options.root[$internal].instrumentation;
++        const { resolutionResult, descriptor, connectedTargets, connectedAttribs, module, resolveMs } = this.#resolveObserved(instrumentation, trigger);
+         const { usedBindGroupLayouts, catchall, logResources } = resolutionResult;
++        const createStart = instrumentation?.now() ?? 0;
+         this.#memo = {
+             pipeline: device.createRenderPipeline(descriptor),
+             usedBindGroupLayouts,
+@@ -384,12 +408,34 @@
+             connectedTargets,
+             usedImmediate: resolutionResult.usedImmediate,
+         };
++        instrumentation?.pipelineCreated(this, {
++            pipeline: 'render',
++            trigger,
++            resolveMs,
++            createMs: instrumentation.now() - createStart,
++            wgsl: resolutionResult.code,
++            layouts: usedBindGroupLayouts,
++            module,
++        });
+         this.#performanceTracker.measureCompile(device);
+     }
+     unwrap() {
+-        this.initSync();
++        // Checked here so the hot path (already compiled) does not call into the larger `initSync`.
++        if (this.#memo === undefined) {
++            this.initSync('lazy');
++        }
+         return this.#memo;
+     }
++    /** Reports a failure of WGSL generation (the most common developer error) before it propagates unchanged. */
++    #resolveObserved(instrumentation, trigger) {
++        try {
++            return this.resolveAndCreateShaderModule();
++        }
++        catch (error) {
++            instrumentation?.pipelineResolutionFailed(this, 'render', trigger, error);
++            throw error;
++        }
++    }
+     resolveAndCreateShaderModule() {
+         const { root, descriptor: tgpuDescriptor } = this.options;
+         if (!tgpuDescriptor) {
+@@ -398,6 +444,8 @@
+         const device = root.device;
+         const enableExtensions = wgslEnableExtensions.filter((extension) => root.enabledFeatures.has(wgslEnableExtensionToFeatureName[extension]));
+         // Resolving code
++        const instrumentation = root[$internal].instrumentation;
++        const resolveStart = instrumentation?.now() ?? 0;
+         const ns = namespace({ names: root.nameRegistrySetting });
+         const resolutionResult = this.#performanceTracker.measureResolve(() => resolve(this, {
+             namespace: ns,
+@@ -406,6 +454,7 @@
+             shaderGenerator: root.shaderGeneratorClass ? new root.shaderGeneratorClass() : undefined,
+             root,
+         }));
++        const resolveMs = instrumentation ? instrumentation.now() - resolveStart : 0;
+         const { code, usedBindGroupLayouts, catchall, usedImmediate } = resolutionResult;
+         if (catchall !== undefined) {
+             usedBindGroupLayouts[catchall[0]]?.$name(`${getName(this) ?? '<unnamed>'} - Automatic Bind Group & Layout`);
+@@ -465,7 +514,7 @@
+         if (tgpuDescriptor.multisample) {
+             descriptor.multisample = tgpuDescriptor.multisample;
+         }
+-        return { resolutionResult, descriptor, connectedTargets, connectedAttribs };
++        return { resolutionResult, descriptor, connectedTargets, connectedAttribs, module, resolveMs };
+     }
+ }
+ /**
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/root/init.js work/patched/node_modules/typegpu/core/root/init.js
+--- work/pristine/node_modules/typegpu/core/root/init.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/root/init.js	2026-10-28 09:28:47
+@@ -173,10 +173,13 @@
+     nameRegistrySetting;
+     shaderGeneratorClass;
+     #unwrappedBindGroupLayouts = new WeakMemo((key) => key.unwrap(this));
+-    #unwrappedBindGroups = new WeakMemo((key) => key.unwrap(this));
++    #unwrappedBindGroups = new WeakMemo((key) => key.unwrap(this), 
++    // Adopted groups wrap a GPUBindGroup the user created, so unwrapping returns it as is.
++    (key, raw) => this[$internal].instrumentation?.bindGroupCreated(key, key[$soul].raw === raw ? 'adopted' : 'created'));
+     #ownDevice;
+     [$internal];
+-    constructor(device, nameRegistrySetting, minify, ownDevice, logOptions, shaderGeneratorClass) {
++    #instrumentation;
++    constructor(device, nameRegistrySetting, minify, ownDevice, logOptions, shaderGeneratorClass, instrumentation) {
+         super(() => this, []);
+         this.device = device;
+         this.nameRegistrySetting = nameRegistrySetting;
+@@ -192,10 +195,19 @@
+             nonTransferablePriors: shaderGeneratorClass ? ['shaderGeneratorClass'] : undefined,
+             label: undefined,
+         };
+-        this[$internal] = {
+-            logOptions,
+-        };
++        const internals = { logOptions, instrumentation: undefined };
++        this[$internal] = internals;
++        if (instrumentation) {
++            if (typeof instrumentation.attach !== 'function') {
++                throw new Error("unstable_instrumentation expects the value of `createInstrumentation()` from 'typegpu/unstable-instrumentation'.");
++            }
++            // `internals` is a plain object; see the provider contract for why no closure may be used here.
++            this.#instrumentation = instrumentation.attach(device, internals);
++        }
+     }
++    get instrumentation() {
++        return this.#instrumentation?.api;
++    }
+     configureContext(options) {
+         const context = options.canvas.getContext('webgpu');
+         if (!context) {
+@@ -245,6 +257,7 @@
+         return new TgpuBindGroupImpl(this, layout, entries);
+     }
+     destroy() {
++        this.#instrumentation?.rootDestroyed(this.#ownDevice);
+         clearTextureUtilsCache(this.device);
+         if (this.#ownDevice) {
+             this.device.destroy();
+@@ -322,7 +335,7 @@
+  * ```
+  */
+ export async function init(options) {
+-    const { adapter: adapterOpt, device: deviceOpt, unstable_names: names = 'strict', unstable_minify: minify = false, unstable_logOptions: logOptions, unstable_shaderGeneratorClass: shaderGeneratorClass, } = options ?? {};
++    const { adapter: adapterOpt, device: deviceOpt, unstable_names: names = 'strict', unstable_minify: minify = false, unstable_logOptions: logOptions, unstable_shaderGeneratorClass: shaderGeneratorClass, unstable_instrumentation: instrumentation, } = options ?? {};
+     const { optionalFeatures, ...deviceDescriptor } = deviceOpt ?? {};
+     if (!navigator.gpu) {
+         throw new Error('WebGPU is not supported by this browser.');
+@@ -350,7 +363,7 @@
+         ...deviceDescriptor,
+         requiredFeatures: availableFeatures,
+     });
+-    return new TgpuRootImpl(device, names, minify, true, logOptions ?? {}, shaderGeneratorClass);
++    return new TgpuRootImpl(device, names, minify, true, logOptions ?? {}, shaderGeneratorClass, instrumentation);
+ }
+ /**
+  * Creates a root from the given device, instead of requesting it like @see init.
+@@ -362,6 +375,6 @@
+  * ```
+  */
+ export function initFromDevice(options) {
+-    const { device, unstable_names: names = 'strict', unstable_minify: minify = false, unstable_logOptions: logOptions, unstable_shaderGeneratorClass: shaderGeneratorClass, } = options ?? {};
+-    return new TgpuRootImpl(device, names, minify, false, logOptions ?? {}, shaderGeneratorClass);
++    const { device, unstable_names: names = 'strict', unstable_minify: minify = false, unstable_logOptions: logOptions, unstable_shaderGeneratorClass: shaderGeneratorClass, unstable_instrumentation: instrumentation, } = options ?? {};
++    return new TgpuRootImpl(device, names, minify, false, logOptions ?? {}, shaderGeneratorClass, instrumentation);
+ }
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/core/texture/texture.js work/patched/node_modules/typegpu/core/texture/texture.js
+--- work/pristine/node_modules/typegpu/core/texture/texture.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/core/texture/texture.js	2026-10-28 09:28:47
+@@ -61,7 +61,7 @@
+                 const soul = this[$soul];
+                 if (!soul.raw) {
+                     const props = soul.props;
+-                    soul.raw = soul.device.createTexture({
++                    const descriptor = {
+                         label: getName(this) ?? '<unnamed>',
+                         format: props.format,
+                         // The WebGPU types accept only mutable arrays, which is too loosely typed
+@@ -71,7 +71,9 @@
+                         viewFormats: props.viewFormats ?? [],
+                         mipLevelCount: props.mipLevelCount ?? 1,
+                         sampleCount: props.sampleCount ?? 1,
+-                    });
++                    };
++                    soul.raw = soul.device.createTexture(descriptor);
++                    root[$internal].instrumentation?.textureMaterialized(this, descriptor);
+                 }
+                 return soul.raw;
+             },
+@@ -262,6 +264,7 @@
+         if (this.#ownTexture) {
+             this[$soul].raw?.destroy();
+         }
++        this[$internal].root[$internal].instrumentation?.resourceDestroyed(this);
+     }
+ }
+ class TgpuFixedTextureViewImpl {
+diff -ru -x instrumentation -x package.json -x *.d.ts work/pristine/node_modules/typegpu/memo.js work/patched/node_modules/typegpu/memo.js
+--- work/pristine/node_modules/typegpu/memo.js	2026-10-28 09:28:43
++++ work/patched/node_modules/typegpu/memo.js	2026-10-28 09:28:47
+@@ -7,8 +7,11 @@
+ export class WeakMemo {
+     #map = new WeakMap();
+     #make;
+-    constructor(make) {
++    #onMade;
++    /** @param onMade Called once per new entry, after it is stored (so it may safely re-enter `getOrMake`). */
++    constructor(make, onMade) {
+         this.#make = make;
++        this.#onMade = onMade;
+     }
+     getOrMake(key, ...args) {
+         if (this.#map.has(key)) {
+@@ -16,6 +19,7 @@
+         }
+         const value = this.#make(key, ...args);
+         this.#map.set(key, value);
++        this.#onMade?.(key, value);
+         return value;
+     }
+ }

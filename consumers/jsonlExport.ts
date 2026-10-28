@@ -4,7 +4,7 @@
  * so it works in any runtime. Nothing here touches the file system.
  *
  * Records, one JSON object per line, each with a `record` discriminator:
- *   {"record":"header","format":"typegpu-instrumentation-jsonl","version":1,"eventSchema":1}
+ *   {"record":"header","format":"typegpu-instrumentation-jsonl","version":1,"eventSchema":2}
  *   {"record":"event","event":{ ...exactly what the core emitted... }}
  *   {"record":"snapshot","afterSeq":N,"snapshot":{ ...getSnapshot() at that moment... }}
  * A caller may add its own records (for example `environment`) between lines.
@@ -25,7 +25,7 @@ export function createJsonlExport(source: Source) {
       record: 'header',
       format: JSONL_FORMAT,
       version: JSONL_VERSION,
-      eventSchema: 1,
+      eventSchema: 2,
     }),
   ];
   let lastSeq = 0;

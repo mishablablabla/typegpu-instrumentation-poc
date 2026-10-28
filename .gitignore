@@ -1,3 +1,7 @@
 .work/
 node_modules/
 *.log
+package-test/work/
+package-test/tarballs/
+package-test/stage/
+experiments/**/dist/

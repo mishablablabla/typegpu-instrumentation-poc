@@ -1,0 +1,24 @@
+{
+  "k1d": "PASS",
+  "notOptedIn": {
+    "instrumentation": "undefined",
+    "deviceListeners": 0,
+    "calls": 11
+  },
+  "optedIn": {
+    "eventTypes": [
+      "pipeline-created",
+      "resource-materialized",
+      "bind-group-created",
+      "shader-diagnostics",
+      "device-error",
+      "device-lost",
+      "root-destroyed"
+    ],
+    "historyLength": 6,
+    "wgslBytes": 183,
+    "listenerRemovedOnDestroy": true
+  },
+  "misuseThrows": "both `true` and un-called createInstrumentation throw an Error naming createInstrumentation()",
+  "initPath": "tgpu.init({unstable_instrumentation}) ok"
+}

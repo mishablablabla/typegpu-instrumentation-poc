@@ -19,7 +19,7 @@ export type DiagnosticsIndex = {
     label: string | null;
     errorType: string;
     message: string;
-    wgsl: string;
+    wgsl: string | null;
   }[];
   /** "What did the compiler say?" With the offending line of the generated WGSL attached. */
   readonly shaderProblems: readonly {
@@ -43,7 +43,7 @@ export type DiagnosticsIndex = {
 type State = {
   lazy: DiagnosticsIndex['lazyCompiles'][number][];
   failed: DiagnosticsIndex['failedCompiles'][number][];
-  wgslByPipeline: Map<number, { label: string | null; wgsl: string }>;
+  wgslByPipeline: Map<number, { label: string | null; wgsl: string | null }>;
   problems: DiagnosticsIndex['shaderProblems'][number][];
   errors: DiagnosticsIndex['deviceErrors'][number][];
   unknownBindings: DiagnosticsIndex['bindGroupsWithUnknownResources'][number][];
@@ -74,13 +74,13 @@ export function reduce(state: State, e: TgpuInstrumentationEvent): void {
     case 'resource-destroyed':
       state.live.delete(e.id);
       break;
-    case 'pipeline-compiled':
+    case 'pipeline-created':
       state.wgslByPipeline.set(e.id, { label: e.label, wgsl: e.wgsl });
       if (e.trigger === 'lazy') {
         state.lazy.push({ id: e.id, label: e.label, cpuMs: e.resolveMs + e.createMs });
       }
       break;
-    case 'pipeline-compile-failed':
+    case 'pipeline-creation-failed':
       state.wgslByPipeline.set(e.id, { label: e.label, wgsl: e.wgsl });
       state.failed.push({
         id: e.id,
@@ -95,7 +95,7 @@ export function reduce(state: State, e: TgpuInstrumentationEvent): void {
         break;
       }
       const pipeline = state.wgslByPipeline.get(e.pipelineId);
-      const lines = pipeline?.wgsl.split('\n');
+      const lines = pipeline?.wgsl?.split('\n');
       state.problems.push({
         pipelineId: e.pipelineId,
         label: pipeline?.label ?? null,

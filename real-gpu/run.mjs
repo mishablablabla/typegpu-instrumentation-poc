@@ -27,9 +27,22 @@ const option = (name) => (args.includes(name) ? args[args.indexOf(name) + 1] : u
 const exampleArg = option('--example');
 const jsonlArg = option('--jsonl');
 const exampleMode = exampleArg !== undefined;
-const pkg = join(root, '.work/typegpu/packages/typegpu');
-const pageDir = join(pkg, 'tests/instrumentation/real-gpu-page');
-const distDir = join(root, '.work/real-gpu-dist');
+// Generic mode, used by the viability and overhead experiments:
+//   --call <js expression>   evaluate it in the page instead of a fixed entry point; it must return
+//                            { provenance, report?: string[], ok?: boolean, ... }
+//   --out <file>             write the returned JSON (plus environment) there
+//   --tree <checkout>        build from another TypeGPU checkout (e.g. the pristine baseline)
+//   --page <dir>             page directory name under tests/instrumentation of that checkout
+//   --dist <dir> --skip-build  reuse an already built page
+//   --prebuilt <dir>         run a page that was built elsewhere (CI matrix cells): no checkout, no sync, no build
+//   --ready <js expression>  what to wait for before calling
+const callExpr = option('--call');
+const outArg = option('--out');
+const pkg = option('--tree') ? join(resolve(option('--tree')), 'packages/typegpu') : join(root, '.work/typegpu/packages/typegpu');
+const pageDir = join(pkg, 'tests/instrumentation', option('--page') ?? 'real-gpu-page');
+const prebuilt = option('--prebuilt');
+const distDir = prebuilt ? resolve(prebuilt) : option('--dist') ? resolve(option('--dist')) : join(root, '.work/real-gpu-dist');
+const readyExpr = option('--ready') ?? 'typeof window.runRealDeviceScenario === "function"';
 
 function fail(code, message) {
   console.error(message);
@@ -50,8 +63,8 @@ if (!chrome) {
 }
 
 // --- build ---
-if (!existsSync(pkg)) fail(3, 'Run scripts/setup.sh first.');
-spawnSync(join(root, 'scripts/sync.sh'), { stdio: 'inherit' });
+if (!prebuilt && !existsSync(pkg)) fail(3, 'Run scripts/setup.sh first.');
+if (!prebuilt && !option('--tree')) spawnSync(join(root, 'scripts/sync.sh'), { stdio: 'inherit' });
 // The scenario must live inside the checkout so that `typegpu` resolves; single files only.
 let examplePath = join(pkg, 'tests/instrumentation/examples/compute-scale.ts');
 if (exampleMode) {
@@ -60,8 +73,10 @@ if (exampleMode) {
   examplePath = join(pageDir, 'user-example.ts');
   copyFileSync(source, examplePath);
 }
-const build = spawnSync('node', [join(pageDir, 'build.mjs'), distDir, examplePath], { cwd: pkg, stdio: 'inherit' });
-if (build.status !== 0) fail(3, 'Page build failed.');
+if (!flag('--skip-build') && !prebuilt) {
+  const build = spawnSync('node', [join(pageDir, 'build.mjs'), distDir, examplePath], { cwd: pkg, stdio: 'inherit' });
+  if (build.status !== 0) fail(3, 'Page build failed.');
+}
 
 // --- static server ---
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript', '.css': 'text/css', '.map': 'application/json' };
@@ -76,10 +91,22 @@ const server = createServer((req, res) => {
     res.writeHead(404).end();
     return;
   }
-  res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream' }).end(readFileSync(file));
+  // Cross-origin isolation makes performance.now() fine-grained (about 5 us instead of 0.1 ms); the overhead
+  // benchmark records the tick it actually got.
+  res
+    .writeHead(200, {
+      'content-type': types[extname(file)] ?? 'application/octet-stream',
+      ...(process.env.NO_COI
+        ? {}
+        : {
+            'cross-origin-opener-policy': 'same-origin',
+            'cross-origin-embedder-policy': 'require-corp',
+          }),
+    })
+    .end(readFileSync(file));
 });
 await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
-const url = `http://127.0.0.1:${server.address().port}/`;
+const url = `http://127.0.0.1:${server.address().port}/${option('--query') ?? ''}`;
 
 // --- launch Chrome with a throwaway profile ---
 const profile = mkdtempSync(join(tmpdir(), 'typegpu-instr-chrome-'));
@@ -118,8 +145,17 @@ async function waitFor(fn, what, timeoutMs = 20000) {
 }
 
 const portFile = join(profile, 'DevToolsActivePort');
-await waitFor(() => existsSync(portFile), 'Chrome DevTools port');
-const [port, wsPath] = readFileSync(portFile, 'utf8').trim().split('\n');
+// The file appears before Chrome has finished writing it: wait for both lines. On Windows the read can also fail
+// with EBUSY while Chrome still holds the file, so a failed read just means "not yet".
+const readPortFile = () => {
+  try {
+    return existsSync(portFile) ? readFileSync(portFile, 'utf8') : '';
+  } catch {
+    return '';
+  }
+};
+await waitFor(() => readPortFile().trim().split('\n').length >= 2, 'Chrome DevTools port');
+const [port, wsPath] = readPortFile().trim().split('\n');
 const ws = new WebSocket(`ws://127.0.0.1:${port}${wsPath}`);
 await new Promise((ok, no) => {
   ws.onopen = ok;
@@ -172,17 +208,17 @@ await waitFor(async () => true, 'navigation');
 // wait for the module script to register the entry point
 let ready = false;
 for (let i = 0; i < 100 && !ready; i++) {
-  const r = await page('Runtime.evaluate', { expression: 'typeof window.runRealDeviceScenario === "function"', returnByValue: true });
+  const r = await page('Runtime.evaluate', { expression: readyExpr, returnByValue: true });
   ready = r.result.value === true;
   if (!ready) await new Promise((r2) => setTimeout(r2, 100));
 }
 if (!ready) fail(3, `Page did not register the scenario. Console: ${JSON.stringify(consoleLog)}`);
 
 const evaluation = await page('Runtime.evaluate', {
-  expression: exampleMode ? 'window.runExample()' : 'window.runRealDeviceScenario()',
+  expression: callExpr ?? (exampleMode ? 'window.runExample()' : 'window.runRealDeviceScenario()'),
   awaitPromise: true,
   returnByValue: true,
-  timeout: 60000,
+  timeout: Number(option('--eval-timeout') ?? 60000),
 });
 if (evaluation.exceptionDetails) {
   fail(3, `Scenario threw: ${JSON.stringify(evaluation.exceptionDetails, null, 2)}\nConsole: ${JSON.stringify(consoleLog, null, 2)}`);
@@ -206,6 +242,29 @@ const validationLevel =
       : mode === 'unverified-adapter'
         ? 'UNVERIFIED - the adapter does not say whether it is a fallback; not counted as real-GPU validation'
         : 'NOT RUN - WebGPU unavailable';
+
+if (callExpr) {
+  const environment = {
+    when: new Date().toISOString(),
+    chrome: browserVersion.product,
+    headless: !flag('--headed'),
+    classification: mode,
+    adapter: { vendor: result.provenance.vendor, architecture: result.provenance.architecture, isFallbackAdapter: result.provenance.isFallbackAdapter },
+    gpuProcess: gpuStrings,
+  };
+  for (const line of result.report ?? []) console.log(line);
+  console.log(`Run classification: ${validationLevel}`);
+  if (outArg) {
+    mkdirSync(dirname(resolve(outArg)), { recursive: true });
+    writeFileSync(resolve(outArg), JSON.stringify({ environment, ...result, browserConsole: consoleLog }, null, 2) + '\n');
+  }
+  if (mode === 'unavailable') fail(2, 'NOT RUN: WebGPU is not available in this browser.');
+  if ((mode === 'software' || mode === 'unverified-adapter') && !flag('--allow-software')) {
+    fail(2, `NOT VALIDATED as real-GPU: ${validationLevel}.`);
+  }
+  if (result.ok === false) fail(1, 'The run reported failures.');
+  process.exit(0);
+}
 
 if (exampleMode) {
   const REPORT_PREFIX = '[typegpu-instrumentation] ';
@@ -273,7 +332,8 @@ const record = {
 };
 
 mkdirSync(join(here, 'results'), { recursive: true });
-const out = join(here, 'results', `${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+const out = outArg ? resolve(outArg) : join(here, 'results', `${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(record, null, 2) + '\n');
 
 // --- report ---

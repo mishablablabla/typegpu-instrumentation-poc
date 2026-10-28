@@ -1,0 +1,56 @@
+<figure class="arch" aria-labelledby="arch-cap">
+  <div class="bar">
+    <span class="bar-title">Follow one event: a failed <code>initAsync()</code></span>
+    <button type="button" class="play" (click)="toggle()">
+      {{ playing() ? 'Pause' : 'Play' }}
+    </button>
+  </div>
+
+  <ol class="stages">
+    @for (s of stages; track s.id; let i = $index) {
+      <li class="stage" [class.done]="i < active()" [class.on]="i === active()" [attr.data-stage]="s.id">
+        <span class="node" aria-hidden="true">{{ i + 1 }}</span>
+        <div class="card">
+          <button
+            type="button"
+            class="head"
+            [attr.aria-expanded]="i === active()"
+            [attr.aria-controls]="'stage-' + s.id"
+            (click)="select(i)"
+          >
+            <strong>{{ s.title }}</strong>
+            <span>{{ s.sub }}</span>
+          </button>
+          @if (s.chips) {
+            <ul class="chips" aria-label="Parts of the hub">
+              @for (c of s.chips; track c) {
+                <li>{{ c }}</li>
+              }
+            </ul>
+          }
+          <div class="detail" [id]="'stage-' + s.id" [hidden]="i !== active()">
+            <p>{{ s.text }}</p>
+            @if (code()[i]; as block) {
+              <app-code [html]="block.html" [copyText]="block.plain" />
+            }
+          </div>
+        </div>
+        @if (s.id === 'core') {
+          <div class="gate" role="note">
+            <code>import 'typegpu/unstable-instrumentation'</code>
+            <span>Opt-in line. Above it nothing of the layer is bundled.</span>
+          </div>
+        }
+        @if (s.id === 'hub') {
+          <div class="gate contract-gate" role="note">
+            <span>Contract boundary. Nothing below it knows TypeGPU's internals.</span>
+          </div>
+        }
+      </li>
+    }
+  </ol>
+
+  <figcaption id="arch-cap">
+    Pick a stage to stop the animation. The event is the failed pipeline of the debugging example at the end of this page.
+  </figcaption>
+</figure>

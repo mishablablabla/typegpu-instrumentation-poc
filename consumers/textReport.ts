@@ -28,15 +28,18 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
         .join(', ');
       return `${head} bind group #${e.id} of layout ${e.label ?? '<unnamed>'}#${e.layoutId} (${e.origin}) { ${entries} }`;
     }
-    case 'pipeline-compiled':
+    case 'pipeline-created':
       return (
-        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} compiled [${e.trigger}] ` +
-        `resolve ${e.resolveMs.toFixed(2)} ms (CPU), create ${e.createMs.toFixed(2)} ms (CPU), ${e.wgsl.length} chars of WGSL`
+        // A synchronous creation cannot know whether the pipeline is valid (observed on a real device:
+        // an invalid shader still produces this event), so only the async success may say "compiled".
+        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} ${e.trigger === 'initAsync' ? 'compiled' : 'created'} [${e.trigger}] ` +
+        `resolve ${e.resolveMs.toFixed(2)} ms (CPU), create ${e.createMs.toFixed(2)} ms (CPU), ${e.wgslLength} chars of WGSL`
       );
-    case 'pipeline-compile-failed':
+    case 'pipeline-creation-failed':
       return (
-        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} FAILED to compile [${e.trigger}] ` +
-        `${e.errorType}: ${e.message.split('\n')[0]} (${e.wgsl.length} chars of WGSL kept)`
+        `${head} ${e.pipeline} pipeline ${name(e.label, e.id)} creation FAILED [${e.trigger}, ${e.phase}] ` +
+        `${e.errorType}: ${failureText(e.phase, e.message)}` +
+        (e.wgslLength > 0 ? ` (${e.wgslLength} chars of WGSL)` : '')
       );
     case 'shader-diagnostics':
       return e.messages.length === 0
@@ -55,6 +58,30 @@ export function formatEvent(e: TgpuInstrumentationEvent): string {
   }
 }
 
+/**
+ * A resolution error lists the failing tree one level per line, and the cause is on the last line, so all lines
+ * matter; an async creation error is a browser message whose first line is its summary.
+ */
+function failureText(phase: 'resolve' | 'create', message: string): string {
+  const lines = message.split('\n').filter((line) => line.trim() !== '');
+  const text =
+    phase === 'resolve' ? lines.map((l) => l.replace(/^- /, '')).join(' > ') : (lines[0] ?? '');
+  return text.length > 300 ? `${text.slice(0, 297)}...` : text;
+}
+
+/** Names that occur on at least this many live objects are called out: they are what a leak or per-frame creation looks like. */
+const REPEATED_NAME_THRESHOLD = 3;
+
+function repeatedNames(items: readonly { label: string | null }[]): [string, number][] {
+  const counts = new Map<string, number>();
+  for (const { label } of items) {
+    if (label !== null) {
+      counts.set(label, (counts.get(label) ?? 0) + 1);
+    }
+  }
+  return [...counts].filter(([, n]) => n >= REPEATED_NAME_THRESHOLD);
+}
+
 export function formatSnapshot(s: TgpuInstrumentationSnapshot): string[] {
   const lines = [
     `${s.resources.length} live resources, ${s.pipelines.length} pipelines, ${s.bindGroups.length} bind groups`,
@@ -68,6 +95,21 @@ export function formatSnapshot(s: TgpuInstrumentationSnapshot): string[] {
   for (const p of s.pipelines) {
     lines.push(
       `  ${p.pipeline} pipeline ${name(p.label, p.id)}: ${p.dispatches} dispatches, ${p.draws} draws`,
+    );
+  }
+  for (const [label, n] of repeatedNames(s.pipelines)) {
+    lines.push(
+      `  note: ${n} live pipelines are named '${label}': created repeatedly (each creation costs CPU)?`,
+    );
+  }
+  for (const [label, n] of repeatedNames(s.resources)) {
+    lines.push(
+      `  note: ${n} live resources are named '${label}': created repeatedly and never destroyed?`,
+    );
+  }
+  if (s.retainedFailures.length > 0) {
+    lines.push(
+      `  ${s.retainedFailures.length} retained failure(s), most recent: ${s.retainedFailures.at(-1)?.type}`,
     );
   }
   lines.push(`  submits via TypeGPU encoders: ${s.counters.submits}`);

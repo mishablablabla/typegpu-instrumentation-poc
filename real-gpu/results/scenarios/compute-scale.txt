@@ -1,0 +1,23 @@
+Scenario: examples/compute-scale.ts
+Chrome Chrome/156.0.8078.48 (headless)
+Adapter (from the page): apple / metal-3, isFallbackAdapter: false
+GPU process (from the browser): Google Inc. (Apple) ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Version 26.3 (Build 25D125))
+Run classification: real-device: adapter reported non-fallback and the browser GPU process lists a hardware GPU
+
+[001] buffer factor#1 materialized (4 B)
+[002] compute pipeline scale#3 created [lazy] resolve 2.64 ms (CPU), create 0.15 ms (CPU), 241 chars of WGSL
+[003] buffer data#4 materialized (32 B)
+[004] bind group #5 of layout layout#2 (created) { data=#4, factor=#1 }
+[005] pipeline #3 shader: no compiler messages
+[scenario] result after x3: [3,6,9,12,15,18,21,24]
+[scenario] result after x10: [30,60,90,120,150,180,210,240]
+[006] buffer data#4 destroyed
+1 live resources, 1 pipelines, 1 bind groups
+  buffer factor#1: 2 writes, 8 B written
+  compute pipeline scale#3: 2 dispatches, 0 draws
+  submits via TypeGPU encoders: 2
+  not available: gpuExecutionTime, gpuMemoryUsage, wrappedResources, internalResources, rawWebGPUCalls, workgroupCounts, perDispatchBindings, textureMemory, helperSubmissions, restoredPipelines, samplers, textureViews, renderBundles, bindGroupLayouts
+[007] root destroyed (own device: true), still alive: 1 buffers, 0 textures
+[008] DEVICE LOST (destroyed): Device was destroyed.
+
+JSONL written to /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/real-gpu/results/scenarios/compute-scale.jsonl (11 lines)

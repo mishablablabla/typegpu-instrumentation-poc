@@ -1,0 +1,11 @@
+:host { display: block; margin-top: 1rem; padding: 1rem; border-inline-start: 0.25rem solid var(--a-border); background: var(--a-bg); color: var(--tg-text-strong); }
+:host(.aside-note) { --a-bg: var(--tg-note-bg); --a-border: var(--tg-note-border); --a-title: var(--tg-note-title); }
+:host(.aside-tip) { --a-bg: var(--tg-tip-bg); --a-border: var(--tg-tip-border); --a-title: var(--tg-tip-title); }
+:host(.aside-caution) { --a-bg: var(--tg-caution-bg); --a-border: var(--tg-caution-border); --a-title: var(--tg-caution-title); }
+:host(.aside-danger) { --a-bg: var(--tg-danger-bg); --a-border: var(--tg-danger-border); --a-title: var(--tg-danger-title); }
+.aside-title { margin: 0; font-size: 1.125rem; font-weight: 600; line-height: 1.3; color: var(--a-title); }
+.aside-body { margin-top: 0.5rem; font-size: 1rem; line-height: 1.6; }
+.aside-body ::ng-deep > :first-child { margin-top: 0; }
+.aside-body ::ng-deep > * + * { margin-top: 0.75rem; }
+.aside-body ::ng-deep a { color: var(--a-title); }
+.aside-body ::ng-deep code { background: color-mix(in srgb, var(--a-title) 12%, transparent); font-family: var(--tg-font-mono); font-size: var(--tg-text-xs); padding: 0.1rem 0.3rem; }

@@ -1,3 +1,4 @@
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, vi } from 'vitest';
@@ -13,7 +14,7 @@ async function scenario(device: GPUDevice) {
   observable.setCompilationMessages([
     { type: 'warning', message: 'unreachable code', lineNum: 1, linePos: 1 },
   ]);
-  const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+  const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
   const inst = root['~unstable'].instrumentation!;
 
   const report = createTextReport(inst);
@@ -96,7 +97,7 @@ describe('two independent consumers of one stream', () => {
     (
       device as unknown as { mock: { createComputePipelineAsync: ReturnType<typeof vi.fn> } }
     ).mock.createComputePipelineAsync.mockRejectedValueOnce(new GPUPipelineError('invalid module'));
-    const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+    const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
     const inst = root['~unstable'].instrumentation!;
     const report = createTextReport(inst);
     const index = createDiagnosticsIndex(inst);
@@ -106,13 +107,34 @@ describe('two independent consumers of one stream', () => {
     ).rejects.toThrow('invalid module');
     await flush();
 
-    expect(report.lines().join('\n')).toContain('FAILED to compile [initAsync] GPUPipelineError');
+    expect(report.lines().join('\n')).toContain(
+      'creation FAILED [initAsync, create] GPUPipelineError',
+    );
     const result = index.index();
     expect(result.failedCompiles).toEqual([
       expect.objectContaining({ label: 'doomed', errorType: 'GPUPipelineError' }),
     ]);
     expect(result.failedCompiles[0]?.wgsl).toContain('fn computeMain');
     expect(result.shaderProblems[0]?.messages[0]?.wgslLine).toContain('var<storage');
+  });
+
+  // Found by the viability gate on a real device: an invalid shader created synchronously still produces
+  // pipeline-created, and the report used to print "compiled" for it.
+  it('the text report does not claim a synchronous creation "compiled"', async ({ device }) => {
+    makeObservableDevice(device);
+    const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
+    const inst = root['~unstable'].instrumentation!;
+    const report = createTextReport(inst);
+
+    root.createComputePipeline({ compute: computeMain }).initSync();
+    await root.createComputePipeline({ compute: computeMain }).initAsync();
+
+    const [sync, async_] = report
+      .lines()
+      .filter((l) => l.includes('pipeline') && !l.includes('shader'));
+    expect(sync).toContain('created [initSync]');
+    expect(sync).not.toContain('compiled');
+    expect(async_).toContain('compiled [initAsync]');
   });
 
   it('a consumer attached late reconstructs the same state from history', async ({ device }) => {

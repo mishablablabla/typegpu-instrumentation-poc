@@ -4,5 +4,5 @@
 set -euo pipefail
 source "$(dirname "$0")/env.sh"
 mkdir -p "$ROOT/patches"
-git -C "$WORK" diff -- packages/typegpu/src > "$ROOT/patches/0001-instrumentation-hooks.patch"
-git -C "$WORK" diff --stat -- packages/typegpu/src
+git -C "$WORK" diff -- packages/typegpu/src packages/typegpu/package.json > "$ROOT/patches/0001-instrumentation-hooks.patch"
+git -C "$WORK" diff --stat -- packages/typegpu/src packages/typegpu/package.json

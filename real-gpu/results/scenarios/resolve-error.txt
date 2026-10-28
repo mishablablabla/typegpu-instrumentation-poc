@@ -1,0 +1,16 @@
+Scenario: examples/resolve-error.ts
+Chrome Chrome/156.0.8078.48 (headless)
+Adapter (from the page): apple / metal-3, isFallbackAdapter: false
+GPU process (from the browser): Google Inc. (Apple) ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Version 26.3 (Build 25D125))
+Run classification: real-device: adapter reported non-fallback and the browser GPU process lists a hardware GPU
+
+[001] compute pipeline needsSlot#1 creation FAILED [lazy, resolve] ResolutionError: Resolution of the following tree failed: > computePipelineCore > computeFn:kernel: Missing value for 'slot:multiplier'
+[scenario] dispatch threw ResolutionError
+0 live resources, 0 pipelines, 0 bind groups
+  1 retained failure(s), most recent: pipeline-creation-failed
+  submits via TypeGPU encoders: 0
+  not available: gpuExecutionTime, gpuMemoryUsage, wrappedResources, internalResources, rawWebGPUCalls, workgroupCounts, perDispatchBindings, textureMemory, helperSubmissions, restoredPipelines, samplers, textureViews, renderBundles, bindGroupLayouts
+[002] root destroyed (own device: true), still alive: 0 buffers, 0 textures
+[003] DEVICE LOST (destroyed): Device was destroyed.
+
+JSONL written to /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/real-gpu/results/scenarios/resolve-error.jsonl (6 lines)

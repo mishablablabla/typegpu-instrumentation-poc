@@ -1,0 +1,35 @@
+{
+  "cell": "chrome-macos-default",
+  "kind": "chrome",
+  "os": "darwin",
+  "arch": "arm64",
+  "node": "v24.22.1",
+  "pageDigest": "719a9a4e4790588680ff540e59c9f9b73176b9c6330c555eaf03b38a3af2e43f",
+  "when": "2026-10-28T08:29:14.315Z",
+  "steps": {
+    "viability": {
+      "exit": 0,
+      "status": "pass",
+      "passed": 133,
+      "failed": 0,
+      "skipped": [],
+      "classification": "hardware-adapter",
+      "browser": "Chrome/156.0.8078.48",
+      "adapterRequest": "default",
+      "adapter": {
+        "vendor": "apple",
+        "architecture": "",
+        "isFallbackAdapter": false
+      },
+      "file": "real-gpu/results/ci/chrome-macos-default-viability.json"
+    },
+    "suite": {
+      "exit": 0,
+      "status": "pass",
+      "passed": 20,
+      "failed": 0,
+      "classification": "hardware-adapter"
+    }
+  },
+  "status": "pass"
+}

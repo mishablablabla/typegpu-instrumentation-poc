@@ -1,0 +1,172 @@
+[
+  {
+    "id": "K1a ok.ts moduleResolution=bundler (skipLibCheck:true)",
+    "ok": true,
+    "detail": "exit 0"
+  },
+  {
+    "id": "K1a ok.ts moduleResolution=bundler (skipLibCheck:false): no diagnostic in instrumentation .d.ts",
+    "ok": true,
+    "detail": "exit 2; 8 lib diagnostics, all upstream (see baseline rows)"
+  },
+  {
+    "id": "K1a ok.ts moduleResolution=node16 (skipLibCheck:true)",
+    "ok": true,
+    "detail": "exit 0"
+  },
+  {
+    "id": "K1a ok.ts moduleResolution=node16 (skipLibCheck:false): no diagnostic in instrumentation .d.ts",
+    "ok": true,
+    "detail": "exit 2; 8 lib diagnostics, all upstream (see baseline rows)"
+  },
+  {
+    "id": "K1a ok.ts moduleResolution=nodenext (skipLibCheck:true)",
+    "ok": true,
+    "detail": "exit 0"
+  },
+  {
+    "id": "K1a ok.ts moduleResolution=nodenext (skipLibCheck:false): no diagnostic in instrumentation .d.ts",
+    "ok": true,
+    "detail": "exit 2; 8 lib diagnostics, all upstream (see baseline rows)"
+  },
+  {
+    "id": "K1a ok.ts moduleResolution=node10",
+    "ok": true,
+    "detail": "exit 2 (expected failure: node10 ignores package exports)\n    node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation."
+  },
+  {
+    "id": "K1a baseline (upstream-only code) strict lib check [pristine]",
+    "ok": true,
+    "detail": "exit 2 (pre-existing diagnostics: TS2636,TS2636,TS2636,TS2636,TS2636,TS2636,TS2636,TS2636)"
+  },
+  {
+    "id": "K1a baseline (upstream-only code) strict lib check [patched]",
+    "ok": true,
+    "detail": "exit 2 (pre-existing diagnostics: TS2636,TS2636,TS2636,TS2636,TS2636,TS2636,TS2636,TS2636)"
+  },
+  {
+    "id": "K1a bad/true.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2322: TS2322: Type 'boolean' is not assignable to type 'TgpuInstrumentationProvider'."
+  },
+  {
+    "id": "K1a bad/forgot-call.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2322: TS2322: Type '(options?: TgpuInstrumentationOptions | undefined) => TgpuInstrumentationProvider' is not assignable to type 'TgpuInstrumentationProvider'."
+  },
+  {
+    "id": "K1a bad/option-name.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2353: TS2353: Object literal may only specify known properties, and 'historyLength' does not exist in type 'TgpuInstrumentationOptions'."
+  },
+  {
+    "id": "K1a bad/option-type.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2322: TS2322: Type 'string' is not assignable to type 'number'."
+  },
+  {
+    "id": "K1a bad/event-field.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2339: TS2339: Property 'wgls' does not exist on type 'TgpuPipelineCreated'."
+  },
+  {
+    "id": "K1a bad/event-type.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2367: TS2367: This comparison appears to be unintentional because the types '\"resource-materialized\" | \"resource-destroyed\" | \"bind-group-created\" | \"pipeline-created\" | \"pipeline-creation-failed\" | \"shader-diagnostics\" | \"device-error\" | \"device-lost\" | \"root-destroyed\"' and '\"pipeline-compiled\"' have no overlap."
+  },
+  {
+    "id": "K1a bad/no-optional-chain.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2532: TS2532: Object is possibly 'undefined'."
+  },
+  {
+    "id": "K1a bad/hub-not-exported.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2724: TS2724: '\"typegpu/unstable-instrumentation\"' has no exported member named 'InstrumentationHub'. Did you mean 'TgpuInstrumentation'?"
+  },
+  {
+    "id": "K1a bad/not-from-main.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2614: TS2614: Module '\"typegpu\"' has no exported member 'createInstrumentation'. Did you mean to use 'import createInstrumentation from \"typegpu\"' instead?"
+  },
+  {
+    "id": "K1a bad/deep-import.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2307: TS2307: Cannot find module 'typegpu/core/instrumentation/hub' or its corresponding type declarations."
+  },
+  {
+    "id": "K1a bad/sink-method.ts [bundler]",
+    "ok": true,
+    "detail": "expect TS2339: TS2339: Property 'bufferMaterialized' does not exist on type 'TgpuInstrumentation'."
+  },
+  {
+    "id": "K1a bad/true.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2322: TS2322: Type 'boolean' is not assignable to type 'TgpuInstrumentationProvider'."
+  },
+  {
+    "id": "K1a bad/forgot-call.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2322: TS2322: Type '(options?: TgpuInstrumentationOptions | undefined) => TgpuInstrumentationProvider' is not assignable to type 'TgpuInstrumentationProvider'."
+  },
+  {
+    "id": "K1a bad/option-name.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2353: TS2353: Object literal may only specify known properties, and 'historyLength' does not exist in type 'TgpuInstrumentationOptions'."
+  },
+  {
+    "id": "K1a bad/option-type.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2322: TS2322: Type 'string' is not assignable to type 'number'."
+  },
+  {
+    "id": "K1a bad/event-field.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2339: TS2339: Property 'wgls' does not exist on type 'TgpuPipelineCreated'."
+  },
+  {
+    "id": "K1a bad/event-type.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2367: TS2367: This comparison appears to be unintentional because the types '\"resource-materialized\" | \"resource-destroyed\" | \"bind-group-created\" | \"pipeline-created\" | \"pipeline-creation-failed\" | \"shader-diagnostics\" | \"device-error\" | \"device-lost\" | \"root-destroyed\"' and '\"pipeline-compiled\"' have no overlap."
+  },
+  {
+    "id": "K1a bad/no-optional-chain.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2532: TS2532: Object is possibly 'undefined'."
+  },
+  {
+    "id": "K1a bad/hub-not-exported.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2724: TS2724: '\"typegpu/unstable-instrumentation\"' has no exported member named 'InstrumentationHub'. Did you mean 'TgpuInstrumentation'?"
+  },
+  {
+    "id": "K1a bad/not-from-main.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2614: TS2614: Module '\"typegpu\"' has no exported member 'createInstrumentation'. Did you mean to use 'import createInstrumentation from \"typegpu\"' instead?"
+  },
+  {
+    "id": "K1a bad/deep-import.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2307: TS2307: Cannot find module 'typegpu/core/instrumentation/hub' or its corresponding type declarations."
+  },
+  {
+    "id": "K1a bad/sink-method.ts [node16]",
+    "ok": true,
+    "detail": "expect TS2339: TS2339: Property 'bufferMaterialized' does not exist on type 'TgpuInstrumentation'."
+  },
+  {
+    "id": "K1b node ESM import of the entry: no globals/listeners/handles/prototype changes",
+    "ok": true,
+    "detail": "constructed at import (control subtracted by reader): entry={\"FinalizationRegistry\":1,\"WeakMap\":1,\"Set\":1,\"Promise\":1} control={\"Set\":1,\"Promise\":1}"
+  },
+  {
+    "id": "K1c exports map: entry resolves to core/instrumentation/index.d.ts under bundler/node16/nodenext; hub not deep-importable",
+    "ok": true,
+    "detail": ""
+  },
+  {
+    "id": "K1d built package runs instrumented app on fake device",
+    "ok": true,
+    "detail": ""
+  }
+]

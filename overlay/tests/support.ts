@@ -1,6 +1,10 @@
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
-import type { TgpuInstrumentationEvent } from '../../src/core/instrumentation/types.ts';
+import type {
+  TgpuInstrumentationEvent,
+  TgpuInstrumentationOptions,
+} from '../../src/core/instrumentation/types.ts';
 
 type CompilationMessage = { type: string; message: string; lineNum: number; linePos: number };
 
@@ -92,3 +96,97 @@ export const fragmentMain = tgpu.fragmentFn({ out: d.vec4f })(() => {
   'use gpu';
   return d.vec4f(1, 0, 0, 1);
 });
+
+type Mock = ReturnType<typeof vi.fn>;
+type DeviceMock = Record<
+  | 'createBuffer'
+  | 'createBindGroup'
+  | 'createBindGroupLayout'
+  | 'createShaderModule'
+  | 'createComputePipeline'
+  | 'createComputePipelineAsync'
+  | 'createRenderPipeline'
+  | 'createRenderPipelineAsync'
+  | 'createTexture',
+  Mock
+> & { queue: Record<'submit' | 'writeBuffer', Mock> };
+
+export const mockOf = (device: GPUDevice) => (device as unknown as { mock: DeviceMock }).mock;
+
+/** A root with instrumentation on and one recording subscriber. */
+export function enabledRoot(device: GPUDevice, options: TgpuInstrumentationOptions = {}) {
+  const root = tgpu.initFromDevice({
+    device,
+    unstable_instrumentation: createInstrumentation(options),
+  });
+  const inst = root['~unstable'].instrumentation;
+  if (!inst) {
+    throw new Error('instrumentation should be enabled');
+  }
+  const events: TgpuInstrumentationEvent[] = [];
+  inst.subscribe((e) => events.push(e));
+  return { root, inst, events };
+}
+
+const noop = () => {};
+
+/**
+ * A device made of plain functions: unlike the shared `vi.fn` mock it records nothing, so a long loop shows the
+ * memory behaviour of the code under test and not of the test double (the `vi.fn` mock alone grows ~640 MiB
+ * over 48 000 buffer creations).
+ */
+export function makePlainDevice(): GPUDevice {
+  const pass = {
+    setPipeline: noop,
+    setBindGroup: noop,
+    dispatchWorkgroups: noop,
+    draw: noop,
+    end: noop,
+    setImmediates: noop,
+  };
+  const encoder = { beginComputePass: () => pass, beginRenderPass: () => pass, finish: () => ({}) };
+  return {
+    features: new Set<string>(),
+    limits: {
+      maxUniformBuffersPerShaderStage: 12,
+      maxStorageBuffersPerShaderStage: 8,
+      maxComputeWorkgroupStorageSize: 16384,
+    },
+    lost: new Promise(noop),
+    addEventListener: noop,
+    removeEventListener: noop,
+    createBindGroup: () => ({}),
+    createBindGroupLayout: () => ({}),
+    createBuffer: ({ size, usage }: { size: number; usage: number }) => ({
+      size,
+      usage,
+      mapState: 'unmapped',
+      label: '',
+      destroy: noop,
+      getMappedRange: () => new ArrayBuffer(size),
+      unmap: noop,
+    }),
+    createPipelineLayout: () => ({}),
+    createShaderModule: () => ({}),
+    createComputePipeline: () => ({}),
+    createCommandEncoder: () => encoder,
+    queue: { submit: noop, writeBuffer: noop, onSubmittedWorkDone: () => Promise.resolve() },
+    destroy: noop,
+  } as unknown as GPUDevice;
+}
+
+/**
+ * The root's `$internal` symbol, found on the root itself. Importing it from `src/shared/symbols.ts` would give a
+ * different symbol than the one the built package uses (`TEST_BUILT=1` runs these tests against `dist`).
+ */
+export function internalsOf(root: object): {
+  instrumentation: Record<string, (...a: unknown[]) => void>;
+} {
+  const symbol = Object.getOwnPropertySymbols(root).find((s) =>
+    s.description?.endsWith('$internal'),
+  );
+  if (symbol === undefined) {
+    throw new Error('the root has no $internal symbol');
+  }
+  return (root as Record<symbol, unknown>)[symbol] as ReturnType<typeof internalsOf>;
+}

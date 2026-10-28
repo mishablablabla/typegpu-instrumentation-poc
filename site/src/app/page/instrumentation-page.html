@@ -1,0 +1,160 @@
+<article class="prose page">
+  <section id="overview" aria-labelledby="h-overview">
+    <p class="eyebrow">Tooling · Experimental</p>
+    <h1 id="h-overview">Instrumentation</h1>
+    <p class="lede">
+      Instrumentation reports what TypeGPU does on your behalf: the buffers and textures it creates, bind groups, pipeline
+      compilation with the generated WGSL, shader compiler messages, device errors and teardown. You get them as plain-data events
+      and as a snapshot of what is alive.
+    </p>
+    <p>
+      It is opt-in per root and has no UI. Print the events, assert on them in a test, or write them to a file.
+      It does not report GPU execution time or raw WebGPU calls.
+    </p>
+    <app-aside kind="caution" title="Experimental">
+      <p>
+        This needs a TypeGPU build that contains the hook patch from this repository; it is not in the published package.
+        The API is <code>unstable_</code> and can change.
+      </p>
+    </app-aside>
+  </section>
+
+  <section id="setup" aria-labelledby="h-setup">
+    <h2 id="h-setup">Setup<a class="anchor" href="#setup" (click)="jump('setup', $event)" aria-label="Link to this section">#</a></h2>
+    <p>Build the patched package from a clone of the repository:</p>
+    <app-code [html]="code.setup.html" title="shell" [copyText]="code.setup.plain" />
+    <p>Then install the tarball in your app:</p>
+    <app-code [html]="code.install.html" title="shell" [copyText]="code.install.plain" />
+    <p>
+      The instrumentation lives in its own entry point, <code>typegpu/unstable-instrumentation</code>. An application that does not import it
+      contains none of its code.
+    </p>
+  </section>
+
+  <section id="quick-start" aria-labelledby="h-qs">
+    <h2 id="h-qs">Quick start<a class="anchor" href="#quick-start" (click)="jump('quick-start', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      Pass <code>createInstrumentation()</code> as <code>unstable_instrumentation</code> to <code>tgpu.init</code> or
+      <code>tgpu.initFromDevice</code>, then read it from the root.
+    </p>
+    <app-code [html]="code.quickstart.html" title="main.ts" [copyText]="code.quickstart.plain" />
+    <p>
+      <code>root['~unstable'].instrumentation</code> is <code>undefined</code> when the option was not passed. A TypeGPU build without the
+      patch ignores the option, so the check also catches a wrong build.
+    </p>
+  </section>
+
+  <section id="how-it-works" aria-labelledby="h-how">
+    <h2 id="h-how">How it works<a class="anchor" href="#how-it-works" (click)="jump('how-it-works', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      Hooks inside TypeGPU's core report what happened. A hub keeps a bounded history and a snapshot. Everything above the event contract is a
+      consumer, so the core has no UI, DOM or framework code.
+    </p>
+    <app-architecture-diagram [call]="code.archCall" [hook]="code.archHook" [event]="code.archEvent" [line]="code.archLine" />
+  </section>
+
+  <section id="options" aria-labelledby="h-options">
+    <h2 id="h-options">Options<a class="anchor" href="#options" (click)="jump('options', $event)" aria-label="Link to this section">#</a></h2>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Options">
+      <table>
+        <thead><tr><th scope="col">Option</th><th scope="col">Default</th><th scope="col">Meaning</th></tr></thead>
+        <tbody>
+          <tr data-option="historySize"><th scope="row"><code>historySize</code></th><td><code>256</code></td><td>Events kept for subscribers that attach late. <code>0</code> keeps none.</td></tr>
+          <tr data-option="historyMaxBytes"><th scope="row"><code>historyMaxBytes</code></th><td><code>4 MiB</code></td><td>Cap on the <em>estimated</em> size of the kept history, in bytes. The newest event is always kept.</td></tr>
+          <tr data-option="captureSource"><th scope="row"><code>captureSource</code></th><td><code>true</code></td><td>Keep the generated WGSL in pipeline events and snapshots. <code>false</code> keeps only its length (<code>wgsl: null</code>).</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>An invalid value throws from <code>createInstrumentation()</code>, before a device is requested.</p>
+  </section>
+
+  <section id="events" aria-labelledby="h-events">
+    <h2 id="h-events">Reading events<a class="anchor" href="#events" (click)="jump('events', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      Every event has <code>v</code> (schema version, currently <code>2</code>), <code>seq</code> (1, 2, 3, … per root) and <code>t</code>
+      (<code>performance.now()</code> at emission). Listeners run synchronously, in <code>seq</code> order.
+    </p>
+    <app-code [html]="code.events.html" title="events.ts" [copyText]="code.events.plain" />
+
+    <h3>Event types</h3>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Event types">
+      <table>
+        <thead><tr><th scope="col"><code>type</code></th><th scope="col">Emitted when</th><th scope="col">Useful fields</th></tr></thead>
+        <tbody>
+          <tr data-event="resource-materialized"><th scope="row"><code>resource-materialized</code></th><td>A buffer or texture gets its GPU object.</td><td><code>resource</code>, <code>id</code>, <code>label</code>, <code>sizeBytes</code> (buffer), <code>format</code> and <code>size</code> (texture)</td></tr>
+          <tr data-event="resource-destroyed"><th scope="row"><code>resource-destroyed</code></th><td>A tracked buffer or texture is destroyed.</td><td><code>resource</code>, <code>id</code>, <code>label</code></td></tr>
+          <tr data-event="bind-group-created"><th scope="row"><code>bind-group-created</code></th><td>A bind group is created, or wraps one you created.</td><td><code>origin</code>, <code>entries[].resourceId</code> (<code>null</code>: not tracked)</td></tr>
+          <tr data-event="pipeline-created"><th scope="row"><code>pipeline-created</code></th><td>TypeGPU generated WGSL and the pipeline-creation call returned.</td><td><code>pipeline</code>, <code>trigger</code>, <code>validation</code>, <code>resolveMs</code>, <code>createMs</code>, <code>wgsl</code></td></tr>
+          <tr data-event="pipeline-creation-failed"><th scope="row"><code>pipeline-creation-failed</code></th><td>Creating a pipeline failed, so none exists.</td><td><code>phase</code> (<code>resolve</code>: TypeGPU, before WebGPU; <code>create</code>: WebGPU rejected it), <code>errorType</code>, <code>message</code>, <code>wgsl</code></td></tr>
+          <tr data-event="shader-diagnostics"><th scope="row"><code>shader-diagnostics</code></th><td>The compiler reported on a pipeline's shader.</td><td><code>pipelineId</code>, <code>messages[]</code> with <code>lineNum</code> and <code>linePos</code> in the generated WGSL</td></tr>
+          <tr data-event="device-error"><th scope="row"><code>device-error</code></th><td>WebGPU reported an uncaptured error.</td><td><code>errorType</code>, <code>message</code></td></tr>
+          <tr data-event="device-lost"><th scope="row"><code>device-lost</code></th><td>The device was lost or destroyed.</td><td><code>reason</code>, <code>message</code></td></tr>
+          <tr data-event="root-destroyed"><th scope="row"><code>root-destroyed</code></th><td><code>root.destroy()</code> was called.</td><td><code>ownDevice</code>, <code>liveBuffers</code>, <code>liveTextures</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <app-aside kind="note" title="'Created' is not 'valid'">
+      <p>
+        With <code>validation: 'deferred'</code> (<code>trigger</code> <code>lazy</code> or <code>initSync</code>), <code>pipeline-created</code>
+        only says that the call returned. An invalid shader still produces it; the problem arrives afterwards as
+        <code>shader-diagnostics</code> or <code>device-error</code>. Only <code>initAsync</code> reports <code>validation: 'passed'</code>.
+      </p>
+    </app-aside>
+
+    <h3>Snapshot</h3>
+    <p>
+      <code>history()</code> returns the most recent events, oldest first. <code>getSnapshot()</code> describes what is alive right now and
+      can be cloned with <code>structuredClone</code>.
+    </p>
+    <app-code [html]="code.snapshot.html" title="snapshot.ts" [copyText]="code.snapshot.plain" />
+  </section>
+
+  <section id="output" aria-labelledby="h-output">
+    <h2 id="h-output">Console and JSON Lines<a class="anchor" href="#output" (click)="jump('output', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      <a [href]="repoDir('consumers')" target="_blank" rel="noopener"><code>consumers/</code></a> has small, dependency-free helpers that turn the stream into text. They only
+      build strings; where the text goes is up to you. They are plain files, not part of the package: copy them into your project and change
+      their type import from TypeGPU's source tree to <code>typegpu/unstable-instrumentation</code>.
+    </p>
+    <app-code [html]="code.consumers.html" title="consumers.ts" [copyText]="code.consumers.plain" />
+    <ul>
+      <li><code>attachConsoleReporter</code>: one line per event, replaying history first. <code>formatEvent</code> and <code>formatSnapshot</code> in <code>textReport.ts</code> give you the same lines without a subscription.</li>
+      <li><code>createJsonlExport</code>: one JSON object per line, each with a <code>record</code> field: <code>header</code>, <code>event</code> (exactly what was emitted) or <code>snapshot</code>.</li>
+      <li><code>parseJsonl</code>: reads that text back and rejects a file or event whose schema version it does not know.</li>
+    </ul>
+  </section>
+
+  <section id="cleanup" aria-labelledby="h-cleanup">
+    <h2 id="h-cleanup">Cleanup<a class="anchor" href="#cleanup" (click)="jump('cleanup', $event)" aria-label="Link to this section">#</a></h2>
+    <app-code [html]="code.cleanup.html" title="cleanup.ts" [copyText]="code.cleanup.plain" />
+    <p>
+      <code>root-destroyed</code> counts the buffers and textures that were still alive at that moment (created, not destroyed, not yet
+      garbage-collected). A non-zero count points at resources you never destroyed.
+    </p>
+    <p>
+      While <code>disable()</code>d, nothing is recorded, and a buffer created in that time stays untracked for good:
+      bind-group entries that use it show <code>resourceId: null</code>.
+    </p>
+  </section>
+
+  <section id="debugging" aria-labelledby="h-debug">
+    <h2 id="h-debug">Debugging a failed pipeline<a class="anchor" href="#debugging" (click)="jump('debugging', $event)" aria-label="Link to this section">#</a></h2>
+    <p>
+      A compute pipeline calls a function that does not exist. Print the events with the console reporter, then read the WGSL TypeGPU generated
+      from the failure the snapshot keeps.
+    </p>
+    <app-code [html]="code.debug.html" title="debug.ts" [copyText]="code.debug.plain" />
+    <p>Output in Chrome:</p>
+    <app-code [html]="code.debugOutput.html" title="output" />
+    <app-code [html]="code.debugWgsl.html" title="failure.wgsl" />
+    <p>
+      Line 1 is the browser's validation error, delivered as a <code>device-error</code>. Line 2 names the TypeGPU pipeline (<code>broken</code>), how it was created
+      (<code>initAsync</code>) and that WebGPU rejected it (<code>create</code>). Line 3 is the compiler message, positioned in the
+      <em>generated</em> WGSL: <code>1:51</code> is the call to <code>definitelyUndeclared</code>.
+    </p>
+    <p class="small">
+      Reproduce it in Chrome with <code>node real-gpu/run.mjs --example examples/broken-shader.ts</code>. The repository's
+      <a [href]="repoDir('examples')" target="_blank" rel="noopener"><code>examples/</code></a> contain four more scenarios.
+    </p>
+  </section>
+</article>

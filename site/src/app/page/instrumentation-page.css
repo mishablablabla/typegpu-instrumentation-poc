@@ -1,0 +1,25 @@
+:host {
+  display: block;
+}
+.page {
+  max-width: 46rem;
+  margin-inline: auto;
+}
+.page section + section {
+  margin-top: 3rem;
+}
+.eyebrow {
+  margin: 0 0 0.75rem;
+  font-size: var(--tg-text-sm);
+  color: var(--tg-text-muted);
+}
+.page h1 {
+  margin-top: 0;
+}
+.lede {
+  margin-top: 1rem;
+}
+.small {
+  font-size: var(--tg-text-sm);
+  color: var(--tg-text-muted);
+}

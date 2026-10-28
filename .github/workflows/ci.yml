@@ -1,7 +1,7 @@
 name: CI
 
-# No GPU and no browser are used here: GitHub-hosted runners have neither a usable GPU nor a way to
-# validate real-device behaviour. The real-device run (real-gpu/) stays a manual, recorded step.
+# No GPU and no browser are used here: GitHub-hosted runners have no GPU. Browsers on software adapters and
+# the Windows/macOS runs live in browsers.yml; the real-device run (real-gpu/) on hardware stays a manual, recorded step.
 on:
   push:
   pull_request:
@@ -28,11 +28,52 @@ jobs:
         run: scripts/setup.sh
       - name: Tests, type check, lint
         run: scripts/check.sh
+      - name: Relative links in README and docs resolve
+        run: node scripts/check-links.mjs
 
   upstream-drift:
-    name: hook patch applies to upstream main
+    name: patch + overlay work on upstream main
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - run: scripts/check-drift.sh
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      # applies the patch to the current tip of upstream main, installs, runs the instrumentation tests and tsc
+      - run: scripts/check-drift-full.sh
+
+  packaging:
+    name: built package, bundle matrix
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: corepack enable
+      - run: scripts/setup.sh && scripts/setup-pristine.sh
+      # the bundle matrix takes webpack / the rollup plugins / terser from the upstream pnpm store; the
+      # filtered setup above does not install them (they belong to apps/treeshake-test and @typegpu/noise)
+      - run: cd .work/typegpu && pnpm install --frozen-lockfile --filter "treeshake-test..." --filter "@typegpu/noise..."
+      # offline from here on: packs the built package, type-checks a consumer against it, bundles with four bundlers
+      - run: package-test/run.sh
+      - name: Fail on any recorded FAIL
+        run: "! grep -q FAIL package-test/results/k1.log"
+
+  usage-page:
+    name: usage page (data checks, production build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - working-directory: site
+        run: |
+          npm ci
+          npm run check
+          npx ng build --configuration production

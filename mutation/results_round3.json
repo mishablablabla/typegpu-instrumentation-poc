@@ -1,0 +1,142 @@
+[
+ {
+  "id": "R01",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "two independent consumers of one stream diagnostics index: answers the use-case questions from the same events",
+   "two independent consumers of one stream both consumers explain an async compile failure from the stream alone",
+   "history is bounded by bytes as well as by count can drop the generated WGSL and keep only its length",
+   "failures before a pipeline exists D12 keeps a failed pipeline retrievable for late subscribers after the ring evicted its event",
+   "events reports a lazy compile with WGSL, then materialization, bind group and diagnostics, in order",
+   "events reports an async compute failure with the WGSL, then the compiler messages, and recovers on retry"
+  ],
+  "n": 8
+ },
+ {
+  "id": "R02",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps about 4 MiB of history by default"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R03",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options fail early and precisely A-4 createInstrumentation() validates its options itself, before any root or device exists",
+   "history is bounded by bytes as well as by count can drop the generated WGSL and keep only its length",
+   "options and bounds keeps no WGSL of a failed pipeline either when captureSource is off"
+  ],
+  "n": 3
+ },
+ {
+  "id": "R04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options fail early and precisely A-4 createInstrumentation() validates its options itself, before any root or device exists"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R05",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options fail early and precisely A-4 createInstrumentation() validates its options itself, before any root or device exists",
+   "options fail early and precisely A-4b a bad option never reaches tgpu.init, so no device is requested for it"
+  ],
+  "n": 2
+ },
+ {
+  "id": "R06",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "exotic thrown values A-1 a subscriber throwing a null-prototype object is isolated: others still receive the event and the layer stays on"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R07",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "exotic thrown values A-1 a subscriber throwing a null-prototype object is isolated: others still receive the event and the layer stays on",
+   "exotic thrown values A-1b an application error that cannot be stringified is rethrown unchanged and does not switch the layer off"
+  ],
+  "n": 2
+ },
+ {
+  "id": "R08",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "exotic thrown values A-1b an application error that cannot be stringified is rethrown unchanged and does not switch the layer off"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R09",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "device loss retention A-2 the retained device-lost event survives byte pressure from later failures",
+   "device loss retention (single oversized failure) A-2b when the newest failure alone exceeds the byte bound, the device-lost event is still kept next to it"
+  ],
+  "n": 2
+ },
+ {
+  "id": "R10",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "device loss retention (single oversized failure) A-2b when the newest failure alone exceeds the byte bound, the device-lost event is still kept next to it"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R11",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "root-destroyed is emitted once A-3 a root-destroyed listener that triggers the destroy hook again does not duplicate the event"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R12",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "root-destroyed is emitted once A-3 a root-destroyed listener that triggers the destroy hook again does not duplicate the event"
+  ],
+  "n": 1
+ },
+ {
+  "id": "R13",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options fail early and precisely A-5 a device whose `lost` is not thenable does not break attaching",
+   "options are validated when instrumentation is attached accepts the boundaries",
+   "device events works on a device that is not an event target and has no lost promise",
+   "options and bounds accepts historyMaxBytes up to Number.MAX_SAFE_INTEGER and no more"
+  ],
+  "n": 4
+ },
+ {
+  "id": "R14",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "subscriber failures are isolated and observable does not let a throwing subscriber reach the application or other subscribers",
+   "the layer never disturbs the application R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once"
+  ],
+  "n": 2
+ }
+]

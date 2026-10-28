@@ -1,0 +1,56 @@
+Scenario: examples/per-frame-churn.ts
+Chrome Chrome/156.0.8078.48 (headless)
+Adapter (from the page): apple / metal-3, isFallbackAdapter: false
+GPU process (from the browser): Google Inc. (Apple) ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Version 26.3 (Build 25D125))
+Run classification: real-device: adapter reported non-fallback and the browser GPU process lists a hardware GPU
+
+[001] compute pipeline steady#2 created [lazy] resolve 2.70 ms (CPU), create 0.15 ms (CPU), 140 chars of WGSL
+[002] buffer scratch#3 materialized (16 B)
+[003] bind group #4 of layout layout#1 (created) { data=#3 }
+[004] compute pipeline perFrame#5 created [lazy] resolve 0.34 ms (CPU), create 0.01 ms (CPU), 140 chars of WGSL
+[005] buffer shared#6 materialized (16 B)
+[006] bind group #7 of layout layout#1 (created) { data=#6 }
+[007] buffer scratch#8 materialized (16 B)
+[008] bind group #9 of layout layout#1 (created) { data=#8 }
+[009] compute pipeline perFrame#10 created [lazy] resolve 0.17 ms (CPU), create 0.00 ms (CPU), 140 chars of WGSL
+[010] bind group #11 of layout layout#1 (created) { data=#6 }
+[011] buffer scratch#12 materialized (16 B)
+[012] bind group #13 of layout layout#1 (created) { data=#12 }
+[013] compute pipeline perFrame#14 created [lazy] resolve 0.13 ms (CPU), create 0.00 ms (CPU), 140 chars of WGSL
+[014] bind group #15 of layout layout#1 (created) { data=#6 }
+[015] buffer scratch#16 materialized (16 B)
+[016] bind group #17 of layout layout#1 (created) { data=#16 }
+[017] compute pipeline perFrame#18 created [lazy] resolve 0.56 ms (CPU), create 0.00 ms (CPU), 140 chars of WGSL
+[018] bind group #19 of layout layout#1 (created) { data=#6 }
+[019] buffer scratch#20 materialized (16 B)
+[020] bind group #21 of layout layout#1 (created) { data=#20 }
+[021] compute pipeline perFrame#22 created [lazy] resolve 0.17 ms (CPU), create 0.00 ms (CPU), 140 chars of WGSL
+[022] bind group #23 of layout layout#1 (created) { data=#6 }
+[scenario] 5 scratch buffers still referenced
+[023] pipeline #2 shader: no compiler messages
+[024] pipeline #5 shader: no compiler messages
+[025] pipeline #10 shader: no compiler messages
+[026] pipeline #14 shader: no compiler messages
+[027] pipeline #18 shader: no compiler messages
+[028] pipeline #22 shader: no compiler messages
+6 live resources, 6 pipelines, 10 bind groups
+  buffer scratch#3: 0 writes, 0 B written
+  buffer shared#6: 0 writes, 0 B written
+  buffer scratch#8: 0 writes, 0 B written
+  buffer scratch#12: 0 writes, 0 B written
+  buffer scratch#16: 0 writes, 0 B written
+  buffer scratch#20: 0 writes, 0 B written
+  compute pipeline steady#2: 5 dispatches, 0 draws
+  compute pipeline perFrame#5: 1 dispatches, 0 draws
+  compute pipeline perFrame#10: 1 dispatches, 0 draws
+  compute pipeline perFrame#14: 1 dispatches, 0 draws
+  compute pipeline perFrame#18: 1 dispatches, 0 draws
+  compute pipeline perFrame#22: 1 dispatches, 0 draws
+  note: 5 live pipelines are named 'perFrame': created repeatedly (each creation costs CPU)?
+  note: 5 live resources are named 'scratch': created repeatedly and never destroyed?
+  submits via TypeGPU encoders: 10
+  not available: gpuExecutionTime, gpuMemoryUsage, wrappedResources, internalResources, rawWebGPUCalls, workgroupCounts, perDispatchBindings, textureMemory, helperSubmissions, restoredPipelines, samplers, textureViews, renderBundles, bindGroupLayouts
+[029] root destroyed (own device: true), still alive: 6 buffers, 0 textures
+[030] DEVICE LOST (destroyed): Device was destroyed.
+
+JSONL written to /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/real-gpu/results/scenarios/per-frame-churn.jsonl (33 lines)

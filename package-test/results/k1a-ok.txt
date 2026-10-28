@@ -1,0 +1,390 @@
+
+$ tsc -p tsconfig.bundler.json (skipLibCheck:false)  -> exit 2
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuFragmentFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuFragmentFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,93): error TS2636: Type 'TgpuFragmentFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuFragmentFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(50,33): error TS2636: Type 'TgpuFragmentFn<super-Varying, Output>' is not assignable to type 'TgpuFragmentFn<sub-Varying, Output>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-Varying | undefined' is not assignable to type 'sub-Varying | undefined'.
+      Type 'super-Varying' is not assignable to type 'sub-Varying | undefined'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,36): error TS2636: Type 'TgpuVertexFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuVertexFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuVertexFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuVertexFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,69): error TS2636: Type 'TgpuVertexFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuVertexFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(36,31): error TS2636: Type 'TgpuVertexFn<super-VertexIn, VertexOut>' is not assignable to type 'TgpuVertexFn<sub-VertexIn, VertexOut>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-VertexIn | undefined' is not assignable to type 'sub-VertexIn | undefined'.
+      Type 'super-VertexIn' is not assignable to type 'sub-VertexIn | undefined'.
+node_modules/typegpu/data/dataTypes.d.ts(42,27): error TS2636: Type 'Unstruct<sub-TProps>' is not assignable to type 'Unstruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$validVertexSchema]' are incompatible.
+    Type '{ [K in keyof sub-TProps]: IsValidVertexSchema<sub-TProps[K]>; }[keyof sub-TProps] extends true ? true : false' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+      Type 'boolean' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct<sub-TProps>' is not assignable to type 'WgslStruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$invalidSchemaReason]' are incompatible.
+    Type 'SwapNever<{ [K in keyof sub-TProps]: ExtractInvalidSchemaError<sub-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof sub-TProps], undefined>' is not assignable to type 'SwapNever<{ [K in keyof super-TProps]: ExtractInvalidSchemaError<super-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof super-TProps], undefined>'.
+      Type 'ExtractInvalidSchemaError<sub-TProps[keyof sub-TProps], `in struct property '${keyof sub-TProps & string}' \u2014 `>' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+        Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+          Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+
+$ tsc -p tsconfig.bundler.json --skipLibCheck -> exit 0
+
+$ tsc -p tsconfig.node16.json (skipLibCheck:false)  -> exit 2
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuFragmentFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuFragmentFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,93): error TS2636: Type 'TgpuFragmentFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuFragmentFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(50,33): error TS2636: Type 'TgpuFragmentFn<super-Varying, Output>' is not assignable to type 'TgpuFragmentFn<sub-Varying, Output>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-Varying | undefined' is not assignable to type 'sub-Varying | undefined'.
+      Type 'super-Varying' is not assignable to type 'sub-Varying | undefined'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,36): error TS2636: Type 'TgpuVertexFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuVertexFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuVertexFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuVertexFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,69): error TS2636: Type 'TgpuVertexFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuVertexFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(36,31): error TS2636: Type 'TgpuVertexFn<super-VertexIn, VertexOut>' is not assignable to type 'TgpuVertexFn<sub-VertexIn, VertexOut>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-VertexIn | undefined' is not assignable to type 'sub-VertexIn | undefined'.
+      Type 'super-VertexIn' is not assignable to type 'sub-VertexIn | undefined'.
+node_modules/typegpu/data/dataTypes.d.ts(42,27): error TS2636: Type 'Unstruct<sub-TProps>' is not assignable to type 'Unstruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$validVertexSchema]' are incompatible.
+    Type '{ [K in keyof sub-TProps]: IsValidVertexSchema<sub-TProps[K]>; }[keyof sub-TProps] extends true ? true : false' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+      Type 'boolean' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct<sub-TProps>' is not assignable to type 'WgslStruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$invalidSchemaReason]' are incompatible.
+    Type 'SwapNever<{ [K in keyof sub-TProps]: ExtractInvalidSchemaError<sub-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof sub-TProps], undefined>' is not assignable to type 'SwapNever<{ [K in keyof super-TProps]: ExtractInvalidSchemaError<super-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof super-TProps], undefined>'.
+      Type 'ExtractInvalidSchemaError<sub-TProps[keyof sub-TProps], `in struct property '${keyof sub-TProps & string}' \u2014 `>' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+        Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+          Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+
+$ tsc -p tsconfig.node16.json --skipLibCheck -> exit 0
+
+$ tsc -p tsconfig.nodenext.json (skipLibCheck:false)  -> exit 2
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuFragmentFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuFragmentFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,93): error TS2636: Type 'TgpuFragmentFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuFragmentFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(50,33): error TS2636: Type 'TgpuFragmentFn<super-Varying, Output>' is not assignable to type 'TgpuFragmentFn<sub-Varying, Output>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-Varying | undefined' is not assignable to type 'sub-Varying | undefined'.
+      Type 'super-Varying' is not assignable to type 'sub-Varying | undefined'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,36): error TS2636: Type 'TgpuVertexFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuVertexFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuVertexFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuVertexFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,69): error TS2636: Type 'TgpuVertexFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuVertexFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(36,31): error TS2636: Type 'TgpuVertexFn<super-VertexIn, VertexOut>' is not assignable to type 'TgpuVertexFn<sub-VertexIn, VertexOut>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-VertexIn | undefined' is not assignable to type 'sub-VertexIn | undefined'.
+      Type 'super-VertexIn' is not assignable to type 'sub-VertexIn | undefined'.
+node_modules/typegpu/data/dataTypes.d.ts(42,27): error TS2636: Type 'Unstruct<sub-TProps>' is not assignable to type 'Unstruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$validVertexSchema]' are incompatible.
+    Type '{ [K in keyof sub-TProps]: IsValidVertexSchema<sub-TProps[K]>; }[keyof sub-TProps] extends true ? true : false' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+      Type 'boolean' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct<sub-TProps>' is not assignable to type 'WgslStruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$invalidSchemaReason]' are incompatible.
+    Type 'SwapNever<{ [K in keyof sub-TProps]: ExtractInvalidSchemaError<sub-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof sub-TProps], undefined>' is not assignable to type 'SwapNever<{ [K in keyof super-TProps]: ExtractInvalidSchemaError<super-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof super-TProps], undefined>'.
+      Type 'ExtractInvalidSchemaError<sub-TProps[keyof sub-TProps], `in struct property '${keyof sub-TProps & string}' \u2014 `>' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+        Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+          Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+
+$ tsc -p tsconfig.nodenext.json --skipLibCheck -> exit 0
+
+$ tsc -p tsconfig.node10.json (skipLibCheck:false)  -> exit 2
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuFragmentFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuFragmentFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,93): error TS2636: Type 'TgpuFragmentFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuFragmentFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(50,33): error TS2636: Type 'TgpuFragmentFn<super-Varying, Output>' is not assignable to type 'TgpuFragmentFn<sub-Varying, Output>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-Varying | undefined' is not assignable to type 'sub-Varying | undefined'.
+      Type 'super-Varying' is not assignable to type 'sub-Varying | undefined'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,36): error TS2636: Type 'TgpuVertexFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuVertexFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuVertexFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuVertexFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,69): error TS2636: Type 'TgpuVertexFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuVertexFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(36,31): error TS2636: Type 'TgpuVertexFn<super-VertexIn, VertexOut>' is not assignable to type 'TgpuVertexFn<sub-VertexIn, VertexOut>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-VertexIn | undefined' is not assignable to type 'sub-VertexIn | undefined'.
+      Type 'super-VertexIn' is not assignable to type 'sub-VertexIn | undefined'.
+node_modules/typegpu/data/dataTypes.d.ts(42,27): error TS2636: Type 'Unstruct<sub-TProps>' is not assignable to type 'Unstruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$validVertexSchema]' are incompatible.
+    Type '{ [K in keyof sub-TProps]: IsValidVertexSchema<sub-TProps[K]>; }[keyof sub-TProps] extends true ? true : false' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+      Type 'boolean' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct<sub-TProps>' is not assignable to type 'WgslStruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$invalidSchemaReason]' are incompatible.
+    Type 'SwapNever<{ [K in keyof sub-TProps]: ExtractInvalidSchemaError<sub-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof sub-TProps], undefined>' is not assignable to type 'SwapNever<{ [K in keyof super-TProps]: ExtractInvalidSchemaError<super-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof super-TProps], undefined>'.
+      Type 'ExtractInvalidSchemaError<sub-TProps[keyof sub-TProps], `in struct property '${keyof sub-TProps & string}' \u2014 `>' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+        Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+          Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+src/ok.ts(2,59): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/ok.ts(8,8): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/ok.ts(31,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+
+$ tsc -p tsconfig.node10.json --skipLibCheck -> exit 2
+src/ok.ts(2,59): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/ok.ts(8,8): error TS2307: Cannot find module 'typegpu/unstable-instrumentation' or its corresponding type declarations.
+  There are types at '/Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/package-test/work/patched/node_modules/typegpu/core/instrumentation/index.d.ts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+src/ok.ts(31,29): error TS7006: Parameter 'e' implicitly has an 'any' type.
+
+$ [pristine] tsc -p .tmp/tsconfig.baseline.json (skipLibCheck:false, upstream-only import)  -> exit 2
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuFragmentFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuFragmentFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,93): error TS2636: Type 'TgpuFragmentFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuFragmentFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(50,33): error TS2636: Type 'TgpuFragmentFn<super-Varying, Output>' is not assignable to type 'TgpuFragmentFn<sub-Varying, Output>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-Varying | undefined' is not assignable to type 'sub-Varying | undefined'.
+      Type 'super-Varying' is not assignable to type 'sub-Varying | undefined'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,36): error TS2636: Type 'TgpuVertexFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuVertexFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuVertexFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuVertexFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,69): error TS2636: Type 'TgpuVertexFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuVertexFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(36,31): error TS2636: Type 'TgpuVertexFn<super-VertexIn, VertexOut>' is not assignable to type 'TgpuVertexFn<sub-VertexIn, VertexOut>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-VertexIn | undefined' is not assignable to type 'sub-VertexIn | undefined'.
+      Type 'super-VertexIn' is not assignable to type 'sub-VertexIn | undefined'.
+node_modules/typegpu/data/dataTypes.d.ts(42,27): error TS2636: Type 'Unstruct<sub-TProps>' is not assignable to type 'Unstruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$validVertexSchema]' are incompatible.
+    Type '{ [K in keyof sub-TProps]: IsValidVertexSchema<sub-TProps[K]>; }[keyof sub-TProps] extends true ? true : false' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+      Type 'boolean' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct<sub-TProps>' is not assignable to type 'WgslStruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$invalidSchemaReason]' are incompatible.
+    Type 'SwapNever<{ [K in keyof sub-TProps]: ExtractInvalidSchemaError<sub-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof sub-TProps], undefined>' is not assignable to type 'SwapNever<{ [K in keyof super-TProps]: ExtractInvalidSchemaError<super-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof super-TProps], undefined>'.
+      Type 'ExtractInvalidSchemaError<sub-TProps[keyof sub-TProps], `in struct property '${keyof sub-TProps & string}' \u2014 `>' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+        Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+          Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+
+$ [patched] tsc -p .tmp/tsconfig.baseline.json (skipLibCheck:false, upstream-only import)  -> exit 2
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,38): error TS2636: Type 'TgpuFragmentFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuFragmentFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuFragmentFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuFragmentFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(36,93): error TS2636: Type 'TgpuFragmentFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuFragmentFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuFragmentFn.d.ts(50,33): error TS2636: Type 'TgpuFragmentFn<super-Varying, Output>' is not assignable to type 'TgpuFragmentFn<sub-Varying, Output>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-Varying | undefined' is not assignable to type 'sub-Varying | undefined'.
+      Type 'super-Varying' is not assignable to type 'sub-Varying | undefined'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,36): error TS2636: Type 'TgpuVertexFnShell<sub-TIn, TOut>' is not assignable to type 'TgpuVertexFnShell<super-TIn, TOut>' as implied by variance annotation.
+  Type 'TgpuVertexFn<CleanIO<sub-TIn>, CleanIO<TOut>>' is not assignable to type 'TgpuVertexFn<CleanIO<super-TIn>, CleanIO<TOut>>'.
+    Type 'CleanIO<super-TIn>' is not assignable to type 'CleanIO<sub-TIn>'.
+      Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; } | ({ [K in keyof UndecorateRecord<{ [Key in keyof { a: super-TIn; } as { a: super-TIn; }[Key] extends AnyBuiltin ? never : Key extends `$${string}` ? never : Key]: { ...; }[Key]; }>]: UndecorateRecord<...>[K]; }...' is not assignable to type 'CleanIO<sub-TIn>'.
+        Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type 'CleanIO<sub-TIn>'.
+          Type '{ [K in keyof UndecorateRecord<OmitBuiltins<super-TIn>>]: UndecorateRecord<OmitBuiltins<super-TIn>>[K]; }' is not assignable to type '{ [K in keyof UndecorateRecord<OmitBuiltins<sub-TIn>>]: UndecorateRecord<OmitBuiltins<sub-TIn>>[K]; }'.
+            Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+              Type 'string | number | symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                Type 'symbol' is not assignable to type 'keyof OmitBuiltins<super-TIn>'.
+                  Type 'symbol' is not assignable to type 'string | number'.
+                    Type 'keyof OmitBuiltins<sub-TIn>' is not assignable to type 'string | number'.
+                      Type 'string | number | symbol' is not assignable to type 'string | number'.
+                        Type 'symbol' is not assignable to type 'string | number'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(31,69): error TS2636: Type 'TgpuVertexFnShell<TIn, sub-TOut>' is not assignable to type 'TgpuVertexFnShell<TIn, super-TOut>' as implied by variance annotation.
+  Types of parameters 'implementation' and 'implementation' are incompatible.
+    Type 'InferIO<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+      Type 'InferGPU<super-TOut> | (super-TOut extends Record<string, unknown> ? { [K in keyof super-TOut]: InferGPU<super-TOut[K]>; } : super-TOut)' is not assignable to type 'InferIO<sub-TOut>'.
+        Type 'InferGPU<super-TOut>' is not assignable to type 'InferIO<sub-TOut>'.
+          Type 'unknown' is not assignable to type 'InferIO<sub-TOut>'.
+            Type 'InferGPU<super-TOut>' is not assignable to type 'InferGPU<sub-TOut>'.
+              Type '{ type: string; } & super-TOut' is not assignable to type 'sub-TOut'.
+node_modules/typegpu/core/function/tgpuVertexFn.d.ts(36,31): error TS2636: Type 'TgpuVertexFn<super-VertexIn, VertexOut>' is not assignable to type 'TgpuVertexFn<sub-VertexIn, VertexOut>' as implied by variance annotation.
+  The types of 'shell.in' are incompatible between these types.
+    Type 'super-VertexIn | undefined' is not assignable to type 'sub-VertexIn | undefined'.
+      Type 'super-VertexIn' is not assignable to type 'sub-VertexIn | undefined'.
+node_modules/typegpu/data/dataTypes.d.ts(42,27): error TS2636: Type 'Unstruct<sub-TProps>' is not assignable to type 'Unstruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$validVertexSchema]' are incompatible.
+    Type '{ [K in keyof sub-TProps]: IsValidVertexSchema<sub-TProps[K]>; }[keyof sub-TProps] extends true ? true : false' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+      Type 'boolean' is not assignable to type '{ [K in keyof super-TProps]: IsValidVertexSchema<super-TProps[K]>; }[keyof super-TProps] extends true ? true : false'.
+node_modules/typegpu/data/wgslTypes.d.ts(787,29): error TS2636: Type 'WgslStruct<sub-TProps>' is not assignable to type 'WgslStruct<super-TProps>' as implied by variance annotation.
+  Types of property '[$invalidSchemaReason]' are incompatible.
+    Type 'SwapNever<{ [K in keyof sub-TProps]: ExtractInvalidSchemaError<sub-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof sub-TProps], undefined>' is not assignable to type 'SwapNever<{ [K in keyof super-TProps]: ExtractInvalidSchemaError<super-TProps[K], `in struct property '${K & string}' \u2014 `>; }[keyof super-TProps], undefined>'.
+      Type 'ExtractInvalidSchemaError<sub-TProps[keyof sub-TProps], `in struct property '${keyof sub-TProps & string}' \u2014 `>' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+        Type '`in struct property '${keyof sub-TProps & string}' \u2014 ${sub-TProps[keyof sub-TProps][unique symbol]}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.
+          Type '`in struct property '${string}' \u2014 ${string}`' is not assignable to type 'ExtractInvalidSchemaError<super-TProps[keyof super-TProps], `in struct property '${keyof super-TProps & string}' \u2014 `>'.

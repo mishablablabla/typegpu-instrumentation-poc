@@ -37,10 +37,17 @@ function run(example, mustPrint) {
   return events;
 }
 
-const compute = run('compute-scale', ['compiled [lazy]', 'result after x3: [3,6,9,12,15,18,21,24]', 'factor#', '2 writes, 8 B written', 'DEVICE LOST (destroyed)']);
-expect(compute.some((e) => e.type === 'pipeline-compiled' && e.trigger === 'lazy'), 'compute-scale: a lazy pipeline-compiled event');
-const broken = run('broken-shader', ['FAILED to compile [initAsync]', 'shader: error at WGSL 1:51']);
-expect(broken.some((e) => e.type === 'pipeline-compile-failed'), 'broken-shader: a pipeline-compile-failed event');
+const compute = run('compute-scale', ['created [lazy]', 'result after x3: [3,6,9,12,15,18,21,24]', 'factor#', '2 writes, 8 B written', 'DEVICE LOST (destroyed)']);
+expect(compute.some((e) => e.type === 'pipeline-created' && e.trigger === 'lazy'), 'compute-scale: a lazy pipeline-created event');
+const broken = run('broken-shader', ['creation FAILED [initAsync, create]', 'shader: error at WGSL 1:51']);
+expect(broken.some((e) => e.type === 'pipeline-creation-failed'), 'broken-shader: a pipeline-creation-failed event');
+
+const resolveError = run('resolve-error', ['creation FAILED [lazy, resolve]', "Missing value for 'slot:multiplier'", 'dispatch threw ResolutionError', '0 pipelines']);
+expect(resolveError.every((e) => e.type !== 'shader-diagnostics' && e.type !== 'device-error'), 'resolve-error: the browser never saw a shader (no diagnostics, no device error)');
+const syncInvalid = run('sync-invalid-shader', ['created [initSync]', 'initSync() returned normally', 'shader: error at WGSL 1:51', 'DEVICE ERROR']);
+expect(syncInvalid.some((e) => e.type === 'pipeline-created' && e.validation === 'deferred') && !syncInvalid.some((e) => e.type === 'pipeline-creation-failed'), 'sync-invalid-shader: created (validation deferred), never "failed"');
+const churn = run('per-frame-churn', ["note: 5 live pipelines are named 'perFrame'", "note: 5 live resources are named 'scratch'", 'steady#2: 5 dispatches', 'still alive: 6 buffers']);
+expect(churn.filter((e) => e.type === 'pipeline-created' && e.label === 'perFrame').length === 5, 'per-frame-churn: five pipeline-created events named perFrame');
 
 rmSync(tmp, { recursive: true, force: true });
 console.log(failures === 0 ? '\nAll example checks passed on the hardware adapter.' : `\n${failures} check(s) failed.`);

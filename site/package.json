@@ -1,0 +1,35 @@
+{
+  "name": "site",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "data": "node tools/build-data.mjs",
+    "prebuild": "node tools/build-data.mjs",
+    "prestart": "node tools/build-data.mjs",
+    "check": "node tools/build-data.mjs && node tools/check-site.mjs"
+  },
+  "private": true,
+  "packageManager": "npm@11.19.0",
+  "dependencies": {
+    "@angular/common": "22.2.3",
+    "@angular/compiler": "22.2.3",
+    "@angular/core": "22.2.3",
+    "@angular/platform-browser": "22.2.3",
+    "@angular/router": "22.2.3",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "rxjs": "7.8.2",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "@angular/build": "22.2.4",
+    "@angular/cli": "22.2.4",
+    "@angular/compiler-cli": "22.2.3",
+    "prettier": "3.9.10",
+    "shiki": "4.5.0",
+    "typescript": "6.0.3"
+  }
+}

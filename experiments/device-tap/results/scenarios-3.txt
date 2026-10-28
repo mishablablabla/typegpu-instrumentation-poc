@@ -1,0 +1,98 @@
+
+== resources: 11/11
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  event sequence: buffer, texture, buffer, destroy x2, device-destroy-called, device-lost (no extra kinds)
+PASS  buffer payload: label, size, usage flags
+PASS  texture payload: label, format, size, mips, samples, dimension, usage
+PASS  destroy events name the right resources, once each (second buf.destroy() silent)
+PASS  device-destroy-called reports the survivor (1 buffer, 0 textures)
+PASS  snapshot before teardown lists only the survivor
+PASS  writes counted through queue.writeBuffer: buf had 1 write of 16 bytes (counter visible even after destroy via event/log? live record only)
+PASS  write after destroy throws (TypeGPU) and emits nothing
+PASS  stable device-lost reason
+
+== compute-bindgroups: 12/12
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  GPU really ran every dispatch
+PASS  one pipeline created for five dispatches over two handles; label is the TypeGPU name; mode sync
+PASS  pipeline event carries the WGSL (via its shader module) and entry stage
+PASS  bind group 1: binding0->data1, binding1->factor (by BINDING INDEX, names lost)
+PASS  bind group 2: binding0->data2 and the SAME factor id
+PASS  both groups share one layout id, and it appears in the pipeline layout
+PASS  per-pipeline counters: 5 dispatches
+PASS  submits: 5 dispatch + 2 read() helper submits = 7 (PoC counts 5)
+PASS  diagnostics: one shader-diagnostics, empty
+PASS  buffer writes: factor never written; data buffers were mappedAtCreation (initial data): invisible to writeBuffer counters
+
+== render: 8/8
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  red pixel read back
+PASS  render pipeline created once, lazily (mode sync), vertex+fragment WGSL
+PASS  per-pipeline counters: 3 draws
+PASS  submits: 3 TypeGPU draws + 1 raw readback submit = 4; PoC cannot count the raw one
+PASS  the RAW readback buffer was seen (label readback) and its destroy
+PASS  raw encoder finish observed
+
+== explicit-init: 5/5
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  three pipelines created; modes: sync (initSync), async (initAsync), sync (lazy)
+PASS  initSync and lazy are INDISTINGUISHABLE at device level (same event shape/payload)
+PASS  no recompile on dispatch/draw after explicit init
+
+== sync-failures: 6/6
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  both invalid sync pipelines reported as created (same limitation as PoC)
+PASS  compiler ERROR with line pointing at the offending generated WGSL line, per shader module
+PASS  device errors name the identifier
+PASS  no pipeline-failed on sync path
+
+== async-failures: 7/7
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  both creations rejected with GPUPipelineError (rejection preserved through our derived promise)
+PASS  one pipeline-failed per failure, compute then render, GPUPipelineError, labels from TypeGPU names
+PASS  no pipeline-created for failed async
+PASS  failed pipelines not listed as live
+PASS  diagnostics per module with errors
+
+== new-coverage: 11/11
+PASS  restore(): no own properties left on device, queue or tracked objects
+PASS  restore(): methods are the native prototype methods again
+PASS  wrapped raw buffer is visible (label rawStorage) and referenced by a bind group entry
+PASS  submissions visible: 1 dispatch + buf.clear + copyFrom + read() + generateMipmaps(1 submit, 2 render passes) + TypeGPU-encoder finish + raw compute = 7 (tex.clear/tex.write use queue.writeTexture, not submit)
+PASS  internal resources created by TypeGPU helpers are visible (mipmap pipeline / shaders with no TypeGPU label)
+PASS  encoder.finish() path (TypeGPU encoder + raw queue.submit) observed
+PASS  raw compute pass: dispatches counted on the raw pipeline (2 dispatches, label rawPipe)
+PASS  queue.writeTexture counted (TypeGPU tex.write + raw)
+PASS  raw bind group with texture view + sampler: view resolved to texture id, sampler kind
+PASS  raw bind group over an AUTO layout has layoutId null (getBindGroupLayout is not a creation call)
+PASS  encoder/pass wrappers existed while recording and are gone after end()/finish()
+
+== risks: 13/13
+PASS  device.queue identity is stable (we patch the queue instance)
+PASS  instanceof GPUBuffer / GPUDevice / GPUQueue hold; object identity preserved (unwrap() returns the same GPUBuffer every time)
+PASS  texture.createView result still a GPUTextureView
+PASS  detached call (wrong this) throws the same TypeError as native
+PASS  brand check with a foreign this: same error as native
+PASS  invalid descriptor throws the same TypeError (message) through the wrapper
+PASS  FINDING: wrapper is detectable (Function.prototype.toString is not [native code])
+PASS  pushErrorScope/popErrorScope still catch errors; tap records no device-error for scoped errors
+PASS  two taps stacked: each sees the call exactly once
+PASS  after restoring the INNER tap first, the outer tap keeps working (inert wrapper left in chain)
+PASS  after restoring both (non-LIFO): device has no own props and native methods are back
+PASS  LIFO restore and double restore are clean
+PASS  resource created under two stacked taps: destroy() after restoring the inner one leaves no own props
+
+== retention: 6/6
+PASS  tap does not retain abandoned TypeGPU roots (30 roots)
+PASS  tap does not retain GPUBuffers beyond control (no destroy())
+PASS  collectedWithoutDestroy accounting is fed by GC
+PASS  restored + dropped tap is collectable while the device lives (no retention by restored device)
+PASS  FINDING: a tap dropped WITHOUT restore() stays alive as long as the device (device holds its wrappers) - same class as PoC defect D1
+PASS  a restored tap does not keep a dropped device alive beyond the no-tap control
+Run classification: real-device: adapter reported non-fallback and the browser GPU process lists a hardware GPU

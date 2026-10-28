@@ -1,3 +1,20 @@
+// CI runners have no GPU. With `?forceFallback=1` a `requestAdapter()` that returns null is retried once with
+// `forceFallbackAdapter: true` (a software adapter, where the browser has one). Every caller in the page goes through
+// `navigator.gpu`, so the shim covers them all; `provenance()` reports that it was active and whether it was needed.
+const forceFallback =
+  typeof location !== 'undefined' && new URLSearchParams(location.search).has('forceFallback');
+let fallbackNeeded = false;
+if (forceFallback && typeof navigator !== 'undefined' && navigator.gpu) {
+  const gpu = navigator.gpu;
+  const original = gpu.requestAdapter.bind(gpu);
+  gpu.requestAdapter = async (options) => {
+    const adapter = await original(options);
+    if (adapter) return adapter;
+    fallbackNeeded = true;
+    return original({ ...options, forceFallbackAdapter: true });
+  };
+}
+
 /** What the page can tell about the adapter it got. The driver cross-checks it against the browser's GPU process. */
 export async function provenance() {
   const gpu = navigator.gpu;
@@ -23,6 +40,11 @@ export async function provenance() {
           ? ('non-fallback' as const)
           : ('fallback-status-unreported' as const),
     userAgent: navigator.userAgent,
+    adapterRequest: forceFallback
+      ? fallbackNeeded
+        ? 'forceFallbackAdapter (default request returned null)'
+        : 'default (forceFallback shim active, not needed)'
+      : 'default',
     vendor: info.vendor,
     architecture: info.architecture,
     device: info.device,

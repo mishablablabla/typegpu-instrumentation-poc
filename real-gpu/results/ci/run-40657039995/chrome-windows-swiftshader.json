@@ -1,0 +1,35 @@
+{
+  "cell": "chrome-windows-swiftshader",
+  "kind": "chrome",
+  "os": "win32",
+  "arch": "x64",
+  "node": "v24.22.1",
+  "pageDigest": "719a9a4e4790588680ff540e59c9f9b73176b9c6330c555eaf03b38a3af2e43f",
+  "when": "2026-10-28T08:29:22.470Z",
+  "steps": {
+    "viability": {
+      "exit": 2,
+      "status": "not-run",
+      "passed": 0,
+      "failed": 0,
+      "skipped": [],
+      "classification": "unavailable",
+      "browser": "Chrome/156.0.8078.48",
+      "adapterRequest": null,
+      "adapter": {
+        "vendor": null,
+        "architecture": null,
+        "isFallbackAdapter": null
+      },
+      "file": "real-gpu\\results\\ci\\chrome-windows-swiftshader-viability.json"
+    },
+    "suite": {
+      "exit": 2,
+      "status": "not-run",
+      "passed": 0,
+      "failed": 0,
+      "classification": "unavailable"
+    }
+  },
+  "status": "not-run"
+}

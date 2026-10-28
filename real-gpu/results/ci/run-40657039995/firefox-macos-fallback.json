@@ -1,0 +1,28 @@
+{
+  "cell": "firefox-macos-fallback",
+  "kind": "firefox",
+  "os": "darwin",
+  "arch": "arm64",
+  "node": "v24.21.0",
+  "pageDigest": "719a9a4e4790588680ff540e59c9f9b73176b9c6330c555eaf03b38a3af2e43f",
+  "when": "2026-10-28T08:29:16.963Z",
+  "steps": {
+    "viability": {
+      "exit": 2,
+      "status": "not-run",
+      "passed": 0,
+      "failed": 0,
+      "skipped": [],
+      "classification": "page-only",
+      "browser": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:157.0) Gecko/20100101 Firefox/157.0",
+      "adapterRequest": null,
+      "adapter": {
+        "vendor": null,
+        "architecture": null,
+        "isFallbackAdapter": null
+      },
+      "file": "real-gpu/results/ci/firefox-macos-fallback-viability.json"
+    }
+  },
+  "status": "not-run"
+}

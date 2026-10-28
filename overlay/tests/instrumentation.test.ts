@@ -1,9 +1,13 @@
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import * as v8 from 'node:v8';
 import * as vm from 'node:vm';
 import { describe, expect, vi } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
-import type { TgpuInstrumentationEvent } from '../../src/core/instrumentation/types.ts';
+import type {
+  TgpuInstrumentationEvent,
+  TgpuInstrumentationOptions,
+} from '../../src/core/instrumentation/types.ts';
 import {
   computeMain,
   flush,
@@ -18,8 +22,11 @@ import {
 v8.setFlagsFromString('--expose-gc');
 const gc = vm.runInNewContext('gc') as () => void;
 
-function enabledRoot(device: GPUDevice, options: boolean | { historySize?: number } = true) {
-  const root = tgpu.initFromDevice({ device, unstable_instrumentation: options });
+function enabledRoot(device: GPUDevice, options: TgpuInstrumentationOptions = {}) {
+  const root = tgpu.initFromDevice({
+    device,
+    unstable_instrumentation: createInstrumentation(options),
+  });
   const inst = root['~unstable'].instrumentation;
   if (!inst) {
     throw new Error('instrumentation should be enabled');
@@ -63,9 +70,15 @@ describe('instrumentation is opt-in', () => {
     );
   });
 
-  it('is absent for `false`', ({ device }) => {
-    const root = tgpu.initFromDevice({ device, unstable_instrumentation: false });
+  it('is absent when the option is omitted', ({ device }) => {
+    const root = tgpu.initFromDevice({ device });
     expect(root['~unstable'].instrumentation).toBeUndefined();
+  });
+
+  it('rejects the old boolean form with an actionable message', ({ device }) => {
+    expect(() =>
+      tgpu.initFromDevice({ device, unstable_instrumentation: true as never }),
+    ).toThrowError(/createInstrumentation\(\)/);
   });
 });
 
@@ -80,14 +93,14 @@ describe('events', () => {
     await flush();
 
     expect(typesOf(events)).toEqual([
-      'pipeline-compiled',
+      'pipeline-created',
       'resource-materialized',
       'bind-group-created',
       'shader-diagnostics',
     ]);
     expect(events.map((e) => e.seq)).toEqual([1, 2, 3, 4]);
 
-    const [compiled] = ofType(events, 'pipeline-compiled');
+    const [compiled] = ofType(events, 'pipeline-created');
     // The label is the variable name, given by the unplugin's auto-naming.
     expect(compiled).toMatchObject({ pipeline: 'compute', trigger: 'lazy', label: 'pipeline' });
     expect(compiled?.wgsl).toContain('@compute @workgroup_size(1)');
@@ -128,7 +141,7 @@ describe('events', () => {
       )
       .dispatchWorkgroups(1);
 
-    expect(ofType(events, 'pipeline-compiled').map((e) => e.trigger)).toEqual([
+    expect(ofType(events, 'pipeline-created').map((e) => e.trigger)).toEqual([
       'initSync',
       'initAsync',
       'lazy',
@@ -171,8 +184,8 @@ describe('events', () => {
     await expect(pipeline.initAsync()).rejects.toBe(failure);
     await flush();
 
-    expect(typesOf(events)).toEqual(['pipeline-compile-failed', 'shader-diagnostics']);
-    const [failed] = ofType(events, 'pipeline-compile-failed');
+    expect(typesOf(events)).toEqual(['pipeline-creation-failed', 'shader-diagnostics']);
+    const [failed] = ofType(events, 'pipeline-creation-failed');
     expect(failed).toMatchObject({
       pipeline: 'compute',
       trigger: 'initAsync',
@@ -187,7 +200,7 @@ describe('events', () => {
     expect(inst.getSnapshot().pipelines).toEqual([]);
 
     await pipeline.initAsync();
-    expect(ofType(events, 'pipeline-compiled')).toHaveLength(1);
+    expect(ofType(events, 'pipeline-created')).toHaveLength(1);
     expect(inst.getSnapshot().pipelines).toHaveLength(1);
   });
 
@@ -206,7 +219,7 @@ describe('events', () => {
 
     await expect(pipeline.initAsync()).rejects.toBe(failure);
 
-    expect(ofType(events, 'pipeline-compile-failed')).toEqual([
+    expect(ofType(events, 'pipeline-creation-failed')).toEqual([
       expect.objectContaining({ pipeline: 'render', errorType: 'Error', message: failure.message }),
     ]);
   });
@@ -245,7 +258,7 @@ describe('events', () => {
     pipeline.withColorAttachment({ view: texture, loadOp: 'clear', storeOp: 'store' }).draw(3);
     pipeline.withColorAttachment({ view: texture, loadOp: 'load', storeOp: 'store' }).draw(3);
 
-    expect(ofType(events, 'pipeline-compiled')[0]).toMatchObject({
+    expect(ofType(events, 'pipeline-created')[0]).toMatchObject({
       pipeline: 'render',
       trigger: 'lazy',
     });
@@ -501,7 +514,7 @@ describe('device errors and teardown', () => {
 
   it('keeps listening for the loss of a device the root owns', async ({ device }) => {
     const observable = makeObservableDevice(device);
-    const root = await tgpu.init({ unstable_instrumentation: true });
+    const root = await tgpu.init({ unstable_instrumentation: createInstrumentation() });
     const inst = root['~unstable'].instrumentation!;
     const events: TgpuInstrumentationEvent[] = [];
     inst.subscribe((e) => events.push(e));
@@ -546,7 +559,7 @@ describe('garbage collection compatibility', () => {
   }
 
   function useInstrumentedRoot(device: GPUDevice) {
-    const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+    const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
     const { values, bindGroup, pipeline } = dispatchOnce(root as never);
     const texture = root.createTexture({ size: [8, 8], format: 'rgba8unorm' }).$usage('render');
     root.unwrap(texture);
@@ -588,9 +601,74 @@ describe('garbage collection compatibility', () => {
     expect(after.counters.collectedWithoutDestroy).toBe(2);
   });
 
+  // Regression, found by the viability gate on a real device: a device keeps its listeners and its `lost`
+  // reactions for as long as it lives, so a per-root listener kept every abandoned root's instrumentation
+  // (with its event history) alive: 30 of 30 hubs survived. Hot reloading creates roots like this.
+  it('does not keep instrumentation of abandoned roots alive through a long-lived device', async ({
+    device,
+  }) => {
+    // plain functions, not vi.fn (which records its arguments): behave like a real device and nothing more
+    const listeners = new Set<unknown>();
+    const mock = (device as unknown as { mock: Record<string, unknown> }).mock;
+    mock.addEventListener = (_type: string, listener: unknown) => listeners.add(listener);
+    mock.removeEventListener = (_type: string, listener: unknown) => listeners.delete(listener);
+    mock.lost = new Promise(() => {}); // never settles: the device lives on
+
+    const hubs: WeakRef<object>[] = [];
+    (() => {
+      for (let i = 0; i < 30; i++) {
+        const root = tgpu.initFromDevice({
+          device,
+          unstable_instrumentation: createInstrumentation(),
+        });
+        hubs.push(new WeakRef(root['~unstable'].instrumentation as object));
+        root.createComputePipeline({ compute: computeMain }).initSync();
+      }
+    })();
+    expect(listeners.size).toBe(1); // one shared listener, not one per root
+
+    for (let i = 0; i < 20; i++) {
+      await flush();
+      gc();
+    }
+
+    expect(hubs.filter((h) => h.deref() !== undefined)).toHaveLength(0);
+    for (let i = 0; i < 20 && listeners.size > 0; i++) {
+      await flush();
+      gc();
+    }
+    expect(listeners.size).toBe(0); // the shared listener is removed once the last hub is gone
+  });
+
+  it('delivers one device error to every live instrumented root on the same device', ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const a = enabledRoot(device);
+    const b = enabledRoot(device);
+
+    observable.fireError('shared');
+
+    expect(ofType(a.events, 'device-error')).toHaveLength(1);
+    expect(ofType(b.events, 'device-error')).toHaveLength(1);
+    expect(observable.errorListenerCount).toBe(1);
+
+    a.inst.dispose();
+    observable.fireError('second');
+    expect(ofType(a.events, 'device-error')).toHaveLength(1);
+    expect(ofType(b.events, 'device-error')).toHaveLength(2);
+    expect(observable.errorListenerCount).toBe(1);
+
+    b.inst.dispose();
+    expect(observable.errorListenerCount).toBe(0);
+  });
+
   it('keeps event history bounded while resources churn and get collected', async ({ device }) => {
     makeObservableDevice(device);
-    const root = tgpu.initFromDevice({ device, unstable_instrumentation: { historySize: 8 } });
+    const root = tgpu.initFromDevice({
+      device,
+      unstable_instrumentation: createInstrumentation({ historySize: 8 }),
+    });
     const inst = root['~unstable'].instrumentation!;
 
     for (let i = 0; i < 500; i++) {
@@ -604,5 +682,88 @@ describe('garbage collection compatibility', () => {
     expect(inst.history()).toHaveLength(8);
     expect(inst.getSnapshot().counters.droppedEvents).toBe(492);
     expect(inst.getSnapshot().resources.length).toBeLessThan(500);
+  });
+});
+
+// Viability gate: the lifecycle claims, as durable mock-device tests (the same claims are checked on a
+// real device by real-gpu/page/viability.ts).
+describe('lifecycle under sustained use', () => {
+  it('keeps history at its bound over 40 000 events and accounts for every eviction', ({
+    device,
+  }) => {
+    makeObservableDevice(device);
+    const { root, inst, events } = enabledRoot(device, { historySize: 256 });
+
+    for (let i = 0; i < 20_000; i++) {
+      const buffer = root.createBuffer(d.f32).$usage('uniform');
+      root.unwrap(buffer);
+      buffer.destroy();
+    }
+
+    const history = inst.history();
+    expect(events).toHaveLength(40_000);
+    expect(history).toHaveLength(256);
+    expect(history.map((e) => e.seq)).toEqual(Array.from({ length: 256 }, (_, i) => 39_745 + i));
+    expect(inst.getSnapshot().counters.droppedEvents).toBe(40_000 - 256);
+    expect(inst.getSnapshot().resources).toEqual([]);
+  });
+
+  it('does not count destroyed-then-collected resources as leaked', async ({ device }) => {
+    makeObservableDevice(device);
+    const { root, inst } = enabledRoot(device);
+    (() => {
+      for (let i = 0; i < 50; i++) {
+        const buffer = root.createBuffer(d.f32).$usage('uniform');
+        root.unwrap(buffer);
+        buffer.destroy();
+      }
+    })();
+
+    for (let i = 0; i < 10; i++) {
+      await flush();
+      gc();
+    }
+
+    expect(inst.getSnapshot().counters.collectedWithoutDestroy).toBe(0);
+  });
+
+  it('produces nothing after dispose(): in-flight diagnostics, device errors, device loss, later resources', async ({
+    device,
+  }) => {
+    const observable = makeObservableDevice(device);
+    const { root, inst, events } = enabledRoot(device);
+    root.createComputePipeline({ compute: computeMain }).initSync(); // diagnostics still in flight
+    const before = events.length;
+
+    inst.dispose();
+    observable.fireError('late');
+    observable.lose('unknown', 'late');
+    root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+    await flush();
+
+    expect(before).toBe(1);
+    expect(events).toHaveLength(before);
+    expect(inst.history()).toHaveLength(before);
+  });
+
+  it('keeps unsubscribed and independent consumers independent over many events', ({ device }) => {
+    makeObservableDevice(device);
+    const { root, inst } = enabledRoot(device);
+    let kept = 0;
+    let dropped = 0;
+    let thrown = 0;
+    inst.subscribe(() => kept++);
+    const off = inst.subscribe(() => dropped++);
+    inst.subscribe(() => {
+      thrown++;
+      throw new Error('consumer bug');
+    });
+
+    for (let i = 0; i < 100; i++) root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+    off();
+    for (let i = 0; i < 100; i++) root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+
+    expect({ kept, dropped, thrown }).toEqual({ kept: 200, dropped: 100, thrown: 200 });
+    expect(inst.getSnapshot().counters.listenerErrors).toBe(200);
   });
 });

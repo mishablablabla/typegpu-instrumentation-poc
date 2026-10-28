@@ -1,0 +1,763 @@
+{
+  "when": "2026-10-28T08:29:37.495Z",
+  "harness": {
+    "chrome": "Chrome/155.0.8059.39",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "headless": true
+  },
+  "gpuProcess": [
+    {
+      "vendorId": 65535,
+      "deviceId": 65535,
+      "vendorString": "Google Inc. (Google)",
+      "deviceString": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver-5.0.0)",
+      "driverVersion": "5.0.0"
+    }
+  ],
+  "gpuFeatureStatus": {
+    "2d_canvas": "enabled",
+    "direct_rendering_display_compositor": "disabled_off_ok",
+    "gpu_compositing": "enabled",
+    "multiple_raster_threads": "enabled_on",
+    "opengl": "enabled_on",
+    "rasterization": "enabled",
+    "raw_draw": "disabled_off_ok",
+    "skia_graphite": "disabled_off",
+    "trees_in_viz": "disabled_off",
+    "video_decode": "enabled",
+    "video_encode": "disabled_software",
+    "vulkan": "enabled_on",
+    "webgl": "enabled",
+    "webgpu": "unavailable_software",
+    "webgpu_on_vk_via_gl_interop": "disabled_off",
+    "webnn": "disabled_off"
+  },
+  "executionMode": "software",
+  "validationLevel": "SOFTWARE ADAPTER - not real-GPU validation",
+  "provenance": {
+    "pageClassification": "software",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/155.0.0.0 Safari/537.36",
+    "adapterRequest": "default",
+    "vendor": "google",
+    "architecture": "swiftshader",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": true,
+    "features": [
+      "bgra8unorm-storage",
+      "chromium-experimental-sampling-resource-table",
+      "chromium-experimental-timestamp-query-inside-passes",
+      "clip-distances",
+      "core-features-and-limits",
+      "depth-clip-control",
+      "depth32float-stencil8",
+      "float32-blendable",
+      "float32-filterable",
+      "indirect-first-instance",
+      "rg11b10ufloat-renderable",
+      "subgroup-size-control",
+      "subgroups",
+      "texture-component-swizzle",
+      "texture-compression-astc",
+      "texture-compression-astc-sliced-3d",
+      "texture-compression-bc",
+      "texture-compression-bc-sliced-3d",
+      "texture-compression-etc2",
+      "texture-compression-unaligned",
+      "timestamp-query"
+    ]
+  },
+  "checks": [
+    {
+      "id": "init",
+      "description": "instrumentation is present and enabled after tgpu.init",
+      "pass": true
+    },
+    {
+      "id": "compute-result",
+      "description": "the GPU actually ran the shader (readback equals input * 3)",
+      "pass": true,
+      "detail": [
+        3,
+        6,
+        9,
+        12,
+        15,
+        18,
+        21,
+        24
+      ]
+    },
+    {
+      "id": "pipeline-event",
+      "description": "exactly one pipeline-created event, lazy, with generated WGSL",
+      "pass": true,
+      "detail": [
+        {
+          "trigger": "lazy",
+          "label": "scalePipeline",
+          "wgslLength": 241
+        }
+      ]
+    },
+    {
+      "id": "diagnostics-valid",
+      "description": "getCompilationInfo reported for the valid shader with no errors",
+      "pass": true,
+      "detail": [
+        []
+      ]
+    },
+    {
+      "id": "resources",
+      "description": "both buffers materialized with their sizes, before the bind group",
+      "pass": true,
+      "detail": [
+        {
+          "label": "data",
+          "size": 32
+        },
+        {
+          "label": "factor",
+          "size": 4
+        }
+      ]
+    },
+    {
+      "id": "bind-group",
+      "description": "bind group entries resolve to the tracked buffers",
+      "pass": true,
+      "detail": [
+        {
+          "name": "data",
+          "kind": "buffer",
+          "resourceId": 3
+        },
+        {
+          "name": "factor",
+          "kind": "buffer",
+          "resourceId": 4
+        }
+      ]
+    },
+    {
+      "id": "counters",
+      "description": "one dispatch and at least one submit counted",
+      "pass": true,
+      "detail": {
+        "pipelines": [
+          {
+            "label": "scalePipeline",
+            "dispatches": 1
+          }
+        ],
+        "submits": 1
+      }
+    },
+    {
+      "id": "buffer-writes",
+      "description": "a TypeGPU write is counted per buffer with its byte size",
+      "pass": true,
+      "detail": {
+        "id": 4,
+        "resource": "buffer",
+        "label": "factor",
+        "sizeBytes": 4,
+        "usage": 76,
+        "writes": 1,
+        "bytesWritten": 4
+      }
+    },
+    {
+      "id": "render",
+      "description": "render pipeline compiled lazily and one draw counted, no device error so far",
+      "pass": true,
+      "detail": [
+        {
+          "kind": "compute",
+          "label": "scalePipeline",
+          "draws": 0
+        },
+        {
+          "kind": "render",
+          "label": "trianglePipeline",
+          "draws": 1
+        }
+      ]
+    },
+    {
+      "id": "diagnostics-error",
+      "description": "the compiler error is reported with a line number that points at the offending line of the generated WGSL",
+      "pass": true,
+      "detail": {
+        "messages": [
+          {
+            "type": "error",
+            "message": "unresolved call target 'definitelyUndeclared'",
+            "lineNum": 1,
+            "linePos": 51
+          }
+        ],
+        "wgsl": "@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }"
+      }
+    },
+    {
+      "id": "device-error",
+      "description": "the invalid pipeline surfaced as an uncaptured device error",
+      "pass": true,
+      "detail": [
+        {
+          "errorType": "GPUValidationError",
+          "message": "Error while parsing WGSL: :1:51 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }\n                                                  ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenSync - Shader\"\"]).\n"
+        },
+        {
+          "errorType": "GPUValidationError",
+          "message": "[Invalid ShaderModule \"brokenSync - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenSync - Shader\"], entryPoint: [undefined]).\n - While calling [Device].CreateComputePipeline([ComputePipelineDescriptor \"\"brokenSync\"\"]).\n"
+        }
+      ]
+    },
+    {
+      "id": "async-failure-event",
+      "description": "an invalid pipeline created with initAsync reports pipeline-creation-failed with its WGSL, and the compiler error follows",
+      "pass": true,
+      "detail": {
+        "failed": {
+          "type": "pipeline-creation-failed",
+          "id": 9,
+          "pipeline": "compute",
+          "label": "brokenAsync",
+          "trigger": "initAsync",
+          "phase": "create",
+          "resolveMs": 0.40499999999883585,
+          "createMs": 0.9550000000017462,
+          "wgslLength": 78,
+          "layoutIds": [],
+          "layoutLabels": [],
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"brokenSync - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenSync - Shader\"], entryPoint: [undefined]).\n",
+          "v": 2,
+          "seq": 14,
+          "t": 817.989999999998
+        },
+        "diagnostics": [
+          {
+            "type": "error",
+            "message": "unresolved call target 'definitelyUndeclared'",
+            "lineNum": 1,
+            "linePos": 51
+          }
+        ]
+      }
+    },
+    {
+      "id": "resource-destroyed",
+      "description": "destroying a buffer produced a resource-destroyed event",
+      "pass": true
+    },
+    {
+      "id": "root-destroyed",
+      "description": "root-destroyed reports the resources that were still alive (factor buffer + target texture)",
+      "pass": true,
+      "detail": {
+        "type": "root-destroyed",
+        "ownDevice": true,
+        "liveBuffers": 1,
+        "liveTextures": 1,
+        "v": 2,
+        "seq": 17,
+        "t": 1118.9950000000026
+      }
+    },
+    {
+      "id": "device-lost-owned",
+      "description": "destroying the owned device produced a device-lost event with reason \"destroyed\"",
+      "pass": true,
+      "detail": {
+        "browser": {
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        },
+        "event": {
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed.",
+          "v": 2,
+          "seq": 18,
+          "t": 1119.5449999999983
+        }
+      }
+    },
+    {
+      "id": "seq",
+      "description": "event sequence numbers are contiguous and history is bounded",
+      "pass": true,
+      "detail": {
+        "events": 18,
+        "history": 18
+      }
+    },
+    {
+      "id": "raw-error-event",
+      "description": "a raw validation error was delivered as a device-error event exactly once (and not after dispose)",
+      "pass": true,
+      "detail": [
+        {
+          "errorType": "GPUValidationError",
+          "message": "The texture size ([Extent3D width:0, height:0, depthOrArrayLayers:1]) or mipLevelCount (1) is empty.\n - While validating [TextureDescriptor \"\"bogus-texture\"\"].\n - While calling [Device].CreateTexture([TextureDescriptor \"\"bogus-texture\"\"]).\n"
+        }
+      ]
+    },
+    {
+      "id": "device-lost-borrowed",
+      "description": "destroying a borrowed device directly produced a device-lost event; the hub stayed attached",
+      "pass": true,
+      "detail": {
+        "type": "device-lost",
+        "reason": "destroyed",
+        "message": "Device was destroyed.",
+        "v": 2,
+        "seq": 2,
+        "t": 1781.1399999999994
+      }
+    },
+    {
+      "id": "leak-after-loss",
+      "description": "root.destroy() on a borrowed root reports the buffer TypeGPU never destroyed",
+      "pass": true,
+      "detail": {
+        "type": "root-destroyed",
+        "ownDevice": false,
+        "liveBuffers": 1,
+        "liveTextures": 0,
+        "v": 2,
+        "seq": 3,
+        "t": 2080.970000000001
+      }
+    },
+    {
+      "id": "gc-real-device",
+      "description": "with a live real device, the root, buffer and pipeline are garbage-collected and the registry forgets them",
+      "pass": true,
+      "detail": {
+        "collected": true,
+        "before": {
+          "resources": 1,
+          "pipelines": 1
+        },
+        "after": {
+          "resources": 0,
+          "pipelines": 0,
+          "collectedWithoutDestroy": 1
+        }
+      }
+    }
+  ],
+  "observations": [
+    {
+      "id": "compute.cpuMs",
+      "value": [
+        {
+          "resolveMs": 8,
+          "createMs": 0.4150000000008731,
+          "note": "CPU times, not GPU"
+        }
+      ]
+    },
+    {
+      "id": "error.messageMentionsTypeGPULabel",
+      "value": true
+    },
+    {
+      "id": "async.pipelineCreation",
+      "value": {
+        "rejected": true,
+        "rejection": "GPUPipelineError: [Invalid ShaderModule \"brokenSync - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenSync - Shader\"], entryPoint: [undefined]).\n",
+        "pipelineCompiledEvents": 0,
+        "shaderDiagnosticsWithErrors": 1,
+        "deviceErrors": 1
+      }
+    },
+    {
+      "id": "async.rejectionNamesFirstIdenticalModule",
+      "value": true
+    },
+    {
+      "id": "error.rawMessageMentionsLabel",
+      "value": true
+    },
+    {
+      "id": "performance.now.smallestStepMs",
+      "value": 0.004999999997380655
+    },
+    {
+      "id": "console.rawValidationError",
+      "value": {
+        "withHubListener": 1,
+        "afterHubDisposed": 1,
+        "note": "browser console/log entries during each phase"
+      }
+    }
+  ],
+  "events": [
+    {
+      "type": "pipeline-created",
+      "id": 2,
+      "pipeline": "compute",
+      "label": "scalePipeline",
+      "trigger": "lazy",
+      "validation": "deferred",
+      "resolveMs": 8,
+      "createMs": 0.4150000000008731,
+      "wgsl": "@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\n\n@group(0) @binding(1) var<uniform> factor: f32;\n\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\n  data[gid.x] = (data[gid.x] * factor);\n}",
+      "wgslLength": 241,
+      "layoutIds": [
+        1
+      ],
+      "layoutLabels": [
+        "layout"
+      ],
+      "v": 2,
+      "seq": 1,
+      "t": 376.6050000000032
+    },
+    {
+      "type": "resource-materialized",
+      "resource": "buffer",
+      "id": 3,
+      "label": "data",
+      "sizeBytes": 32,
+      "usage": 140,
+      "v": 2,
+      "seq": 2,
+      "t": 377.51000000000204
+    },
+    {
+      "type": "resource-materialized",
+      "resource": "buffer",
+      "id": 4,
+      "label": "factor",
+      "sizeBytes": 4,
+      "usage": 76,
+      "v": 2,
+      "seq": 3,
+      "t": 378.5
+    },
+    {
+      "type": "bind-group-created",
+      "id": 5,
+      "label": "layout",
+      "layoutId": 1,
+      "origin": "created",
+      "entries": [
+        {
+          "name": "data",
+          "kind": "buffer",
+          "resourceId": 3
+        },
+        {
+          "name": "factor",
+          "kind": "buffer",
+          "resourceId": 4
+        }
+      ],
+      "v": 2,
+      "seq": 4,
+      "t": 379.1449999999968
+    },
+    {
+      "type": "shader-diagnostics",
+      "pipelineId": 2,
+      "messages": [],
+      "v": 2,
+      "seq": 5,
+      "t": 385.1849999999977
+    },
+    {
+      "type": "pipeline-created",
+      "id": 6,
+      "pipeline": "render",
+      "label": "trianglePipeline",
+      "trigger": "lazy",
+      "validation": "deferred",
+      "resolveMs": 3.4199999999982538,
+      "createMs": 0.08499999999912689,
+      "wgsl": "struct vertexMain_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexMain(@builtin(vertex_index) idx: u32) -> vertexMain_Output {\n  return vertexMain_Output(vec4f((f32(idx) - 1f), ((f32((idx % 2u)) * 2f) - 1f), 0f, 1f));\n}\n\n@fragment fn fragmentMain() -> @location(0) vec4f {\n  return vec4f(1, 0, 0, 1);\n}",
+      "wgslLength": 316,
+      "layoutIds": [],
+      "layoutLabels": [],
+      "v": 2,
+      "seq": 6,
+      "t": 447.8150000000023
+    },
+    {
+      "type": "resource-materialized",
+      "resource": "texture",
+      "id": 7,
+      "label": "target",
+      "format": "rgba8unorm",
+      "size": [
+        16,
+        16
+      ],
+      "mipLevelCount": 1,
+      "sampleCount": 1,
+      "dimension": "2d",
+      "usage": 19,
+      "v": 2,
+      "seq": 7,
+      "t": 448.2900000000009
+    },
+    {
+      "type": "shader-diagnostics",
+      "pipelineId": 6,
+      "messages": [],
+      "v": 2,
+      "seq": 8,
+      "t": 453.8199999999997
+    },
+    {
+      "type": "pipeline-created",
+      "id": 8,
+      "pipeline": "compute",
+      "label": "brokenSync",
+      "trigger": "initSync",
+      "validation": "deferred",
+      "resolveMs": 0.8099999999976717,
+      "createMs": 0.029999999998835847,
+      "wgsl": "@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }",
+      "wgslLength": 78,
+      "layoutIds": [],
+      "layoutLabels": [],
+      "v": 2,
+      "seq": 9,
+      "t": 514.1549999999988
+    },
+    {
+      "type": "device-error",
+      "errorType": "GPUValidationError",
+      "message": "Error while parsing WGSL: :1:51 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }\n                                                  ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenSync - Shader\"\"]).\n",
+      "v": 2,
+      "seq": 10,
+      "t": 515.1549999999988
+    },
+    {
+      "type": "device-error",
+      "errorType": "GPUValidationError",
+      "message": "[Invalid ShaderModule \"brokenSync - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenSync - Shader\"], entryPoint: [undefined]).\n - While calling [Device].CreateComputePipeline([ComputePipelineDescriptor \"\"brokenSync\"\"]).\n",
+      "v": 2,
+      "seq": 11,
+      "t": 515.3499999999985
+    },
+    {
+      "type": "shader-diagnostics",
+      "pipelineId": 8,
+      "messages": [
+        {
+          "type": "error",
+          "message": "unresolved call target 'definitelyUndeclared'",
+          "lineNum": 1,
+          "linePos": 51
+        }
+      ],
+      "v": 2,
+      "seq": 12,
+      "t": 515.5149999999994
+    },
+    {
+      "type": "device-error",
+      "errorType": "GPUValidationError",
+      "message": "Error while parsing WGSL: :1:51 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }\n                                                  ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenAsync - Shader\"\"]).\n",
+      "v": 2,
+      "seq": 13,
+      "t": 817.4850000000006
+    },
+    {
+      "type": "pipeline-creation-failed",
+      "id": 9,
+      "pipeline": "compute",
+      "label": "brokenAsync",
+      "trigger": "initAsync",
+      "phase": "create",
+      "resolveMs": 0.40499999999883585,
+      "createMs": 0.9550000000017462,
+      "wgsl": "@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }",
+      "wgslLength": 78,
+      "layoutIds": [],
+      "layoutLabels": [],
+      "errorType": "GPUPipelineError",
+      "message": "[Invalid ShaderModule \"brokenSync - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenSync - Shader\"], entryPoint: [undefined]).\n",
+      "v": 2,
+      "seq": 14,
+      "t": 817.989999999998
+    },
+    {
+      "type": "shader-diagnostics",
+      "pipelineId": 9,
+      "messages": [
+        {
+          "type": "error",
+          "message": "unresolved call target 'definitelyUndeclared'",
+          "lineNum": 1,
+          "linePos": 51
+        }
+      ],
+      "v": 2,
+      "seq": 15,
+      "t": 818.3550000000032
+    },
+    {
+      "type": "resource-destroyed",
+      "resource": "buffer",
+      "id": 3,
+      "label": "data",
+      "v": 2,
+      "seq": 16,
+      "t": 1118.675000000003
+    },
+    {
+      "type": "root-destroyed",
+      "ownDevice": true,
+      "liveBuffers": 1,
+      "liveTextures": 1,
+      "v": 2,
+      "seq": 17,
+      "t": 1118.9950000000026
+    },
+    {
+      "type": "device-lost",
+      "reason": "destroyed",
+      "message": "Device was destroyed.",
+      "v": 2,
+      "seq": 18,
+      "t": 1119.5449999999983
+    }
+  ],
+  "snapshot": {
+    "v": 2,
+    "t": 512.9649999999965,
+    "enabled": true,
+    "resources": [
+      {
+        "id": 3,
+        "resource": "buffer",
+        "label": "data",
+        "sizeBytes": 32,
+        "usage": 140,
+        "writes": 0,
+        "bytesWritten": 0
+      },
+      {
+        "id": 4,
+        "resource": "buffer",
+        "label": "factor",
+        "sizeBytes": 4,
+        "usage": 76,
+        "writes": 1,
+        "bytesWritten": 4
+      },
+      {
+        "id": 7,
+        "resource": "texture",
+        "label": "target",
+        "sizeBytes": null,
+        "usage": 19,
+        "writes": null,
+        "bytesWritten": null
+      }
+    ],
+    "bindGroups": [
+      {
+        "id": 5,
+        "label": null,
+        "layoutId": 1,
+        "origin": "created",
+        "entries": [
+          {
+            "name": "data",
+            "kind": "buffer",
+            "resourceId": 3
+          },
+          {
+            "name": "factor",
+            "kind": "buffer",
+            "resourceId": 4
+          }
+        ]
+      }
+    ],
+    "pipelines": [
+      {
+        "id": 2,
+        "pipeline": "compute",
+        "label": "scalePipeline",
+        "trigger": "lazy",
+        "resolveMs": 8,
+        "createMs": 0.4150000000008731,
+        "wgsl": "@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\n\n@group(0) @binding(1) var<uniform> factor: f32;\n\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\n  data[gid.x] = (data[gid.x] * factor);\n}",
+        "wgslLength": 241,
+        "layoutIds": [
+          1
+        ],
+        "dispatches": 1,
+        "draws": 0
+      },
+      {
+        "id": 6,
+        "pipeline": "render",
+        "label": "trianglePipeline",
+        "trigger": "lazy",
+        "resolveMs": 3.4199999999982538,
+        "createMs": 0.08499999999912689,
+        "wgsl": "struct vertexMain_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexMain(@builtin(vertex_index) idx: u32) -> vertexMain_Output {\n  return vertexMain_Output(vec4f((f32(idx) - 1f), ((f32((idx % 2u)) * 2f) - 1f), 0f, 1f));\n}\n\n@fragment fn fragmentMain() -> @location(0) vec4f {\n  return vec4f(1, 0, 0, 1);\n}",
+        "wgslLength": 316,
+        "layoutIds": [],
+        "dispatches": 0,
+        "draws": 1
+      }
+    ],
+    "counters": {
+      "submits": 2,
+      "collectedWithoutDestroy": 0,
+      "droppedEvents": 0,
+      "droppedBytes": 0,
+      "historyBytes": 3984,
+      "listenerErrors": 0,
+      "lastListenerError": null,
+      "internalErrors": 0,
+      "lastInternalError": null
+    },
+    "retainedFailures": [],
+    "unavailable": [
+      "gpuExecutionTime",
+      "gpuMemoryUsage",
+      "wrappedResources",
+      "internalResources",
+      "rawWebGPUCalls",
+      "workgroupCounts",
+      "perDispatchBindings",
+      "textureMemory",
+      "helperSubmissions",
+      "restoredPipelines",
+      "samplers",
+      "textureViews",
+      "renderBundles",
+      "bindGroupLayouts"
+    ]
+  },
+  "keptAlive": 6,
+  "browserOutput": {
+    "broken-shader-sync": [
+      "browser-log/warning: Error while parsing WGSL: :1:51 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }\n                                                  ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescr",
+      "browser-log/warning: [Invalid ShaderModule \"brokenSync - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenSync - Shader\"], entryPoint: [undefined]).\n - While calling [Device].CreateComputePipeline([ComputePipelineDescriptor \"\"brokenSync\"\"]).\n"
+    ],
+    "broken-shader-async": [
+      "browser-log/warning: Error while parsing WGSL: :1:51 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn broken() { let x = definitelyUndeclared(1.0); }\n                                                  ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescr"
+    ],
+    "error-with-listener": [
+      "browser-log/warning: The texture size ([Extent3D width:0, height:0, depthOrArrayLayers:1]) or mipLevelCount (1) is empty.\n - While validating [TextureDescriptor \"\"bogus-texture\"\"].\n - While calling [Device].CreateTexture([TextureDescriptor \"\"bogus-texture\"\"]).\n"
+    ],
+    "error-without-listener": [
+      "browser-log/warning: The texture size ([Extent3D width:0, height:0, depthOrArrayLayers:1]) or mipLevelCount (1) is empty.\n - While validating [TextureDescriptor \"\"bogus-texture\"\"].\n - While calling [Device].CreateTexture([TextureDescriptor \"\"bogus-texture\"\"]).\n"
+    ]
+  }
+}

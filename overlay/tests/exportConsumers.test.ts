@@ -1,14 +1,16 @@
+import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { describe, expect } from 'vitest';
 import { d, tgpu } from 'typegpu';
 import { it } from 'typegpu-testing-utility';
 import { attachConsoleReporter } from './consumers/consoleReporter.ts';
 import { createJsonlExport, JSONL_FORMAT } from './consumers/jsonlExport.ts';
+import { parseJsonl } from './consumers/jsonlRead.ts';
 import { requireInstrumentation } from './consumers/requireInstrumentation.ts';
 import { computeMain, flush, layout, makeObservableDevice } from './support.ts';
 
 function run(device: GPUDevice) {
   makeObservableDevice(device);
-  const root = tgpu.initFromDevice({ device, unstable_instrumentation: true });
+  const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
   const inst = root['~unstable'].instrumentation!;
   return { root, inst };
 }
@@ -89,7 +91,7 @@ describe('JSONL export', () => {
       record: 'header',
       format: JSONL_FORMAT,
       version: 1,
-      eventSchema: 1,
+      eventSchema: 2,
     });
     const events = records.filter((r) => r.record === 'event').map((r) => r.event);
     expect(events).toEqual(emitted);
@@ -124,5 +126,54 @@ describe('requireInstrumentation', () => {
   }) => {
     const root = tgpu.initFromDevice({ device });
     expect(() => requireInstrumentation(root)).toThrowError(/hook patch|unstable_instrumentation/);
+  });
+});
+
+describe('JSONL reader compatibility policy', () => {
+  const header = (extra: object = {}) =>
+    JSON.stringify({
+      record: 'header',
+      format: 'typegpu-instrumentation-jsonl',
+      version: 1,
+      eventSchema: 2,
+      ...extra,
+    });
+  const event = (v: number, extra: object = {}) =>
+    JSON.stringify({ record: 'event', event: { v, seq: 1, t: 0, type: 'device-lost', ...extra } });
+
+  it('reads a file it knows and keeps unknown record kinds and fields untouched', () => {
+    const text = [
+      header(),
+      event(2, { futureField: 'kept' }),
+      JSON.stringify({ record: 'future-record', anything: 1 }),
+    ].join('\n');
+    const { records, events } = parseJsonl(text);
+    expect(records.map((r) => r.record)).toEqual(['header', 'event', 'future-record']);
+    expect(events).toEqual([expect.objectContaining({ futureField: 'kept' })]);
+  });
+
+  it.for([
+    ['an unknown file format version', header({ version: 2 }), /file format version/],
+    ['an unknown event schema in the header', header({ eventSchema: 3 }), /event schema/],
+    ['the schema of the prototype', header({ eventSchema: 1 }), /event schema/],
+    ['a foreign format', header({ format: 'something-else' }), /header/],
+    ['an event of an unknown version', `${header()}\n${event(3)}`, /unsupported schema version 3/],
+    ['a line that is not JSON', `${header()}\nnot json`, /line 2/],
+    ['a missing header', event(2), /header/],
+  ] as const)('rejects %s instead of guessing', ([, text, message]) => {
+    expect(() => parseJsonl(text)).toThrowError(message);
+  });
+
+  it('round-trips what the exporter writes', async ({ device }) => {
+    makeObservableDevice(device);
+    const root = tgpu.initFromDevice({ device, unstable_instrumentation: createInstrumentation() });
+    const inst = root['~unstable'].instrumentation!;
+    const jsonl = createJsonlExport(inst);
+    root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+    jsonl.addSnapshot();
+
+    const { events, records } = parseJsonl(jsonl.toString());
+    expect(events).toEqual(inst.history());
+    expect(records.at(-1)?.record).toBe('snapshot');
   });
 });

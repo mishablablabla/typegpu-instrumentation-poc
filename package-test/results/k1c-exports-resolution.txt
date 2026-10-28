@@ -1,0 +1,18 @@
+bundler                  typegpu                                -> ./node_modules/typegpu/index.d.ts [.d.ts]
+bundler                  typegpu/unstable-instrumentation       -> ./node_modules/typegpu/core/instrumentation/index.d.ts [.d.ts]
+bundler                  typegpu/data                           -> ./node_modules/typegpu/data/index.d.ts [.d.ts]
+bundler                  typegpu/core/instrumentation/hub       -> UNRESOLVED
+node16 (ESM importer)    typegpu                                -> ./node_modules/typegpu/index.d.ts [.d.ts]
+node16 (ESM importer)    typegpu/unstable-instrumentation       -> ./node_modules/typegpu/core/instrumentation/index.d.ts [.d.ts]
+node16 (ESM importer)    typegpu/data                           -> ./node_modules/typegpu/data/index.d.ts [.d.ts]
+node16 (ESM importer)    typegpu/core/instrumentation/hub       -> UNRESOLVED
+node16 (CJS importer)    typegpu                                -> ./node_modules/typegpu/index.d.ts [.d.ts]
+node16 (CJS importer)    typegpu/unstable-instrumentation       -> ./node_modules/typegpu/core/instrumentation/index.d.ts [.d.ts]
+node16 (CJS importer)    typegpu/data                           -> ./node_modules/typegpu/data/index.d.ts [.d.ts]
+node16 (CJS importer)    typegpu/core/instrumentation/hub       -> UNRESOLVED
+nodenext (ESM importer)  typegpu                                -> ./node_modules/typegpu/index.d.ts [.d.ts]
+nodenext (ESM importer)  typegpu/unstable-instrumentation       -> ./node_modules/typegpu/core/instrumentation/index.d.ts [.d.ts]
+nodenext (ESM importer)  typegpu/data                           -> ./node_modules/typegpu/data/index.d.ts [.d.ts]
+nodenext (ESM importer)  typegpu/core/instrumentation/hub       -> UNRESOLVED
+
+node runtime: {"importMetaResolve":"file://./node_modules/typegpu/core/instrumentation/index.js","esmExports":["createInstrumentation","estimateEventBytes"],"requireEsm":"createInstrumentation,estimateEventBytes","deepImport":"ERR_PACKAGE_PATH_NOT_EXPORTED","pkgJson":"string"}

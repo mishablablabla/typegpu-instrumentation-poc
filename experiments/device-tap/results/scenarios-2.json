@@ -1,0 +1,3651 @@
+{
+  "environment": {
+    "when": "2026-10-27T17:12:36.012Z",
+    "chrome": "Chrome/156.0.8078.48",
+    "headless": true,
+    "classification": "hardware-adapter",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "isFallbackAdapter": false
+    },
+    "gpuProcess": "Google Inc. (Apple) ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Version 26.3 (Build 25D125))"
+  },
+  "provenance": {
+    "pageClassification": "non-fallback",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false,
+    "features": [
+      "bgra8unorm-storage",
+      "clip-distances",
+      "core-features-and-limits",
+      "depth-clip-control",
+      "depth32float-stencil8",
+      "dual-source-blending",
+      "float32-blendable",
+      "float32-filterable",
+      "indirect-first-instance",
+      "primitive-index",
+      "rg11b10ufloat-renderable",
+      "shader-f16",
+      "subgroup-size-control",
+      "subgroups",
+      "texture-component-swizzle",
+      "texture-compression-astc",
+      "texture-compression-astc-sliced-3d",
+      "texture-compression-bc",
+      "texture-compression-bc-sliced-3d",
+      "texture-compression-etc2",
+      "texture-compression-unaligned",
+      "texture-formats-tier1",
+      "texture-formats-tier2",
+      "timestamp-query"
+    ]
+  },
+  "ok": true,
+  "report": [
+    "\n== resources: 11/11",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  event sequence: buffer, texture, buffer, destroy x2, device-destroy-called, device-lost (no extra kinds)",
+    "PASS  buffer payload: label, size, usage flags",
+    "PASS  texture payload: label, format, size, mips, samples, dimension, usage",
+    "PASS  destroy events name the right resources, once each (second buf.destroy() silent)",
+    "PASS  device-destroy-called reports the survivor (1 buffer, 0 textures)",
+    "PASS  snapshot before teardown lists only the survivor",
+    "PASS  writes counted through queue.writeBuffer: buf had 1 write of 16 bytes (counter visible even after destroy via event/log? live record only)",
+    "PASS  write after destroy throws (TypeGPU) and emits nothing",
+    "PASS  stable device-lost reason",
+    "\n== compute-bindgroups: 12/12",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  GPU really ran every dispatch",
+    "PASS  one pipeline created for five dispatches over two handles; label is the TypeGPU name; mode sync",
+    "PASS  pipeline event carries the WGSL (via its shader module) and entry stage",
+    "PASS  bind group 1: binding0->data1, binding1->factor (by BINDING INDEX, names lost)",
+    "PASS  bind group 2: binding0->data2 and the SAME factor id",
+    "PASS  both groups share one layout id, and it appears in the pipeline layout",
+    "PASS  per-pipeline counters: 5 dispatches",
+    "PASS  submits: 5 dispatch + 2 read() helper submits = 7 (PoC counts 5)",
+    "PASS  diagnostics: one shader-diagnostics, empty",
+    "PASS  buffer writes: factor never written; data buffers were mappedAtCreation (initial data): invisible to writeBuffer counters",
+    "\n== render: 8/8",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  red pixel read back",
+    "PASS  render pipeline created once, lazily (mode sync), vertex+fragment WGSL",
+    "PASS  per-pipeline counters: 3 draws",
+    "PASS  submits: 3 TypeGPU draws + 1 raw readback submit = 4; PoC cannot count the raw one",
+    "PASS  the RAW readback buffer was seen (label readback) and its destroy",
+    "PASS  raw encoder finish observed",
+    "\n== explicit-init: 5/5",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  three pipelines created; modes: sync (initSync), async (initAsync), sync (lazy)",
+    "PASS  initSync and lazy are INDISTINGUISHABLE at device level (same event shape/payload)",
+    "PASS  no recompile on dispatch/draw after explicit init",
+    "\n== sync-failures: 6/6",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  both invalid sync pipelines reported as created (same limitation as PoC)",
+    "PASS  compiler ERROR with line pointing at the offending generated WGSL line, per shader module",
+    "PASS  device errors name the identifier",
+    "PASS  no pipeline-failed on sync path",
+    "\n== async-failures: 7/7",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  both creations rejected with GPUPipelineError (rejection preserved through our derived promise)",
+    "PASS  one pipeline-failed per failure, compute then render, GPUPipelineError, labels from TypeGPU names",
+    "PASS  no pipeline-created for failed async",
+    "PASS  failed pipelines not listed as live",
+    "PASS  diagnostics per module with errors",
+    "\n== new-coverage: 11/11",
+    "PASS  restore(): no own properties left on device, queue or tracked objects",
+    "PASS  restore(): methods are the native prototype methods again",
+    "PASS  wrapped raw buffer is visible (label rawStorage) and referenced by a bind group entry",
+    "PASS  submissions visible: 1 dispatch + buf.clear + copyFrom + read() + generateMipmaps(1 submit, 2 render passes) + TypeGPU-encoder finish + raw compute = 7 (tex.clear/tex.write use queue.writeTexture, not submit)",
+    "PASS  internal resources created by TypeGPU helpers are visible (mipmap pipeline / shaders with no TypeGPU label)",
+    "PASS  encoder.finish() path (TypeGPU encoder + raw queue.submit) observed",
+    "PASS  raw compute pass: dispatches counted on the raw pipeline (2 dispatches, label rawPipe)",
+    "PASS  queue.writeTexture counted (TypeGPU tex.write + raw)",
+    "PASS  raw bind group with texture view + sampler: view resolved to texture id, sampler kind",
+    "PASS  raw bind group over an AUTO layout has layoutId null (getBindGroupLayout is not a creation call)",
+    "PASS  encoder/pass wrappers existed while recording and are gone after end()/finish()",
+    "\n== risks: 13/13",
+    "PASS  device.queue identity is stable (we patch the queue instance)",
+    "PASS  instanceof GPUBuffer / GPUDevice / GPUQueue hold; object identity preserved (unwrap() returns the same GPUBuffer every time)",
+    "PASS  texture.createView result still a GPUTextureView",
+    "PASS  detached call (wrong this) throws the same TypeError as native",
+    "PASS  brand check with a foreign this: same error as native",
+    "PASS  invalid descriptor throws the same TypeError (message) through the wrapper",
+    "PASS  FINDING: wrapper is detectable (Function.prototype.toString is not [native code])",
+    "PASS  pushErrorScope/popErrorScope still catch errors; tap records no device-error for scoped errors",
+    "PASS  two taps stacked: each sees the call exactly once",
+    "PASS  after restoring the INNER tap first, the outer tap keeps working (inert wrapper left in chain)",
+    "PASS  after restoring both (non-LIFO): device has no own props and native methods are back",
+    "PASS  LIFO restore and double restore are clean",
+    "PASS  resource created under two stacked taps: destroy() after restoring the inner one leaves no own props",
+    "\n== retention: 6/6",
+    "PASS  tap does not retain abandoned TypeGPU roots (30 roots)",
+    "PASS  tap does not retain GPUBuffers beyond control (no destroy())",
+    "PASS  collectedWithoutDestroy accounting is fed by GC",
+    "PASS  restored + dropped tap is collectable while the device lives (no retention by restored device)",
+    "PASS  FINDING: a tap dropped WITHOUT restore() stays alive as long as the device (device holds its wrappers) - same class as PoC defect D1",
+    "PASS  a restored tap does not keep a dropped device alive beyond the no-tap control"
+  ],
+  "findings": [
+    {
+      "scenario": "resources",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": [
+            [],
+            []
+          ]
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": [
+            [],
+            []
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "event sequence: buffer, texture, buffer, destroy x2, device-destroy-called, device-lost (no extra kinds)",
+      "pass": true,
+      "detail": [
+        "buffer-created",
+        "texture-created",
+        "buffer-created",
+        "resource-destroyed",
+        "resource-destroyed",
+        "device-destroy-called",
+        "device-lost"
+      ]
+    },
+    {
+      "scenario": "resources",
+      "check": "buffer payload: label, size, usage flags",
+      "pass": true,
+      "detail": {
+        "v": 1,
+        "seq": 1,
+        "t": 130.79999995231628,
+        "type": "buffer-created",
+        "id": 1,
+        "label": "buf",
+        "sizeBytes": 16,
+        "usage": 140,
+        "mappedAtCreation": false
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "texture payload: label, format, size, mips, samples, dimension, usage",
+      "pass": true,
+      "detail": {
+        "v": 1,
+        "seq": 2,
+        "t": 131.5,
+        "type": "texture-created",
+        "id": 2,
+        "label": "tex",
+        "format": "rgba8unorm",
+        "size": [
+          8,
+          8
+        ],
+        "mipLevelCount": 1,
+        "sampleCount": 1,
+        "dimension": "2d",
+        "usage": 23
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "destroy events name the right resources, once each (second buf.destroy() silent)",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "device-destroy-called reports the survivor (1 buffer, 0 textures)",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 335.5,
+          "type": "device-destroy-called",
+          "liveBuffers": 1,
+          "liveTextures": 0
+        }
+      ]
+    },
+    {
+      "scenario": "resources",
+      "check": "snapshot before teardown lists only the survivor",
+      "pass": true,
+      "detail": [
+        {
+          "id": 3,
+          "label": "keep",
+          "createdLabel": "keep",
+          "resource": "buffer",
+          "sizeBytes": 4,
+          "usage": 76,
+          "writes": 0,
+          "bytesWritten": 0
+        }
+      ]
+    },
+    {
+      "scenario": "resources",
+      "check": "writes counted through queue.writeBuffer: buf had 1 write of 16 bytes (counter visible even after destroy via event/log? live record only)",
+      "pass": true,
+      "detail": {
+        "submits": 0,
+        "commandBuffers": 0,
+        "encoders": 0,
+        "passes": 0,
+        "dispatches": 0,
+        "draws": 0,
+        "writeBufferCalls": 1,
+        "writeBufferBytes": 16,
+        "writeTextureCalls": 0,
+        "writeTextureBytes": 0,
+        "collectedWithoutDestroy": 0,
+        "droppedEvents": 0,
+        "listenerErrors": 0
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "write after destroy throws (TypeGPU) and emits nothing",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "stable device-lost reason",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 335.7999999523163,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ]
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": [
+            [
+              "destroy"
+            ],
+            [
+              "destroy"
+            ]
+          ]
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": [
+            [],
+            []
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "GPU really ran every dispatch",
+      "pass": true,
+      "detail": {
+        "r1": [
+          8,
+          16,
+          24,
+          32,
+          40,
+          48,
+          56,
+          64
+        ],
+        "r2": [
+          4,
+          8,
+          12,
+          16,
+          20,
+          24,
+          28,
+          32
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "one pipeline created for five dispatches over two handles; label is the TypeGPU name; mode sync",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 374.1999999284744,
+          "type": "pipeline-created",
+          "id": 5,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0.10000002384185791,
+          "moduleIds": [
+            2
+          ],
+          "layout": 4,
+          "bindGroupLayoutIds": [
+            3
+          ],
+          "label": "scale",
+          "wgsl": "<241 chars>"
+        }
+      ]
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "pipeline event carries the WGSL (via its shader module) and entry stage",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "bind group 1: binding0->data1, binding1->factor (by BINDING INDEX, names lost)",
+      "pass": true,
+      "detail": {
+        "v": 1,
+        "seq": 5,
+        "t": 375,
+        "type": "bind-group-created",
+        "id": 8,
+        "label": "layout",
+        "layoutId": 3,
+        "layoutLabel": "layout",
+        "entries": [
+          {
+            "binding": 0,
+            "kind": "buffer",
+            "resourceId": 6,
+            "offset": 0,
+            "size": null
+          },
+          {
+            "binding": 1,
+            "kind": "buffer",
+            "resourceId": 7,
+            "offset": 0,
+            "size": null
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "bind group 2: binding0->data2 and the SAME factor id",
+      "pass": true,
+      "detail": {
+        "v": 1,
+        "seq": 13,
+        "t": 375.60000002384186,
+        "type": "bind-group-created",
+        "id": 13,
+        "label": "layout",
+        "layoutId": 3,
+        "layoutLabel": "layout",
+        "entries": [
+          {
+            "binding": 0,
+            "kind": "buffer",
+            "resourceId": 12,
+            "offset": 0,
+            "size": null
+          },
+          {
+            "binding": 1,
+            "kind": "buffer",
+            "resourceId": 7,
+            "offset": 0,
+            "size": null
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "both groups share one layout id, and it appears in the pipeline layout",
+      "pass": true,
+      "detail": {
+        "g1": 3,
+        "pl": [
+          3
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "per-pipeline counters: 5 dispatches",
+      "pass": true,
+      "detail": {
+        "id": 5,
+        "label": "scale",
+        "createdLabel": "scale",
+        "pipeline": "compute",
+        "mode": "sync",
+        "createMs": 0.10000002384185791,
+        "dispatches": 5,
+        "draws": 0
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "submits: 5 dispatch + 2 read() helper submits = 7 (PoC counts 5)",
+      "pass": true,
+      "detail": {
+        "submits": 7,
+        "commandBuffers": 7,
+        "encoders": 7,
+        "passes": 5,
+        "dispatches": 5,
+        "draws": 0,
+        "writeBufferCalls": 0,
+        "writeBufferBytes": 0,
+        "writeTextureCalls": 0,
+        "writeTextureBytes": 0,
+        "collectedWithoutDestroy": 0,
+        "droppedEvents": 0,
+        "listenerErrors": 0
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "diagnostics: one shader-diagnostics, empty",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "buffer writes: factor never written; data buffers were mappedAtCreation (initial data): invisible to writeBuffer counters",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": []
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": []
+        }
+      }
+    },
+    {
+      "scenario": "render",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "red pixel read back",
+      "pass": true,
+      "detail": [
+        255,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "scenario": "render",
+      "check": "render pipeline created once, lazily (mode sync), vertex+fragment WGSL",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 618,
+          "type": "pipeline-created",
+          "id": 4,
+          "pipeline": "render",
+          "mode": "sync",
+          "createMs": 0.20000004768371582,
+          "moduleIds": [
+            2,
+            2
+          ],
+          "layout": 3,
+          "bindGroupLayoutIds": [],
+          "label": "triangle",
+          "wgsl": "<330 chars>"
+        }
+      ]
+    },
+    {
+      "scenario": "render",
+      "check": "per-pipeline counters: 3 draws",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "submits: 3 TypeGPU draws + 1 raw readback submit = 4; PoC cannot count the raw one",
+      "pass": true,
+      "detail": {
+        "submits": 4,
+        "commandBuffers": 4,
+        "encoders": 4,
+        "passes": 3,
+        "dispatches": 0,
+        "draws": 3,
+        "writeBufferCalls": 0,
+        "writeBufferBytes": 0,
+        "writeTextureCalls": 0,
+        "writeTextureBytes": 0,
+        "collectedWithoutDestroy": 0,
+        "droppedEvents": 0,
+        "listenerErrors": 0
+      }
+    },
+    {
+      "scenario": "render",
+      "check": "the RAW readback buffer was seen (label readback) and its destroy",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "raw encoder finish observed",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": []
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": []
+        }
+      }
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "three pipelines created; modes: sync (initSync), async (initAsync), sync (lazy)",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 858.2999999523163,
+          "type": "pipeline-created",
+          "id": 3,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            1
+          ],
+          "layout": 2,
+          "bindGroupLayoutIds": [],
+          "label": "explicitSync",
+          "wgsl": "<40 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 862.2999999523163,
+          "type": "pipeline-created",
+          "id": 6,
+          "pipeline": "render",
+          "mode": "async",
+          "createMs": 2.600000023841858,
+          "moduleIds": [
+            4,
+            4
+          ],
+          "layout": 5,
+          "bindGroupLayoutIds": [],
+          "label": "explicitAsync",
+          "wgsl": "<330 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 13,
+          "t": 863.1000000238419,
+          "type": "pipeline-created",
+          "id": 13,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            11
+          ],
+          "layout": 12,
+          "bindGroupLayoutIds": [],
+          "label": "lazyOne",
+          "wgsl": "<40 chars>"
+        }
+      ]
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "initSync and lazy are INDISTINGUISHABLE at device level (same event shape/payload)",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "no recompile on dispatch/draw after explicit init",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": []
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": []
+        }
+      }
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "both invalid sync pipelines reported as created (same limitation as PoC)",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "compiler ERROR with line pointing at the offending generated WGSL line, per shader module",
+      "pass": true,
+      "detail": [
+        [
+          {
+            "type": "error",
+            "message": "unresolved call target 'definitelyUndeclared'",
+            "lineNum": 1,
+            "linePos": 58
+          }
+        ],
+        [
+          {
+            "type": "error",
+            "message": "unresolved value 'definitelyUndeclared'",
+            "lineNum": 9,
+            "linePos": 63
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "device errors name the identifier",
+      "pass": true,
+      "detail": [
+        "Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'",
+        "[Invalid ShaderModule \"brokenCompute - Shader\"] is invalid due to a previous error.",
+        "Error while parsing WGSL: :9:63 error: unresolved value 'definitelyUndeclared'",
+        "[Invalid ShaderModule \"brokenRender - Shader\"] is invalid due to a previous error."
+      ]
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "no pipeline-failed on sync path",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": []
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": []
+        }
+      }
+    },
+    {
+      "scenario": "async-failures",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "both creations rejected with GPUPipelineError (rejection preserved through our derived promise)",
+      "pass": true,
+      "detail": [
+        "GPUPipelineError",
+        "GPUPipelineError"
+      ]
+    },
+    {
+      "scenario": "async-failures",
+      "check": "one pipeline-failed per failure, compute then render, GPUPipelineError, labels from TypeGPU names",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 1439.6000000238419,
+          "type": "pipeline-failed",
+          "pipeline": "compute",
+          "mode": "async",
+          "createMs": 0.8000000715255737,
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"asyncCompute - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"asyncCompute - Shader\"], entryPoint: [undefined]).\n",
+          "moduleIds": [
+            1
+          ],
+          "layout": 2,
+          "bindGroupLayoutIds": [],
+          "label": "asyncCompute",
+          "wgsl": "<85 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 1440.8999999761581,
+          "type": "pipeline-failed",
+          "pipeline": "render",
+          "mode": "async",
+          "createMs": 0.3999999761581421,
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"asyncRender - Shader\"] is invalid due to a previous error.\n - While validating vertex stage ([Invalid ShaderModule \"asyncRender - Shader\"], entryPoint: [undefined]).\n - While validating vertex state.\n",
+          "moduleIds": [
+            3,
+            3
+          ],
+          "layout": 4,
+          "bindGroupLayoutIds": [],
+          "label": "asyncRender",
+          "wgsl": "<335 chars>"
+        }
+      ]
+    },
+    {
+      "scenario": "async-failures",
+      "check": "no pipeline-created for failed async",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "failed pipelines not listed as live",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "diagnostics per module with errors",
+      "pass": true
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "restore(): no own properties left on device, queue or tracked objects",
+      "pass": true,
+      "detail": {
+        "beforeRestore": {
+          "device": [
+            "createBuffer",
+            "createTexture",
+            "createBindGroupLayout",
+            "createPipelineLayout",
+            "createSampler",
+            "createQuerySet",
+            "createShaderModule",
+            "createComputePipeline",
+            "createComputePipelineAsync",
+            "createRenderPipeline",
+            "createRenderPipelineAsync",
+            "createBindGroup",
+            "createCommandEncoder",
+            "destroy"
+          ],
+          "queue": [
+            "submit",
+            "writeBuffer",
+            "writeTexture"
+          ],
+          "raw": [
+            [],
+            [],
+            [
+              "destroy"
+            ],
+            [
+              "destroy"
+            ]
+          ]
+        },
+        "after": {
+          "device": [],
+          "queue": [],
+          "raw": [
+            [],
+            [],
+            [],
+            []
+          ]
+        }
+      }
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "restore(): methods are the native prototype methods again",
+      "pass": true
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "wrapped raw buffer is visible (label rawStorage) and referenced by a bind group entry",
+      "pass": true,
+      "detail": [
+        "rawStorage",
+        "factor",
+        "other",
+        null,
+        "rawBuf2"
+      ]
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "submissions visible: 1 dispatch + buf.clear + copyFrom + read() + generateMipmaps(1 submit, 2 render passes) + TypeGPU-encoder finish + raw compute = 7 (tex.clear/tex.write use queue.writeTexture, not submit)",
+      "pass": true,
+      "detail": {
+        "submits": 7
+      }
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "internal resources created by TypeGPU helpers are visible (mipmap pipeline / shaders with no TypeGPU label)",
+      "pass": true,
+      "detail": [
+        [
+          "compute",
+          "scaleWrapped"
+        ],
+        [
+          "render",
+          null
+        ],
+        [
+          "compute",
+          "rawPipe"
+        ]
+      ]
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "encoder.finish() path (TypeGPU encoder + raw queue.submit) observed",
+      "pass": true,
+      "detail": [
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 1677.8999999761581,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            10
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 12,
+          "t": 1678.1000000238419,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            11
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 15,
+          "t": 1678.1999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            13
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 25,
+          "t": 1683.5,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            15
+          ],
+          "dispatches": 0,
+          "draws": 2
+        },
+        {
+          "v": 1,
+          "seq": 27,
+          "t": 1683.6999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            24
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 33,
+          "t": 1684,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            29
+          ],
+          "dispatches": 2,
+          "draws": 0
+        }
+      ]
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "raw compute pass: dispatches counted on the raw pipeline (2 dispatches, label rawPipe)",
+      "pass": true,
+      "detail": [
+        [
+          "scaleWrapped",
+          2
+        ],
+        [
+          "",
+          0
+        ],
+        [
+          "rawPipe",
+          2
+        ]
+      ]
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "queue.writeTexture counted (TypeGPU tex.write + raw)",
+      "pass": true,
+      "detail": {
+        "submits": 7,
+        "commandBuffers": 7,
+        "encoders": 7,
+        "passes": 5,
+        "dispatches": 4,
+        "draws": 2,
+        "writeBufferCalls": 1,
+        "writeBufferBytes": 16,
+        "writeTextureCalls": 5,
+        "writeTextureBytes": 656,
+        "collectedWithoutDestroy": 0,
+        "droppedEvents": 0,
+        "listenerErrors": 0
+      }
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "raw bind group with texture view + sampler: view resolved to texture id, sampler kind",
+      "pass": true,
+      "detail": {
+        "v": 1,
+        "seq": 35,
+        "t": 1684.1000000238419,
+        "type": "bind-group-created",
+        "id": 33,
+        "label": "rawTexBG",
+        "layoutId": 32,
+        "layoutLabel": "rawBGL",
+        "entries": [
+          {
+            "binding": 0,
+            "kind": "texture-view",
+            "resourceId": 30
+          },
+          {
+            "binding": 1,
+            "kind": "sampler",
+            "resourceId": 31
+          }
+        ]
+      }
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "raw bind group over an AUTO layout has layoutId null (getBindGroupLayout is not a creation call)",
+      "pass": true
+    },
+    {
+      "scenario": "new-coverage",
+      "check": "encoder/pass wrappers existed while recording and are gone after end()/finish()",
+      "pass": true,
+      "detail": {
+        "midPassOwn": 7
+      }
+    },
+    {
+      "scenario": "risks",
+      "check": "device.queue identity is stable (we patch the queue instance)",
+      "pass": true
+    },
+    {
+      "scenario": "risks",
+      "check": "instanceof GPUBuffer / GPUDevice / GPUQueue hold; object identity preserved (unwrap() returns the same GPUBuffer every time)",
+      "pass": true
+    },
+    {
+      "scenario": "risks",
+      "check": "texture.createView result still a GPUTextureView",
+      "pass": true
+    },
+    {
+      "scenario": "risks",
+      "check": "detached call (wrong this) throws the same TypeError as native",
+      "pass": true,
+      "detail": {
+        "nativeErr": "TypeError: Illegal invocation",
+        "ourErr": "TypeError: Illegal invocation"
+      }
+    },
+    {
+      "scenario": "risks",
+      "check": "brand check with a foreign this: same error as native",
+      "pass": true,
+      "detail": {
+        "e1": "Illegal invocation",
+        "e2": "Illegal invocation"
+      }
+    },
+    {
+      "scenario": "risks",
+      "check": "invalid descriptor throws the same TypeError (message) through the wrapper",
+      "pass": true,
+      "detail": {
+        "b1": "Failed to execute 'createBuffer' on 'GPUDevice': Failed to read the 'size' property from 'GPUBufferDescriptor': Required member is undefined.",
+        "b2": "Failed to execute 'createBuffer' on 'GPUDevice': Failed to read the 'size' property from 'GPUBufferDescriptor': Required member is undefined."
+      }
+    },
+    {
+      "scenario": "risks",
+      "check": "FINDING: wrapper is detectable (Function.prototype.toString is not [native code])",
+      "pass": true,
+      "detail": "function(desc) {\n\t\tconst b = orig.call(this, desc)"
+    },
+    {
+      "scenario": "risks",
+      "check": "pushErrorScope/popErrorScope still catch errors; tap records no device-error for scoped errors",
+      "pass": true,
+      "detail": "Error while parsing WGSL: :1:1 error: unexpected token\nnonsense\n^^^^^^^^\n\n\n - Wh"
+    },
+    {
+      "scenario": "risks",
+      "check": "two taps stacked: each sees the call exactly once",
+      "pass": true
+    },
+    {
+      "scenario": "risks",
+      "check": "after restoring the INNER tap first, the outer tap keeps working (inert wrapper left in chain)",
+      "pass": true
+    },
+    {
+      "scenario": "risks",
+      "check": "after restoring both (non-LIFO): device has no own props and native methods are back",
+      "pass": true,
+      "detail": {
+        "device": [],
+        "queue": []
+      }
+    },
+    {
+      "scenario": "risks",
+      "check": "LIFO restore and double restore are clean",
+      "pass": true
+    },
+    {
+      "scenario": "risks",
+      "check": "resource created under two stacked taps: destroy() after restoring the inner one leaves no own props",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "scenario": "retention",
+      "check": "tap does not retain abandoned TypeGPU roots (30 roots)",
+      "pass": true,
+      "detail": {
+        "control": {
+          "roots": 0,
+          "rawBuffers": 0,
+          "rawBuffersCreatedDirectly": 0
+        },
+        "tapped": {
+          "roots": 0,
+          "rawBuffers": 0,
+          "rawBuffersCreatedDirectly": 0,
+          "snapshotAfterGc": {
+            "live": 0,
+            "collectedWithoutDestroy": 60,
+            "history": 150
+          }
+        }
+      }
+    },
+    {
+      "scenario": "retention",
+      "check": "tap does not retain GPUBuffers beyond control (no destroy())",
+      "pass": true,
+      "detail": {
+        "control": {
+          "roots": 0,
+          "rawBuffers": 0,
+          "rawBuffersCreatedDirectly": 0
+        },
+        "tapped": {
+          "roots": 0,
+          "rawBuffers": 0,
+          "rawBuffersCreatedDirectly": 0,
+          "snapshotAfterGc": {
+            "live": 0,
+            "collectedWithoutDestroy": 60,
+            "history": 150
+          }
+        }
+      }
+    },
+    {
+      "scenario": "retention",
+      "check": "collectedWithoutDestroy accounting is fed by GC",
+      "pass": true,
+      "detail": {
+        "live": 0,
+        "collectedWithoutDestroy": 60,
+        "history": 150
+      }
+    },
+    {
+      "scenario": "retention",
+      "check": "restored + dropped tap is collectable while the device lives (no retention by restored device)",
+      "pass": true,
+      "detail": {
+        "restoredThenDropped_stateAlive": false,
+        "droppedWithoutRestore_stateAlive": true
+      }
+    },
+    {
+      "scenario": "retention",
+      "check": "FINDING: a tap dropped WITHOUT restore() stays alive as long as the device (device holds its wrappers) - same class as PoC defect D1",
+      "pass": true,
+      "detail": {
+        "restoredThenDropped_stateAlive": false,
+        "droppedWithoutRestore_stateAlive": true
+      }
+    },
+    {
+      "scenario": "retention",
+      "check": "a restored tap does not keep a dropped device alive beyond the no-tap control",
+      "pass": true,
+      "detail": {
+        "controlDeviceAlive": false,
+        "restoredTapDeviceAlive": false
+      }
+    }
+  ],
+  "evidence": {
+    "resources": {
+      "eventTypes": [
+        "buffer-created",
+        "texture-created",
+        "buffer-created",
+        "resource-destroyed",
+        "resource-destroyed",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 130.79999995231628,
+          "type": "buffer-created",
+          "id": 1,
+          "label": "buf",
+          "sizeBytes": 16,
+          "usage": 140,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 131.5,
+          "type": "texture-created",
+          "id": 2,
+          "label": "tex",
+          "format": "rgba8unorm",
+          "size": [
+            8,
+            8
+          ],
+          "mipLevelCount": 1,
+          "sampleCount": 1,
+          "dimension": "2d",
+          "usage": 23
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 131.5,
+          "type": "buffer-created",
+          "id": 3,
+          "label": "keep",
+          "sizeBytes": 4,
+          "usage": 76,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 131.5,
+          "type": "resource-destroyed",
+          "resource": "buffer",
+          "id": 1,
+          "label": "buf"
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 131.60000002384186,
+          "type": "resource-destroyed",
+          "resource": "texture",
+          "id": 2,
+          "label": "tex"
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 335.5,
+          "type": "device-destroy-called",
+          "liveBuffers": 1,
+          "liveTextures": 0
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 335.7999999523163,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 335.2999999523163,
+        "active": true,
+        "resources": [
+          {
+            "id": 3,
+            "label": "keep",
+            "createdLabel": "keep",
+            "resource": "buffer",
+            "sizeBytes": 4,
+            "usage": 76,
+            "writes": 0,
+            "bytesWritten": 0
+          }
+        ],
+        "bindGroups": [],
+        "pipelines": [],
+        "counters": {
+          "submits": 0,
+          "commandBuffers": 0,
+          "encoders": 0,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "writeBufferCalls": 1,
+          "writeBufferBytes": 16,
+          "writeTextureCalls": 0,
+          "writeTextureBytes": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "compute-bindgroups": {
+      "eventTypes": [
+        "shader-module-created",
+        "pipeline-created",
+        "buffer-created",
+        "buffer-created",
+        "bind-group-created",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "buffer-created",
+        "bind-group-created",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "buffer-created",
+        "encoder-finished",
+        "queue-submit",
+        "shader-diagnostics",
+        "resource-destroyed",
+        "buffer-created",
+        "encoder-finished",
+        "queue-submit",
+        "resource-destroyed",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 373.6999999284744,
+          "type": "shader-module-created",
+          "id": 2,
+          "label": "scale - Shader",
+          "wgsl": "<241 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 374.1999999284744,
+          "type": "pipeline-created",
+          "id": 5,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0.10000002384185791,
+          "moduleIds": [
+            2
+          ],
+          "layout": 4,
+          "bindGroupLayoutIds": [
+            3
+          ],
+          "label": "scale",
+          "wgsl": "<241 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 374.60000002384186,
+          "type": "buffer-created",
+          "id": 6,
+          "label": "data1",
+          "sizeBytes": 32,
+          "usage": 140,
+          "mappedAtCreation": true
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 374.89999997615814,
+          "type": "buffer-created",
+          "id": 7,
+          "label": "factor",
+          "sizeBytes": 4,
+          "usage": 76,
+          "mappedAtCreation": true
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 375,
+          "type": "bind-group-created",
+          "id": 8,
+          "label": "layout",
+          "layoutId": 3,
+          "layoutLabel": "layout",
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "buffer",
+              "resourceId": 6,
+              "offset": 0,
+              "size": null
+            },
+            {
+              "binding": 1,
+              "kind": "buffer",
+              "resourceId": 7,
+              "offset": 0,
+              "size": null
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 375.1999999284744,
+          "type": "encoder-finished",
+          "encoderId": 1,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 375.1999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            1
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 375.39999997615814,
+          "type": "encoder-finished",
+          "encoderId": 9,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 9,
+          "t": 375.39999997615814,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            9
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 375.5,
+          "type": "encoder-finished",
+          "encoderId": 10,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 11,
+          "t": 375.5,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            10
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 12,
+          "t": 375.60000002384186,
+          "type": "buffer-created",
+          "id": 12,
+          "label": "data2",
+          "sizeBytes": 32,
+          "usage": 140,
+          "mappedAtCreation": true
+        },
+        {
+          "v": 1,
+          "seq": 13,
+          "t": 375.60000002384186,
+          "type": "bind-group-created",
+          "id": 13,
+          "label": "layout",
+          "layoutId": 3,
+          "layoutLabel": "layout",
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "buffer",
+              "resourceId": 12,
+              "offset": 0,
+              "size": null
+            },
+            {
+              "binding": 1,
+              "kind": "buffer",
+              "resourceId": 7,
+              "offset": 0,
+              "size": null
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 14,
+          "t": 375.6999999284744,
+          "type": "encoder-finished",
+          "encoderId": 11,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 15,
+          "t": 375.6999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            11
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 16,
+          "t": 375.6999999284744,
+          "type": "encoder-finished",
+          "encoderId": 14,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 17,
+          "t": 375.6999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            14
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 18,
+          "t": 375.7999999523163,
+          "type": "buffer-created",
+          "id": 15,
+          "label": null,
+          "sizeBytes": 32,
+          "usage": 9,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 19,
+          "t": 375.7999999523163,
+          "type": "encoder-finished",
+          "encoderId": 16,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 20,
+          "t": 375.7999999523163,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            16
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 21,
+          "t": 376,
+          "type": "shader-diagnostics",
+          "moduleId": 2,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 22,
+          "t": 378,
+          "type": "resource-destroyed",
+          "resource": "buffer",
+          "id": 15,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 23,
+          "t": 378,
+          "type": "buffer-created",
+          "id": 17,
+          "label": null,
+          "sizeBytes": 32,
+          "usage": 9,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 24,
+          "t": 378,
+          "type": "encoder-finished",
+          "encoderId": 18,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 25,
+          "t": 378,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            18
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 26,
+          "t": 378.89999997615814,
+          "type": "resource-destroyed",
+          "resource": "buffer",
+          "id": 17,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 27,
+          "t": 581.7999999523163,
+          "type": "device-destroy-called",
+          "liveBuffers": 3,
+          "liveTextures": 0
+        },
+        {
+          "v": 1,
+          "seq": 28,
+          "t": 582.5,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 581.6000000238419,
+        "active": true,
+        "resources": [
+          {
+            "id": 6,
+            "label": "data1",
+            "createdLabel": "data1",
+            "resource": "buffer",
+            "sizeBytes": 32,
+            "usage": 140,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 7,
+            "label": "factor",
+            "createdLabel": "factor",
+            "resource": "buffer",
+            "sizeBytes": 4,
+            "usage": 76,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 12,
+            "label": "data2",
+            "createdLabel": "data2",
+            "resource": "buffer",
+            "sizeBytes": 32,
+            "usage": 140,
+            "writes": 0,
+            "bytesWritten": 0
+          }
+        ],
+        "bindGroups": [
+          {
+            "id": 8,
+            "label": "layout",
+            "createdLabel": "layout"
+          },
+          {
+            "id": 13,
+            "label": "layout",
+            "createdLabel": "layout"
+          }
+        ],
+        "pipelines": [
+          {
+            "id": 5,
+            "label": "scale",
+            "createdLabel": "scale",
+            "pipeline": "compute",
+            "mode": "sync",
+            "createMs": 0.10000002384185791,
+            "wgsl": "<241 chars>",
+            "dispatches": 5,
+            "draws": 0
+          }
+        ],
+        "counters": {
+          "submits": 7,
+          "commandBuffers": 7,
+          "encoders": 7,
+          "passes": 5,
+          "dispatches": 5,
+          "draws": 0,
+          "writeBufferCalls": 0,
+          "writeBufferBytes": 0,
+          "writeTextureCalls": 0,
+          "writeTextureBytes": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "render": {
+      "eventTypes": [
+        "shader-module-created",
+        "pipeline-created",
+        "texture-created",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "buffer-created",
+        "encoder-finished",
+        "queue-submit",
+        "shader-diagnostics",
+        "resource-destroyed",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 617.6000000238419,
+          "type": "shader-module-created",
+          "id": 2,
+          "label": "triangle - Shader",
+          "wgsl": "<330 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 618,
+          "type": "pipeline-created",
+          "id": 4,
+          "pipeline": "render",
+          "mode": "sync",
+          "createMs": 0.20000004768371582,
+          "moduleIds": [
+            2,
+            2
+          ],
+          "layout": 3,
+          "bindGroupLayoutIds": [],
+          "label": "triangle",
+          "wgsl": "<330 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 618.2999999523163,
+          "type": "texture-created",
+          "id": 5,
+          "label": "target",
+          "format": "rgba8unorm",
+          "size": [
+            8,
+            8
+          ],
+          "mipLevelCount": 1,
+          "sampleCount": 1,
+          "dimension": "2d",
+          "usage": 19
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 618.7999999523163,
+          "type": "encoder-finished",
+          "encoderId": 1,
+          "passes": 1,
+          "dispatches": 0,
+          "draws": 1,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 618.7999999523163,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            1
+          ],
+          "dispatches": 0,
+          "draws": 1
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 618.8999999761581,
+          "type": "encoder-finished",
+          "encoderId": 6,
+          "passes": 1,
+          "dispatches": 0,
+          "draws": 1,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 619,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            6
+          ],
+          "dispatches": 0,
+          "draws": 1
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 619.1000000238419,
+          "type": "encoder-finished",
+          "encoderId": 7,
+          "passes": 1,
+          "dispatches": 0,
+          "draws": 1,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 9,
+          "t": 619.1000000238419,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            7
+          ],
+          "dispatches": 0,
+          "draws": 1
+        },
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 619.1000000238419,
+          "type": "buffer-created",
+          "id": 8,
+          "label": "readback",
+          "sizeBytes": 2048,
+          "usage": 9,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 11,
+          "t": 619.1999999284744,
+          "type": "encoder-finished",
+          "encoderId": 9,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "label": "readbackEncoder"
+        },
+        {
+          "v": 1,
+          "seq": 12,
+          "t": 619.1999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            9
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 13,
+          "t": 619.7999999523163,
+          "type": "shader-diagnostics",
+          "moduleId": 2,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 14,
+          "t": 624.5,
+          "type": "resource-destroyed",
+          "resource": "buffer",
+          "id": 8,
+          "label": "readback"
+        },
+        {
+          "v": 1,
+          "seq": 15,
+          "t": 827.5,
+          "type": "device-destroy-called",
+          "liveBuffers": 0,
+          "liveTextures": 1
+        },
+        {
+          "v": 1,
+          "seq": 16,
+          "t": 827.8999999761581,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 827.5,
+        "active": true,
+        "resources": [
+          {
+            "id": 5,
+            "label": "target",
+            "createdLabel": "target",
+            "resource": "texture"
+          }
+        ],
+        "bindGroups": [],
+        "pipelines": [
+          {
+            "id": 4,
+            "label": "triangle",
+            "createdLabel": "triangle",
+            "pipeline": "render",
+            "mode": "sync",
+            "createMs": 0.20000004768371582,
+            "wgsl": "<330 chars>",
+            "dispatches": 0,
+            "draws": 3
+          }
+        ],
+        "counters": {
+          "submits": 4,
+          "commandBuffers": 4,
+          "encoders": 4,
+          "passes": 3,
+          "dispatches": 0,
+          "draws": 3,
+          "writeBufferCalls": 0,
+          "writeBufferBytes": 0,
+          "writeTextureCalls": 0,
+          "writeTextureBytes": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "explicit-init": {
+      "eventTypes": [
+        "shader-module-created",
+        "pipeline-created",
+        "shader-module-created",
+        "shader-diagnostics",
+        "shader-diagnostics",
+        "pipeline-created",
+        "encoder-finished",
+        "queue-submit",
+        "texture-created",
+        "encoder-finished",
+        "queue-submit",
+        "shader-module-created",
+        "pipeline-created",
+        "encoder-finished",
+        "queue-submit",
+        "shader-diagnostics",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 858.2999999523163,
+          "type": "shader-module-created",
+          "id": 1,
+          "label": "explicitSync - Shader",
+          "wgsl": "<40 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 858.2999999523163,
+          "type": "pipeline-created",
+          "id": 3,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            1
+          ],
+          "layout": 2,
+          "bindGroupLayoutIds": [],
+          "label": "explicitSync",
+          "wgsl": "<40 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 859.6000000238419,
+          "type": "shader-module-created",
+          "id": 4,
+          "label": "explicitAsync - Shader",
+          "wgsl": "<330 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 860.7999999523163,
+          "type": "shader-diagnostics",
+          "moduleId": 1,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 861.3999999761581,
+          "type": "shader-diagnostics",
+          "moduleId": 4,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 862.2999999523163,
+          "type": "pipeline-created",
+          "id": 6,
+          "pipeline": "render",
+          "mode": "async",
+          "createMs": 2.600000023841858,
+          "moduleIds": [
+            4,
+            4
+          ],
+          "layout": 5,
+          "bindGroupLayoutIds": [],
+          "label": "explicitAsync",
+          "wgsl": "<330 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 862.3999999761581,
+          "type": "encoder-finished",
+          "encoderId": 7,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 862.3999999761581,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            7
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 9,
+          "t": 862.6000000238419,
+          "type": "texture-created",
+          "id": 9,
+          "label": "t",
+          "format": "rgba8unorm",
+          "size": [
+            4,
+            4
+          ],
+          "mipLevelCount": 1,
+          "sampleCount": 1,
+          "dimension": "2d",
+          "usage": 19
+        },
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 862.6999999284744,
+          "type": "encoder-finished",
+          "encoderId": 8,
+          "passes": 1,
+          "dispatches": 0,
+          "draws": 1,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 11,
+          "t": 862.6999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            8
+          ],
+          "dispatches": 0,
+          "draws": 1
+        },
+        {
+          "v": 1,
+          "seq": 12,
+          "t": 863.1000000238419,
+          "type": "shader-module-created",
+          "id": 11,
+          "label": "lazyOne - Shader",
+          "wgsl": "<40 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 13,
+          "t": 863.1000000238419,
+          "type": "pipeline-created",
+          "id": 13,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            11
+          ],
+          "layout": 12,
+          "bindGroupLayoutIds": [],
+          "label": "lazyOne",
+          "wgsl": "<40 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 14,
+          "t": 863.1000000238419,
+          "type": "encoder-finished",
+          "encoderId": 10,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 15,
+          "t": 863.1000000238419,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            10
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 16,
+          "t": 863.3999999761581,
+          "type": "shader-diagnostics",
+          "moduleId": 11,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 17,
+          "t": 1068.3999999761581,
+          "type": "device-destroy-called",
+          "liveBuffers": 0,
+          "liveTextures": 1
+        },
+        {
+          "v": 1,
+          "seq": 18,
+          "t": 1068.7999999523163,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 1068.2999999523163,
+        "active": true,
+        "resources": [
+          {
+            "id": 9,
+            "label": "t",
+            "createdLabel": "t",
+            "resource": "texture"
+          }
+        ],
+        "bindGroups": [],
+        "pipelines": [
+          {
+            "id": 3,
+            "label": "explicitSync",
+            "createdLabel": "explicitSync",
+            "pipeline": "compute",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<40 chars>",
+            "dispatches": 1,
+            "draws": 0
+          },
+          {
+            "id": 6,
+            "label": "explicitAsync",
+            "createdLabel": "explicitAsync",
+            "pipeline": "render",
+            "mode": "async",
+            "createMs": 2.600000023841858,
+            "wgsl": "<330 chars>",
+            "dispatches": 0,
+            "draws": 1
+          },
+          {
+            "id": 13,
+            "label": "lazyOne",
+            "createdLabel": "lazyOne",
+            "pipeline": "compute",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<40 chars>",
+            "dispatches": 1,
+            "draws": 0
+          }
+        ],
+        "counters": {
+          "submits": 3,
+          "commandBuffers": 3,
+          "encoders": 3,
+          "passes": 3,
+          "dispatches": 2,
+          "draws": 1,
+          "writeBufferCalls": 0,
+          "writeBufferBytes": 0,
+          "writeTextureCalls": 0,
+          "writeTextureBytes": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "sync-failures": {
+      "eventTypes": [
+        "shader-module-created",
+        "pipeline-created",
+        "device-error",
+        "shader-diagnostics",
+        "device-error",
+        "shader-module-created",
+        "pipeline-created",
+        "device-error",
+        "shader-diagnostics",
+        "device-error",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 1100,
+          "type": "shader-module-created",
+          "id": 1,
+          "label": "brokenCompute - Shader",
+          "wgsl": "<85 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 1100,
+          "type": "pipeline-created",
+          "id": 3,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            1
+          ],
+          "layout": 2,
+          "bindGroupLayoutIds": [],
+          "label": "brokenCompute",
+          "wgsl": "<85 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 1101.1999999284744,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\n                                                         ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenCompute - Shader\"\"]).\n"
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 1101.2999999523163,
+          "type": "shader-diagnostics",
+          "moduleId": 1,
+          "messages": [
+            {
+              "type": "error",
+              "message": "unresolved call target 'definitelyUndeclared'",
+              "lineNum": 1,
+              "linePos": 58
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 1101.5,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "[Invalid ShaderModule \"brokenCompute - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenCompute - Shader\"], entryPoint: [undefined]).\n - While calling [Device].CreateComputePipeline([ComputePipelineDescriptor \"\"brokenCompute\"\"]).\n"
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 1203.5,
+          "type": "shader-module-created",
+          "id": 4,
+          "label": "brokenRender - Shader",
+          "wgsl": "<335 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 1203.6999999284744,
+          "type": "pipeline-created",
+          "id": 6,
+          "pipeline": "render",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            4,
+            4
+          ],
+          "layout": 5,
+          "bindGroupLayoutIds": [],
+          "label": "brokenRender",
+          "wgsl": "<335 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 1204.6999999284744,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "Error while parsing WGSL: :9:63 error: unresolved value 'definitelyUndeclared'\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\n                                                              ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenRender - Shader\"\"]).\n"
+        },
+        {
+          "v": 1,
+          "seq": 9,
+          "t": 1204.7999999523163,
+          "type": "shader-diagnostics",
+          "moduleId": 4,
+          "messages": [
+            {
+              "type": "error",
+              "message": "unresolved value 'definitelyUndeclared'",
+              "lineNum": 9,
+              "linePos": 63
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 1204.8999999761581,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "[Invalid ShaderModule \"brokenRender - Shader\"] is invalid due to a previous error.\n - While validating vertex stage ([Invalid ShaderModule \"brokenRender - Shader\"], entryPoint: [undefined]).\n - While validating vertex state.\n - While calling [Device].CreateRenderPipeline([RenderPipelineDescriptor \"\"brokenRender\"\"]).\n"
+        },
+        {
+          "v": 1,
+          "seq": 11,
+          "t": 1407.1999999284744,
+          "type": "device-destroy-called",
+          "liveBuffers": 0,
+          "liveTextures": 0
+        },
+        {
+          "v": 1,
+          "seq": 12,
+          "t": 1407.8999999761581,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 1407.1999999284744,
+        "active": true,
+        "resources": [],
+        "bindGroups": [],
+        "pipelines": [
+          {
+            "id": 3,
+            "label": "brokenCompute",
+            "createdLabel": "brokenCompute",
+            "pipeline": "compute",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<85 chars>",
+            "dispatches": 0,
+            "draws": 0
+          },
+          {
+            "id": 6,
+            "label": "brokenRender",
+            "createdLabel": "brokenRender",
+            "pipeline": "render",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<335 chars>",
+            "dispatches": 0,
+            "draws": 0
+          }
+        ],
+        "counters": {
+          "submits": 0,
+          "commandBuffers": 0,
+          "encoders": 0,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "writeBufferCalls": 0,
+          "writeBufferBytes": 0,
+          "writeTextureCalls": 0,
+          "writeTextureBytes": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "async-failures": {
+      "eventTypes": [
+        "shader-module-created",
+        "device-error",
+        "shader-diagnostics",
+        "pipeline-failed",
+        "shader-module-created",
+        "device-error",
+        "shader-diagnostics",
+        "pipeline-failed",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 1438.6000000238419,
+          "type": "shader-module-created",
+          "id": 1,
+          "label": "asyncCompute - Shader",
+          "wgsl": "<85 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 1439.1000000238419,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\n                                                         ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"asyncCompute - Shader\"\"]).\n"
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 1439.1999999284744,
+          "type": "shader-diagnostics",
+          "moduleId": 1,
+          "messages": [
+            {
+              "type": "error",
+              "message": "unresolved call target 'definitelyUndeclared'",
+              "lineNum": 1,
+              "linePos": 58
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 1439.6000000238419,
+          "type": "pipeline-failed",
+          "pipeline": "compute",
+          "mode": "async",
+          "createMs": 0.8000000715255737,
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"asyncCompute - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"asyncCompute - Shader\"], entryPoint: [undefined]).\n",
+          "moduleIds": [
+            1
+          ],
+          "layout": 2,
+          "bindGroupLayoutIds": [],
+          "label": "asyncCompute",
+          "wgsl": "<85 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 1440.3999999761581,
+          "type": "shader-module-created",
+          "id": 3,
+          "label": "asyncRender - Shader",
+          "wgsl": "<335 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 1440.6999999284744,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "Error while parsing WGSL: :9:63 error: unresolved value 'definitelyUndeclared'\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\n                                                              ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"asyncRender - Shader\"\"]).\n"
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 1440.8999999761581,
+          "type": "shader-diagnostics",
+          "moduleId": 3,
+          "messages": [
+            {
+              "type": "error",
+              "message": "unresolved value 'definitelyUndeclared'",
+              "lineNum": 9,
+              "linePos": 63
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 1440.8999999761581,
+          "type": "pipeline-failed",
+          "pipeline": "render",
+          "mode": "async",
+          "createMs": 0.3999999761581421,
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"asyncRender - Shader\"] is invalid due to a previous error.\n - While validating vertex stage ([Invalid ShaderModule \"asyncRender - Shader\"], entryPoint: [undefined]).\n - While validating vertex state.\n",
+          "moduleIds": [
+            3,
+            3
+          ],
+          "layout": 4,
+          "bindGroupLayoutIds": [],
+          "label": "asyncRender",
+          "wgsl": "<335 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 9,
+          "t": 1643.2999999523163,
+          "type": "device-destroy-called",
+          "liveBuffers": 0,
+          "liveTextures": 0
+        },
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 1644.1999999284744,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 1643.2999999523163,
+        "active": true,
+        "resources": [],
+        "bindGroups": [],
+        "pipelines": [],
+        "counters": {
+          "submits": 0,
+          "commandBuffers": 0,
+          "encoders": 0,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "writeBufferCalls": 0,
+          "writeBufferBytes": 0,
+          "writeTextureCalls": 0,
+          "writeTextureBytes": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "new-coverage": {
+      "eventTypes": [
+        "buffer-created",
+        "shader-module-created",
+        "pipeline-created",
+        "buffer-created",
+        "bind-group-created",
+        "encoder-finished",
+        "queue-submit",
+        "buffer-created",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "buffer-created",
+        "encoder-finished",
+        "queue-submit",
+        "shader-diagnostics",
+        "resource-destroyed",
+        "texture-created",
+        "shader-module-created",
+        "shader-module-created",
+        "pipeline-created",
+        "bind-group-created",
+        "bind-group-created",
+        "encoder-finished",
+        "queue-submit",
+        "encoder-finished",
+        "queue-submit",
+        "shader-module-created",
+        "pipeline-created",
+        "buffer-created",
+        "bind-group-created",
+        "encoder-finished",
+        "queue-submit",
+        "texture-created",
+        "bind-group-created",
+        "shader-diagnostics",
+        "shader-diagnostics",
+        "shader-diagnostics",
+        "device-error",
+        "device-destroy-called",
+        "device-lost"
+      ],
+      "events": [
+        {
+          "v": 1,
+          "seq": 1,
+          "t": 1675.3999999761581,
+          "type": "buffer-created",
+          "id": 1,
+          "label": "rawStorage",
+          "sizeBytes": 32,
+          "usage": 140,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 2,
+          "t": 1677.1999999284744,
+          "type": "shader-module-created",
+          "id": 3,
+          "label": "scaleWrapped - Shader",
+          "wgsl": "<241 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 3,
+          "t": 1677.3999999761581,
+          "type": "pipeline-created",
+          "id": 6,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            3
+          ],
+          "layout": 5,
+          "bindGroupLayoutIds": [
+            4
+          ],
+          "label": "scaleWrapped",
+          "wgsl": "<241 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 4,
+          "t": 1677.6000000238419,
+          "type": "buffer-created",
+          "id": 7,
+          "label": "factor",
+          "sizeBytes": 4,
+          "usage": 76,
+          "mappedAtCreation": true
+        },
+        {
+          "v": 1,
+          "seq": 5,
+          "t": 1677.6999999284744,
+          "type": "bind-group-created",
+          "id": 8,
+          "label": "layout",
+          "layoutId": 4,
+          "layoutLabel": "layout",
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "buffer",
+              "resourceId": 1,
+              "offset": 0,
+              "size": null
+            },
+            {
+              "binding": 1,
+              "kind": "buffer",
+              "resourceId": 7,
+              "offset": 0,
+              "size": null
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 6,
+          "t": 1677.6999999284744,
+          "type": "encoder-finished",
+          "encoderId": 2,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 7,
+          "t": 1677.6999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            2
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 8,
+          "t": 1677.8999999761581,
+          "type": "buffer-created",
+          "id": 9,
+          "label": "other",
+          "sizeBytes": 32,
+          "usage": 140,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 9,
+          "t": 1677.8999999761581,
+          "type": "encoder-finished",
+          "encoderId": 10,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 10,
+          "t": 1677.8999999761581,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            10
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 11,
+          "t": 1678.1000000238419,
+          "type": "encoder-finished",
+          "encoderId": 11,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 12,
+          "t": 1678.1000000238419,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            11
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 13,
+          "t": 1678.1999999284744,
+          "type": "buffer-created",
+          "id": 12,
+          "label": null,
+          "sizeBytes": 32,
+          "usage": 9,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 14,
+          "t": 1678.1999999284744,
+          "type": "encoder-finished",
+          "encoderId": 13,
+          "passes": 0,
+          "dispatches": 0,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 15,
+          "t": 1678.1999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            13
+          ],
+          "dispatches": 0,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 16,
+          "t": 1678.5,
+          "type": "shader-diagnostics",
+          "moduleId": 3,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 17,
+          "t": 1681.6000000238419,
+          "type": "resource-destroyed",
+          "resource": "buffer",
+          "id": 12,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 18,
+          "t": 1682,
+          "type": "texture-created",
+          "id": 14,
+          "label": "mipTex",
+          "format": "rgba8unorm",
+          "size": [
+            8,
+            8
+          ],
+          "mipLevelCount": 3,
+          "sampleCount": 1,
+          "dimension": "2d",
+          "usage": 23
+        },
+        {
+          "v": 1,
+          "seq": 19,
+          "t": 1683.1000000238419,
+          "type": "shader-module-created",
+          "id": 18,
+          "label": null,
+          "wgsl": "<329 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 20,
+          "t": 1683.1000000238419,
+          "type": "shader-module-created",
+          "id": 19,
+          "label": null,
+          "wgsl": "<200 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 21,
+          "t": 1683.1999999284744,
+          "type": "pipeline-created",
+          "id": 20,
+          "pipeline": "render",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            18,
+            19
+          ],
+          "layout": 17,
+          "bindGroupLayoutIds": [
+            16
+          ],
+          "label": null,
+          "wgsl": "<329 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 22,
+          "t": 1683.2999999523163,
+          "type": "bind-group-created",
+          "id": 22,
+          "label": null,
+          "layoutId": 16,
+          "layoutLabel": null,
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "texture-view",
+              "resourceId": 14
+            },
+            {
+              "binding": 1,
+              "kind": "sampler",
+              "resourceId": 21
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 23,
+          "t": 1683.5,
+          "type": "bind-group-created",
+          "id": 23,
+          "label": null,
+          "layoutId": 16,
+          "layoutLabel": null,
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "texture-view",
+              "resourceId": 14
+            },
+            {
+              "binding": 1,
+              "kind": "sampler",
+              "resourceId": 21
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 24,
+          "t": 1683.5,
+          "type": "encoder-finished",
+          "encoderId": 15,
+          "passes": 2,
+          "dispatches": 0,
+          "draws": 2,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 25,
+          "t": 1683.5,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            15
+          ],
+          "dispatches": 0,
+          "draws": 2
+        },
+        {
+          "v": 1,
+          "seq": 26,
+          "t": 1683.6999999284744,
+          "type": "encoder-finished",
+          "encoderId": 24,
+          "passes": 1,
+          "dispatches": 1,
+          "draws": 0,
+          "label": ""
+        },
+        {
+          "v": 1,
+          "seq": 27,
+          "t": 1683.6999999284744,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            24
+          ],
+          "dispatches": 1,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 28,
+          "t": 1683.6999999284744,
+          "type": "shader-module-created",
+          "id": 25,
+          "label": "rawShader",
+          "wgsl": "<168 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 29,
+          "t": 1683.6999999284744,
+          "type": "pipeline-created",
+          "id": 26,
+          "pipeline": "compute",
+          "mode": "sync",
+          "createMs": 0,
+          "moduleIds": [
+            25
+          ],
+          "layout": "auto",
+          "bindGroupLayoutIds": null,
+          "label": "rawPipe",
+          "wgsl": "<168 chars>"
+        },
+        {
+          "v": 1,
+          "seq": 30,
+          "t": 1683.7999999523163,
+          "type": "buffer-created",
+          "id": 27,
+          "label": "rawBuf2",
+          "sizeBytes": 16,
+          "usage": 128,
+          "mappedAtCreation": false
+        },
+        {
+          "v": 1,
+          "seq": 31,
+          "t": 1683.7999999523163,
+          "type": "bind-group-created",
+          "id": 28,
+          "label": "rawBG",
+          "layoutId": null,
+          "layoutLabel": null,
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "buffer",
+              "resourceId": 27,
+              "offset": 0,
+              "size": null
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 32,
+          "t": 1684,
+          "type": "encoder-finished",
+          "encoderId": 29,
+          "passes": 1,
+          "dispatches": 2,
+          "draws": 0,
+          "label": "rawEnc"
+        },
+        {
+          "v": 1,
+          "seq": 33,
+          "t": 1684,
+          "type": "queue-submit",
+          "commandBuffers": 1,
+          "encoderIds": [
+            29
+          ],
+          "dispatches": 2,
+          "draws": 0
+        },
+        {
+          "v": 1,
+          "seq": 34,
+          "t": 1684,
+          "type": "texture-created",
+          "id": 30,
+          "label": "rawTex",
+          "format": "rgba8unorm",
+          "size": [
+            4,
+            4
+          ],
+          "mipLevelCount": 1,
+          "sampleCount": 1,
+          "dimension": "2d",
+          "usage": 6
+        },
+        {
+          "v": 1,
+          "seq": 35,
+          "t": 1684.1000000238419,
+          "type": "bind-group-created",
+          "id": 33,
+          "label": "rawTexBG",
+          "layoutId": 32,
+          "layoutLabel": "rawBGL",
+          "entries": [
+            {
+              "binding": 0,
+              "kind": "texture-view",
+              "resourceId": 30
+            },
+            {
+              "binding": 1,
+              "kind": "sampler",
+              "resourceId": 31
+            }
+          ]
+        },
+        {
+          "v": 1,
+          "seq": 36,
+          "t": 1685.7999999523163,
+          "type": "shader-diagnostics",
+          "moduleId": 18,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 37,
+          "t": 1686,
+          "type": "shader-diagnostics",
+          "moduleId": 19,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 38,
+          "t": 1688.2999999523163,
+          "type": "shader-diagnostics",
+          "moduleId": 25,
+          "messages": []
+        },
+        {
+          "v": 1,
+          "seq": 39,
+          "t": 1689.1999999284744,
+          "type": "device-error",
+          "errorType": "GPUValidationError",
+          "message": "[Buffer \"rawBuf2\"] usage (BufferUsage::Storage) doesn't include BufferUsage::CopyDst.\n - While calling [Queue].WriteBuffer([Buffer \"rawBuf2\"], (0 bytes), data, (16 bytes))\n"
+        },
+        {
+          "v": 1,
+          "seq": 40,
+          "t": 1892.5,
+          "type": "device-destroy-called",
+          "liveBuffers": 4,
+          "liveTextures": 2
+        },
+        {
+          "v": 1,
+          "seq": 41,
+          "t": 1893.1000000238419,
+          "type": "device-lost",
+          "reason": "destroyed",
+          "message": "Device was destroyed."
+        }
+      ],
+      "snapshot": {
+        "v": 1,
+        "t": 1892.5,
+        "active": true,
+        "resources": [
+          {
+            "id": 1,
+            "label": "wrapped",
+            "createdLabel": "rawStorage",
+            "resource": "buffer",
+            "sizeBytes": 32,
+            "usage": 140,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 7,
+            "label": "factor",
+            "createdLabel": "factor",
+            "resource": "buffer",
+            "sizeBytes": 4,
+            "usage": 76,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 9,
+            "label": "other",
+            "createdLabel": "other",
+            "resource": "buffer",
+            "sizeBytes": 32,
+            "usage": 140,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 14,
+            "label": "mipTex",
+            "createdLabel": "mipTex",
+            "resource": "texture"
+          },
+          {
+            "id": 27,
+            "label": "rawBuf2",
+            "createdLabel": "rawBuf2",
+            "resource": "buffer",
+            "sizeBytes": 16,
+            "usage": 128,
+            "writes": 1,
+            "bytesWritten": 16
+          },
+          {
+            "id": 30,
+            "label": "rawTex",
+            "createdLabel": "rawTex",
+            "resource": "texture"
+          }
+        ],
+        "bindGroups": [
+          {
+            "id": 8,
+            "label": "layout",
+            "createdLabel": "layout"
+          },
+          {
+            "id": 22,
+            "label": "",
+            "createdLabel": null
+          },
+          {
+            "id": 23,
+            "label": "",
+            "createdLabel": null
+          },
+          {
+            "id": 28,
+            "label": "rawBG",
+            "createdLabel": "rawBG"
+          },
+          {
+            "id": 33,
+            "label": "rawTexBG",
+            "createdLabel": "rawTexBG"
+          }
+        ],
+        "pipelines": [
+          {
+            "id": 6,
+            "label": "scaleWrapped",
+            "createdLabel": "scaleWrapped",
+            "pipeline": "compute",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<241 chars>",
+            "dispatches": 2,
+            "draws": 0
+          },
+          {
+            "id": 20,
+            "label": "",
+            "createdLabel": null,
+            "pipeline": "render",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<329 chars>",
+            "dispatches": 0,
+            "draws": 2
+          },
+          {
+            "id": 26,
+            "label": "rawPipe",
+            "createdLabel": "rawPipe",
+            "pipeline": "compute",
+            "mode": "sync",
+            "createMs": 0,
+            "wgsl": "<168 chars>",
+            "dispatches": 2,
+            "draws": 0
+          }
+        ],
+        "counters": {
+          "submits": 7,
+          "commandBuffers": 7,
+          "encoders": 7,
+          "passes": 5,
+          "dispatches": 4,
+          "draws": 2,
+          "writeBufferCalls": 1,
+          "writeBufferBytes": 16,
+          "writeTextureCalls": 5,
+          "writeTextureBytes": 656,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "listenerErrors": 0
+        },
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "tgpuResolveTime",
+          "tgpuTrigger(lazy|initSync)",
+          "tgpuBindGroupEntryNames",
+          "tgpuHandleIdentity"
+        ]
+      }
+    },
+    "new-coverage-labels": {
+      "buffers": [
+        "rawStorage",
+        "factor",
+        "other",
+        null,
+        "rawBuf2"
+      ],
+      "pipelines": [
+        [
+          "compute",
+          "scaleWrapped",
+          "sync"
+        ],
+        [
+          "render",
+          null,
+          "sync"
+        ],
+        [
+          "compute",
+          "rawPipe",
+          "sync"
+        ]
+      ],
+      "submits": 7
+    },
+    "risks-toString": {
+      "wrapped": "function(desc) {\n\t\tconst b = orig.call(this, desc);\n\t\tif (!s",
+      "nameProp": "",
+      "length": 1
+    },
+    "retention-abandoned-roots": {
+      "control": {
+        "roots": 0,
+        "rawBuffers": 0,
+        "rawBuffersCreatedDirectly": 0
+      },
+      "tapped": {
+        "roots": 0,
+        "rawBuffers": 0,
+        "rawBuffersCreatedDirectly": 0,
+        "snapshotAfterGc": {
+          "live": 0,
+          "collectedWithoutDestroy": 60,
+          "history": 150
+        }
+      }
+    },
+    "retention-dropped-tap": {
+      "restoredThenDropped_stateAlive": false,
+      "droppedWithoutRestore_stateAlive": true
+    },
+    "retention-device": {
+      "controlDeviceAlive": false,
+      "restoredTapDeviceAlive": false
+    }
+  }
+}
