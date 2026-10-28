@@ -158,7 +158,12 @@ jobs:
         run: |
           if [ -n "${{ matrix.exe }}" ]; then
             ls -la "${{ matrix.exe }}" || echo "browser binary not found at the expected path"
-            "${{ matrix.exe }}" --version 2>/dev/null || true
+            # `chrome.exe --version` opens a window on Windows and never returns; read the file version instead
+            if [ "$RUNNER_OS" = Windows ]; then
+              powershell -NoProfile -Command "(Get-Item '${{ matrix.exe }}').VersionInfo.ProductVersion"
+            else
+              "${{ matrix.exe }}" --version 2>/dev/null || true
+            fi
           fi
           sw_vers 2>/dev/null || true
       - name: Run the cell

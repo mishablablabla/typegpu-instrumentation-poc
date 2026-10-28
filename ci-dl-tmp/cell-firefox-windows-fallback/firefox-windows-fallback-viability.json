@@ -1,0 +1,21 @@
+{
+  "environment": {
+    "when": "2026-10-28T07:31:10.153Z",
+    "browser": "Firefox",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:158.0) Gecko/20100101 Firefox/158.0",
+    "crossOriginIsolated": true,
+    "headless": false,
+    "classification": "page-only",
+    "note": "No browser-side GPU report is available without a driver; classification rests on the page's adapter info alone.",
+    "adapter": {}
+  },
+  "provenance": {
+    "pageClassification": "unavailable",
+    "reason": "requestAdapter() returned null"
+  },
+  "ok": false,
+  "report": [
+    "WebGPU unavailable"
+  ],
+  "scenarios": []
+}

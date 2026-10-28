@@ -30,7 +30,7 @@ lines.push('', '### Real browsers (same built page everywhere)', '', '| Cell | B
 const counts = (s) => (s?.passed === undefined ? (s?.status ?? 'n/a') : `${s.passed}/${s.passed + s.failed}${s.skipped?.length ? ` (+${s.skipped.length} skipped)` : ''}`);
 for (const c of cells) {
   const v = c.steps?.viability ?? {};
-  const adapter = v.adapter?.vendor ? `${v.adapter.vendor}/${v.adapter.architecture}${v.adapter.isFallbackAdapter ? ' (fallback)' : ''}` : 'none';
+  const adapter = v.adapter?.isFallbackAdapter === null || v.adapter?.isFallbackAdapter === undefined ? 'none' : `${v.adapter.vendor || 'info hidden'}${v.adapter.architecture ? '/' + v.adapter.architecture : ''}${v.adapter.isFallbackAdapter ? ' (fallback)' : ''}`;
   lines.push(`| ${c.cell} | ${String(v.browser ?? 'n/a').replace(/Mozilla.*?(Firefox\/[\d.]+|Chrome\/[\d.]+|Version\/[\d.]+ Safari)/, '$1').slice(0, 60)} | ${adapter} | ${v.classification ?? 'n/a'} | ${counts(v)} | ${c.steps?.suite ? counts(c.steps.suite) : 'not applicable'} | **${c.status}** |`);
 }
 if (cells.length === 0) lines.push('| (no results found) | | | | | | |');
