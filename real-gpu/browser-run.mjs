@@ -6,14 +6,17 @@
 //   node real-gpu/browser-run.mjs --browser Safari --call 'window.runViability()' --out real-gpu/results/viability-safari.json
 //   node real-gpu/browser-run.mjs --browser Safari --call 'window.runBench({...})' --page real-gpu-bench --dist <dist> --skip-build
 //
-// Options: --browser <macOS app name>  --call <js>  --ready <js>  --out <file>  --tree/--page/--dist/--skip-build as run.mjs
+// Options: --browser <macOS app name>  --exe <path to a browser binary> (instead of `open -a`; used on Windows/Linux and in CI)
+//          --exe-arg=<arg> (repeatable)  --firefox (throwaway profile with WebGPU enabled, headless unless --headed)
+//          --prebuilt <dist> (page built elsewhere: no checkout, no build)  --call <js>  --ready <js>  --out <file>  --tree/--page/--dist/--skip-build as run.mjs
 //          --timeout <seconds> (default 180)
 // There is only ONE source for "is this a real GPU": the page's own adapter information. Without the browser's
 // GPU-process report the run is classified `page-only` and is never called two-source validated.
 // The browser tab stays open afterwards (closing it would need automation permissions this script does not ask for).
 import { spawn, spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createServer } from 'node:http';
+import { tmpdir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -30,9 +33,10 @@ const outArg = option('--out');
 const timeoutMs = Number(option('--timeout') ?? 180) * 1000;
 const pkg = option('--tree') ? join(resolve(option('--tree')), 'packages/typegpu') : join(root, '.work/typegpu/packages/typegpu');
 const pageDir = join(pkg, 'tests/instrumentation', option('--page') ?? 'real-gpu-page');
-const distDir = option('--dist') ? resolve(option('--dist')) : join(root, '.work/real-gpu-dist');
+const prebuilt = option('--prebuilt');
+const distDir = prebuilt ? resolve(prebuilt) : option('--dist') ? resolve(option('--dist')) : join(root, '.work/real-gpu-dist');
 
-if (!flag('--skip-build')) {
+if (!flag('--skip-build') && !prebuilt) {
   if (!option('--tree')) spawnSync(join(root, 'scripts/sync.sh'), { stdio: 'inherit' });
   const examplePath = join(pkg, 'tests/instrumentation/examples/compute-scale.ts');
   const build = spawnSync('node', [join(pageDir, 'build.mjs'), distDir, examplePath], { cwd: pkg, stdio: 'inherit' });
@@ -88,11 +92,52 @@ const server = createServer((req, res) => {
 await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
 const url = `http://127.0.0.1:${server.address().port}/`;
 console.error(`Serving ${distDir} at ${url}; opening ${browser}`);
-const opener = spawn('open', ['-a', browser, url], { stdio: 'inherit' });
-opener.on('exit', (code) => {
-  if (code !== 0) {
-    console.error(`Could not open "${browser}" (open exited ${code}).`);
+const exe = option('--exe');
+let profile;
+let child;
+if (exe) {
+  const exeArgs = args.filter((a) => a.startsWith('--exe-arg=')).map((a) => a.slice('--exe-arg='.length));
+  if (flag('--firefox')) {
+    // WebGPU is behind a pref in Firefox; everything else here just keeps first-run UI and updates out of the way.
+    profile = mkdtempSync(join(tmpdir(), 'typegpu-instr-firefox-'));
+    const prefs = {
+      'dom.webgpu.enabled': true,
+      'gfx.webgpu.ignore-blocklist': true,
+      'browser.shell.checkDefaultBrowser': false,
+      'browser.startup.homepage_override.mstone': 'ignore',
+      'datareporting.policy.dataSubmissionEnabled': false,
+      'app.update.enabled': false,
+      'dom.security.https_only_mode': false,
+      'network.proxy.type': 0,
+    };
+    writeFileSync(join(profile, 'user.js'), Object.entries(prefs).map(([k, v]) => `user_pref(${JSON.stringify(k)}, ${JSON.stringify(v)});`).join('\n'));
+    exeArgs.push('--no-remote', '--profile', profile, ...(flag('--headed') ? [] : ['--headless']));
+  }
+  child = spawn(exe, [...exeArgs, url], { stdio: 'ignore' });
+  child.on('error', (error) => {
+    console.error(`Could not start ${exe}: ${error.message}`);
     process.exit(3);
+  });
+  child.on('exit', (code) => {
+    if (code !== 0 && code !== null) console.error(`${exe} exited early with code ${code}`);
+  });
+} else {
+  const opener = spawn('open', ['-a', browser, url], { stdio: 'inherit' });
+  opener.on('exit', (code) => {
+    if (code !== 0) {
+      console.error(`Could not open "${browser}" (open exited ${code}).`);
+      process.exit(3);
+    }
+  });
+}
+process.on('exit', () => {
+  child?.kill();
+  if (profile) {
+    try {
+      rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 200 });
+    } catch {
+      // the browser may still be flushing its profile
+    }
   }
 });
 
