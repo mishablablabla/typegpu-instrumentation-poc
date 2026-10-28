@@ -1,6 +1,6 @@
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/commandEncoder/computePass.d.ts work/patched/node_modules/typegpu/core/commandEncoder/computePass.d.ts
---- work/pristine/node_modules/typegpu/core/commandEncoder/computePass.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/core/commandEncoder/computePass.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/core/commandEncoder/computePass.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/core/commandEncoder/computePass.d.ts	2026-10-28 01:42:15
 @@ -10,6 +10,7 @@
  import type { ExperimentalTgpuRoot } from '../root/rootTypes.ts';
  import { type TgpuPassTimestampWrites } from './attachments.ts';
@@ -19,8 +19,8 @@ diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_
  /**
   * A compute pass recording into a {@link TgpuCommandEncoder}.
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.d.ts work/patched/node_modules/typegpu/core/commandEncoder/renderPass.d.ts
---- work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/core/commandEncoder/renderPass.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/core/commandEncoder/renderPass.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/core/commandEncoder/renderPass.d.ts	2026-10-28 01:42:15
 @@ -10,6 +10,7 @@
  import type { TgpuRenderPipeline } from '../pipeline/renderPipeline.ts';
  import { type TgpuQuerySet } from '../querySet/querySet.ts';
@@ -39,8 +39,8 @@ diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_
  /**
   * The draw-recording surface shared by render passes and render bundle encoders,
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/pipeline/computePipeline.d.ts work/patched/node_modules/typegpu/core/pipeline/computePipeline.d.ts
---- work/pristine/node_modules/typegpu/core/pipeline/computePipeline.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/core/pipeline/computePipeline.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/core/pipeline/computePipeline.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/core/pipeline/computePipeline.d.ts	2026-10-28 01:42:15
 @@ -20,6 +20,7 @@
  import type { RestoreContext } from '../../serial/types.ts';
  import { type Timeable, type TimestampWritesPriors } from './timeable.ts';
@@ -59,8 +59,8 @@ diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_
      private resolveAndCreateShaderModule;
  }
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.d.ts work/patched/node_modules/typegpu/core/pipeline/renderPipeline.d.ts
---- work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/core/pipeline/renderPipeline.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/core/pipeline/renderPipeline.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/core/pipeline/renderPipeline.d.ts	2026-10-28 01:42:15
 @@ -25,6 +25,7 @@
  import { type TgpuRenderCommands } from '../commandEncoder/renderPass.ts';
  import { type Timeable, type TimestampWritesPriors } from './timeable.ts';
@@ -87,8 +87,8 @@ diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_
  }
  /**
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/root/init.d.ts work/patched/node_modules/typegpu/core/root/init.d.ts
---- work/pristine/node_modules/typegpu/core/root/init.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/core/root/init.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/core/root/init.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/core/root/init.d.ts	2026-10-28 01:42:15
 @@ -8,6 +8,7 @@
  import { type TgpuComputePipeline } from '../pipeline/computePipeline.ts';
  import type { ExperimentalTgpuRoot, TgpuGuardedComputePipeline, TgpuGuardedComputePipelineSoul, TgpuRootSoul, TgpuRoot } from './rootTypes.ts';
@@ -122,8 +122,8 @@ diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_
  /**
   * Requests a new GPU device and creates a root around it.
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/core/root/rootTypes.d.ts work/patched/node_modules/typegpu/core/root/rootTypes.d.ts
---- work/pristine/node_modules/typegpu/core/root/rootTypes.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/core/root/rootTypes.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/core/root/rootTypes.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/core/root/rootTypes.d.ts	2026-10-28 01:42:15
 @@ -11,6 +11,7 @@
  import type { Assume, Mutable, OmitProps, Prettify } from '../../shared/utilityTypes.ts';
  import type { ExtractBindGroupInputFromLayout, TgpuBindGroup, TgpuBindGroupLayout, TgpuLayoutEntry } from '../../tgpuBindGroupLayout.ts';
@@ -158,8 +158,8 @@ diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_
      createTexture<TWidth extends number, THeight extends number, TDepth extends number, TSize extends readonly [TWidth] | readonly [TWidth, THeight] | readonly [TWidth, THeight, TDepth], TFormat extends GPUTextureFormat, TMipLevelCount extends number, TSampleCount extends number, TViewFormats extends GPUTextureFormat[], TDimension extends GPUTextureDimension>(props: CreateTextureOptions<TSize, TFormat, TMipLevelCount, TSampleCount, TViewFormats, TDimension>): TgpuTexture<CreateTextureResult<TSize, TFormat, TMipLevelCount, TSampleCount, TViewFormats, TDimension>>;
      /**
 diff -ru -x instrumentation -x package.json -x *.js -x *.mjs work/pristine/node_modules/typegpu/memo.d.ts work/patched/node_modules/typegpu/memo.d.ts
---- work/pristine/node_modules/typegpu/memo.d.ts	2026-10-27 22:14:52
-+++ work/patched/node_modules/typegpu/memo.d.ts	2026-10-27 22:14:56
+--- work/pristine/node_modules/typegpu/memo.d.ts	2026-10-28 01:42:11
++++ work/patched/node_modules/typegpu/memo.d.ts	2026-10-28 01:42:15
 @@ -6,6 +6,7 @@
   */
  export declare class WeakMemo<TKey extends object, TValue, TArgs extends unknown[]> {

@@ -1,0 +1,12 @@
+# Full typegpu package suite with the hook patch applied (mock device; no GPU)
+# date: 2026-10-28T00:43:20Z  node v24.21.0
+# cwd: .work/typegpu/packages/typegpu (upstream 7c853fa3 + patches/0001 + overlay at repo HEAD working tree)
+$ pnpm vitest run --exclude "**/bench/**"
+ RUN  v4.1.11 /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/.work/typegpu/packages/typegpu
+
+
+ Test Files  208 passed (208)
+      Tests  3174 passed (3174)
+   Start at  01:43:10
+   Duration  10.07s (transform 13.04s, setup 0ms, import 61.28s, tests 13.91s, environment 12ms)
+

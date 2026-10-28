@@ -1,8 +1,12 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const PKG = '/private/tmp/claude-502/-Users-mykhailozuiev-Desktop-type-gpu-fork-TypeGPU/22273805-dfde-4b77-a308-298d24773653/scratchpad/clone-mut2/.work/typegpu/packages/typegpu';
+// The package to mutate. Mutants are applied in place and restored, so point MUTATION_PKG at a COPY
+// (cp -cR .work/typegpu <dir>/typegpu; MUTATION_PKG=<dir>/typegpu/packages/typegpu) rather than the working checkout.
+const here = dirname(fileURLToPath(import.meta.url));
+const PKG = process.env.MUTATION_PKG ?? resolve(here, '../.work/typegpu/packages/typegpu');
 const { mutants } = await import(process.argv[2]);
 const only = process.argv[3] ? new Set(process.argv[3].split(',')) : undefined;
 const outFile = process.argv[4] ?? 'results.json';

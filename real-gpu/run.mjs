@@ -34,12 +34,14 @@ const exampleMode = exampleArg !== undefined;
 //   --tree <checkout>        build from another TypeGPU checkout (e.g. the pristine baseline)
 //   --page <dir>             page directory name under tests/instrumentation of that checkout
 //   --dist <dir> --skip-build  reuse an already built page
+//   --prebuilt <dir>         run a page that was built elsewhere (CI matrix cells): no checkout, no sync, no build
 //   --ready <js expression>  what to wait for before calling
 const callExpr = option('--call');
 const outArg = option('--out');
 const pkg = option('--tree') ? join(resolve(option('--tree')), 'packages/typegpu') : join(root, '.work/typegpu/packages/typegpu');
 const pageDir = join(pkg, 'tests/instrumentation', option('--page') ?? 'real-gpu-page');
-const distDir = option('--dist') ? resolve(option('--dist')) : join(root, '.work/real-gpu-dist');
+const prebuilt = option('--prebuilt');
+const distDir = prebuilt ? resolve(prebuilt) : option('--dist') ? resolve(option('--dist')) : join(root, '.work/real-gpu-dist');
 const readyExpr = option('--ready') ?? 'typeof window.runRealDeviceScenario === "function"';
 
 function fail(code, message) {
@@ -61,8 +63,8 @@ if (!chrome) {
 }
 
 // --- build ---
-if (!existsSync(pkg)) fail(3, 'Run scripts/setup.sh first.');
-if (!option('--tree')) spawnSync(join(root, 'scripts/sync.sh'), { stdio: 'inherit' });
+if (!prebuilt && !existsSync(pkg)) fail(3, 'Run scripts/setup.sh first.');
+if (!prebuilt && !option('--tree')) spawnSync(join(root, 'scripts/sync.sh'), { stdio: 'inherit' });
 // The scenario must live inside the checkout so that `typegpu` resolves; single files only.
 let examplePath = join(pkg, 'tests/instrumentation/examples/compute-scale.ts');
 if (exampleMode) {
@@ -71,7 +73,7 @@ if (exampleMode) {
   examplePath = join(pageDir, 'user-example.ts');
   copyFileSync(source, examplePath);
 }
-if (!flag('--skip-build')) {
+if (!flag('--skip-build') && !prebuilt) {
   const build = spawnSync('node', [join(pageDir, 'build.mjs'), distDir, examplePath], { cwd: pkg, stdio: 'inherit' });
   if (build.status !== 0) fail(3, 'Page build failed.');
 }
@@ -246,7 +248,7 @@ if (callExpr) {
   console.log(`Run classification: ${validationLevel}`);
   if (outArg) {
     mkdirSync(dirname(resolve(outArg)), { recursive: true });
-    writeFileSync(resolve(outArg), JSON.stringify({ environment, ...result }, null, 2) + '\n');
+    writeFileSync(resolve(outArg), JSON.stringify({ environment, ...result, browserConsole: consoleLog }, null, 2) + '\n');
   }
   if (mode === 'unavailable') fail(2, 'NOT RUN: WebGPU is not available in this browser.');
   if ((mode === 'software' || mode === 'unverified-adapter') && !flag('--allow-software')) {
@@ -322,7 +324,8 @@ const record = {
 };
 
 mkdirSync(join(here, 'results'), { recursive: true });
-const out = join(here, 'results', `${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+const out = outArg ? resolve(outArg) : join(here, 'results', `${new Date().toISOString().replace(/[:.]/g, '-')}.json`);
+mkdirSync(dirname(out), { recursive: true });
 writeFileSync(out, JSON.stringify(record, null, 2) + '\n');
 
 // --- report ---

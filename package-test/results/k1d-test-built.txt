@@ -4,10 +4,10 @@ exit 0
  RUN  v4.1.11 /Users/mykhailozuiev/Desktop/typegpu-instrumentation-poc/.work/typegpu/packages/typegpu
 
 
- Test Files  8 passed (8)
-      Tests  206 passed (206)
-   Start at  22:15:08
-   Duration  4.16s (transform 4.87s, setup 0ms, import 6.28s, tests 5.05s, environment 0ms)
+ Test Files  10 passed (10)
+      Tests  219 passed (219)
+   Start at  01:42:27
+   Duration  4.34s (transform 6.72s, setup 0ms, import 8.69s, tests 5.35s, environment 1ms)
 
 
 

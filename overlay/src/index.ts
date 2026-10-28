@@ -4,7 +4,7 @@
  * TypeGPU's core refers to instrumentation through type-only imports, so this module (the hub, the device
  * listener registry, the event size estimate) is bundled only into applications that import it.
  */
-import { InstrumentationHub } from './hub.ts';
+import { InstrumentationHub, validateOptions } from './hub.ts';
 import type {
   InstrumentationHolder,
   InstrumentationSink,
@@ -20,6 +20,8 @@ import type {
 export function createInstrumentation(
   options: TgpuInstrumentationOptions = {},
 ): TgpuInstrumentationProvider {
+  // Fail here, before `tgpu.init` has requested a device, rather than inside the root constructor.
+  validateOptions(options);
   return {
     attach(device: GPUDevice, holder: InstrumentationHolder): InstrumentationSink {
       return new InstrumentationHub(device, options, holder);

@@ -28,6 +28,8 @@ jobs:
         run: scripts/setup.sh
       - name: Tests, type check, lint
         run: scripts/check.sh
+      - name: Relative links in README and docs resolve
+        run: node scripts/check-links.mjs
 
   upstream-drift:
     name: patch + overlay work on upstream main
@@ -60,3 +62,10 @@ jobs:
       - run: package-test/run.sh
       - name: Fail on any recorded FAIL
         run: "! grep -q FAIL package-test/results/k1.log"
+      # the documentation site depends on the packed patched package produced above
+      - name: "Documentation site (Angular, data checks and production build)"
+        working-directory: site
+        run: |
+          npm install
+          npm run check
+          npx ng build --configuration production

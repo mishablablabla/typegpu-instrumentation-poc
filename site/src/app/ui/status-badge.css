@@ -1,0 +1,11 @@
+:host {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.05rem 0.5rem; white-space: nowrap;
+  font-family: var(--tg-font-mono); font-size: 0.75rem; font-weight: 600; line-height: 1.6;
+  border: 1px solid var(--b); color: var(--tg-text-strong); background: color-mix(in srgb, var(--b) 18%, transparent);
+  border-radius: 0.2rem;
+}
+.dot { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: var(--b); flex: none; }
+:host(.badge-verified) { --b: hsl(101, 70%, 40%); }
+:host(.badge-prototype) { --b: hsl(41, 90%, 52%); }
+:host(.badge-proposed) { --b: hsl(234, 80%, 62%); }
+:host(.badge-unverified) { --b: hsl(339, 80%, 58%); }

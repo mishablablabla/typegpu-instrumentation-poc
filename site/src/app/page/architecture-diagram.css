@@ -1,0 +1,26 @@
+:host { display: block; margin-top: 1rem; }
+.arch { margin: 0; display: grid; gap: 0; }
+.lane { display: grid; gap: 0.4rem; }
+.lane-label { font-family: var(--tg-font-mono); font-size: 0.75rem; font-weight: 600; color: var(--tg-text-muted); text-transform: uppercase; letter-spacing: 0.04em; }
+.note { text-transform: none; font-weight: 400; letter-spacing: 0; margin-inline-start: 0.5rem; }
+.box { display: grid; gap: 0.25rem; padding: 0.65rem 0.85rem; border: 1px solid var(--tg-border); background: var(--tg-surface); color: var(--tg-text); font-size: var(--tg-text-sm); line-height: 1.45; min-width: 0; align-content: start; }
+.box strong { color: var(--tg-text-strong); }
+.box span { color: var(--tg-text); overflow-wrap: anywhere; }
+.box code, .boundary code { font-family: var(--tg-font-mono); font-size: 0.75rem; background: var(--tg-inline-code-bg); padding: 0.05rem 0.25rem; overflow-wrap: anywhere; }
+.existing { border-color: var(--tg-link); }
+.proto { border-style: dashed; border-color: var(--tg-caution-border); }
+.future { border-style: dotted; opacity: 0.92; }
+.hub { display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); }
+.consumers { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+.consumers .box { align-content: space-between; }
+.arrow { display: flex; align-items: center; gap: 0.6rem; padding: 0.35rem 0 0.35rem 0.9rem; color: var(--tg-text-muted); font-size: var(--tg-text-xs); }
+.arrow::before { content: ''; width: 1px; height: 1.4rem; background: var(--tg-text-muted); }
+.arrow::after { content: none; }
+.boundary { margin: 0.6rem 0; padding: 0.6rem 0.85rem; display: grid; gap: 0.25rem; font-size: var(--tg-text-sm); line-height: 1.45; min-width: 0; }
+.boundary strong { color: var(--tg-text-strong); }
+.optin { border: 2px dashed var(--tg-caution-border); background: var(--tg-caution-bg); }
+.contract { border: 2px solid var(--tg-link); background: var(--tg-accent-low); color: var(--tg-text-strong); }
+:root[data-theme='light'] .contract { background: color-mix(in srgb, var(--tg-accent-low) 45%, var(--tg-bg)); }
+.boundary span { overflow-wrap: anywhere; }
+figcaption { margin-top: 0.9rem; font-size: var(--tg-text-xs); color: var(--tg-text-muted); line-height: 1.55; }
+figcaption code { font-family: var(--tg-font-mono); }

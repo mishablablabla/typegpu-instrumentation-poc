@@ -8,7 +8,7 @@
  */
 import { createInstrumentation } from 'typegpu/unstable-instrumentation';
 import { d, tgpu } from 'typegpu';
-import { runExample } from './example.ts';
+import { runExample, runExampleControl } from './example.ts';
 import { runViability } from './viability.ts';
 import { provenance } from './provenance.ts';
 import type {
@@ -471,10 +471,12 @@ declare global {
   interface Window {
     runRealDeviceScenario: typeof runRealDeviceScenario;
     runExample: typeof runExample;
+    runExampleControl: typeof runExampleControl;
     runViability: typeof runViability;
   }
 }
 // Assigned here, not in the modules: the package says `sideEffects: false`, so the bundler drops side effects of modules whose exports are unused.
 window.runRealDeviceScenario = runRealDeviceScenario;
 window.runExample = runExample;
+window.runExampleControl = runExampleControl;
 window.runViability = runViability;

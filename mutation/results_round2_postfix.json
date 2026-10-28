@@ -1,0 +1,1487 @@
+[
+ {
+  "id": "N01",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options are validated when instrumentation is attached accepts the boundaries",
+   "options and bounds accepts historyMaxBytes up to Number.MAX_SAFE_INTEGER and no more"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N02",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options fail early and precisely A-4 createInstrumentation() validates its options itself, before any root or device exists",
+   "history is bounded by bytes as well as by count keeps no history for historySize 0 but still counts what it dropped",
+   "options are validated when instrumentation is attached accepts the boundaries",
+   "the registry stays bounded under churn nobody ever inspects forgets collected resources without a snapshot or a finalizer callback",
+   "bounded history delivers events even without history",
+   "history ring counts every event as dropped when there is no history at all"
+  ],
+  "n": 7
+ },
+ {
+  "id": "N03",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options fail early and precisely A-4b a bad option never reaches tgpu.init, so no device is requested for it",
+   "options are validated when instrumentation is attached rejects historySize = NaN with a RangeError naming the option",
+   "options are validated when instrumentation is attached rejects historySize = 1.5 with a RangeError naming the option",
+   "options are validated when instrumentation is attached rejects historyMaxBytes = NaN with a RangeError naming the option",
+   "options are validated when instrumentation is attached rejects historyMaxBytes = 0.5 with a RangeError naming the option"
+  ],
+  "n": 5
+ },
+ {
+  "id": "N04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps about 4 MiB of history by default"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N05",
+  "result": "BAD-FIND(0) options.captureSource ?? true"
+ },
+ {
+  "id": "N06",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds accepts historyMaxBytes up to Number.MAX_SAFE_INTEGER and no more"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N07",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options are validated when instrumentation is attached accepts the boundaries"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N08",
+  "result": "BAD-FIND(0)       'historyMaxBytes',\n      options.h"
+ },
+ {
+  "id": "N09",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "re-entrancy and subscriptions R7 rejects a non-function listener instead of failing on every event"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N10",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "re-entrancy and subscriptions R3 a listener unsubscribed by an earlier listener is not called for the in-flight event"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N11",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N12",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "re-entrancy and subscriptions R4 dispose() from a listener stops delivery of the in-flight event to later listeners"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N13",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application A6 consumers cannot reach or forge the hook methods"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N14",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application A6 consumers cannot reach or forge the hook methods"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N15",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count evicts the oldest events until the estimated payload fits, and accounts for every byte",
+   "history is bounded by bytes as well as by count always keeps the newest event, even when it alone exceeds the bound",
+   "history is bounded by bytes as well as by count releases evicted events (history arrays do not grow with the number of events ever emitted)",
+   "failures before a pipeline exists D12 keeps a failed pipeline retrievable for late subscribers after the ring evicted its event",
+   "bounded history keeps only the most recent events, oldest first, and counts drops",
+   "garbage collection compatibility keeps event history bounded while resources churn and get collected"
+  ],
+  "n": 14
+ },
+ {
+  "id": "N16",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds hands out snapshots that later failures do not change"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N17",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application A5 snapshot.unavailable is frozen and lists the known blind spots"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N18",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds lists every documented blind spot as unavailable"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N19",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event schema v2 stamps the schema version on events and snapshots",
+   "JSONL reader compatibility policy round-trips what the exporter writes",
+   "JSONL reader rejects a file format, event schema or event version it does not know"
+  ],
+  "n": 3
+ },
+ {
+  "id": "N20",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "events are immutable rejects mutation of events, nested arrays and shared history objects"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N21",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "events are immutable rejects mutation of events, nested arrays and shared history objects"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N22",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery order and re-entrancy queues events caused by a listener, so every listener sees seq order and is never re-entered",
+   "history ring has an event in history() by the time a listener receives it"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N23",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery order and re-entrancy queues events caused by a listener, so every listener sees seq order and is never re-entered",
+   "delivery order and re-entrancy cuts off a subscriber that keeps causing events, without hanging or throwing into the app",
+   "re-entrancy and subscriptions R2 every listener sees seq order even when a listener triggers a nested event",
+   "delivery and failure reporting cuts a subscriber that keeps causing events off after exactly 10 000 events"
+  ],
+  "n": 4
+ },
+ {
+  "id": "N24",
+  "result": "KILLED",
+  "status": "TIMEOUT/ERR",
+  "failed": [
+   "delivery order and re-entrancy queues events caused by a listener, so every listener sees seq order and is never re-entered",
+   "delivery order and re-entrancy cuts off a subscriber that keeps causing events, without hanging or throwing into the app",
+   "re-entrancy and subscriptions R2 every listener sees seq order even when a listener triggers a nested event",
+   "delivery and failure reporting cuts a subscriber that keeps causing events off after exactly 10 000 events"
+  ],
+  "n": 4
+ },
+ {
+  "id": "N25",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "exotic thrown values A-1 a subscriber throwing a null-prototype object is isolated: others still receive the event and the layer stays on",
+   "known blind spots bindGroup.unwrap(root) called directly bypasses the per-root cache and the hook",
+   "two independent consumers of one stream text report: WGSL size, diagnostics, errors and leftovers",
+   "two independent consumers of one stream diagnostics index: answers the use-case questions from the same events",
+   "two independent consumers of one stream both consumers explain an async compile failure from the stream alone",
+   "two independent consumers of one stream the text report does not claim a synchronous creation \"compiled\""
+  ],
+  "n": 61
+ },
+ {
+  "id": "N26",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery and failure reporting cuts a subscriber that keeps causing events off after exactly 10 000 events"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N27",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery order and re-entrancy cuts off a subscriber that keeps causing events, without hanging or throwing into the app",
+   "delivery and failure reporting cuts a subscriber that keeps causing events off after exactly 10 000 events"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N28",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "re-entrancy and subscriptions R3 a listener unsubscribed by an earlier listener is not called for the in-flight event",
+   "re-entrancy and subscriptions R4 dispose() from a listener stops delivery of the in-flight event to later listeners"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N29",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "exotic thrown values A-1 a subscriber throwing a null-prototype object is isolated: others still receive the event and the layer stays on",
+   "delivery order and re-entrancy cuts off a subscriber that keeps causing events, without hanging or throwing into the app",
+   "subscriber failures are isolated and observable does not let a throwing subscriber reach the application or other subscribers",
+   "subscriber failures are isolated and observable surfaces each distinct failure once, up to a limit, and keeps counting the rest",
+   "subscriber failures are isolated and observable survives an environment whose own error reporting throws",
+   "subscription isolates a throwing listener and counts it"
+  ],
+  "n": 9
+ },
+ {
+  "id": "N30",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery order and re-entrancy cuts off a subscriber that keeps causing events, without hanging or throwing into the app",
+   "subscriber failures are isolated and observable does not let a throwing subscriber reach the application or other subscribers"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N31",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery and failure reporting surfaces the same subscriber failure only once"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N32",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "subscriber failures are isolated and observable surfaces each distinct failure once, up to a limit, and keeps counting the rest"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N33",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "subscriber failures are isolated and observable surfaces each distinct failure once, up to a limit, and keeps counting the rest"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N34",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "delivery order and re-entrancy cuts off a subscriber that keeps causing events, without hanging or throwing into the app",
+   "subscriber failures are isolated and observable surfaces each distinct failure once, up to a limit, and keeps counting the rest",
+   "the layer never disturbs the application R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once",
+   "delivery and failure reporting surfaces the same subscriber failure only once"
+  ],
+  "n": 4
+ },
+ {
+  "id": "N35",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "subscriber failures are isolated and observable survives an environment whose own error reporting throws"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N36",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once",
+   "the layer never disturbs the application R10 an exception in the diagnostics request does not leak into initSync()"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N37",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once",
+   "the layer never disturbs the application R10 an exception in the diagnostics request does not leak into initSync()"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N38",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application R9 a fault inside a hook leaves TypeGPU state intact, switches the layer off and is reported once"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N39",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N40",
+  "result": "BAD-FIND(0) return `${error.name}: ${error.message}`"
+ },
+ {
+  "id": "N41",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count releases evicted events (history arrays do not grow with the number of events ever emitted)",
+   "bounded history keeps only the most recent events, oldest first, and counts drops",
+   "garbage collection compatibility keeps event history bounded while resources churn and get collected",
+   "lifecycle under sustained use keeps history at its bound over 40 000 events and accounts for every eviction",
+   "history ring keeps 256 events by default",
+   "JSONL export tags the snapshot with the last event seq even when history was evicted"
+  ],
+  "n": 9
+ },
+ {
+  "id": "N42",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps events that fit the byte bound exactly"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N43",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count always keeps the newest event, even when it alone exceeds the bound"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N44",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count evicts the oldest events until the estimated payload fits, and accounts for every byte",
+   "lifecycle under sustained use keeps history at its bound over 40 000 events and accounts for every eviction",
+   "options and bounds keeps about 4 MiB of history by default",
+   "options and bounds keeps events that fit the byte bound exactly",
+   "options and bounds keeps its byte accounting and order exact through thousands of evictions"
+  ],
+  "n": 5
+ },
+ {
+  "id": "N45",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count evicts the oldest events until the estimated payload fits, and accounts for every byte"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N46",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds lets an evicted event be garbage-collected"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N47",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N48",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps its byte accounting and order exact through thousands of evictions"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N49",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count releases evicted events (history arrays do not grow with the number of events ever emitted)",
+   "lifecycle under sustained use keeps history at its bound over 40 000 events and accounts for every eviction",
+   "options and bounds keeps its byte accounting and order exact through thousands of evictions"
+  ],
+  "n": 3
+ },
+ {
+  "id": "N50",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N51",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count keeps no history for historySize 0 but still counts what it dropped"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N52",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "device loss retention A-2 the retained device-lost event survives byte pressure from later failures",
+   "options and bounds retains the device loss outside the history ring",
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 3
+ },
+ {
+  "id": "N53",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "device loss retention A-2 the retained device-lost event survives byte pressure from later failures",
+   "failures before a pipeline exists D12 keeps a failed pipeline retrievable for late subscribers after the ring evicted its event",
+   "failures before a pipeline exists retains at most 16 pipeline failures, newest kept",
+   "options and bounds bounds retained failures by bytes, and always keeps the newest",
+   "options and bounds hands out snapshots that later failures do not change",
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 6
+ },
+ {
+  "id": "N54",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N55",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists retains at most 16 pipeline failures, newest kept"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N56",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists retains at most 16 pipeline failures, newest kept"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N57",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds bounds retained failures by bytes, and always keeps the newest"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N58",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists retains at most 16 pipeline failures, newest kept",
+   "options and bounds bounds retained failures by bytes, and always keeps the newest"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N59",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists retains at most 16 pipeline failures, newest kept"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N60",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds bounds retained failures by bytes, and always keeps the newest"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N61",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N62",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the registry stays bounded under churn nobody ever inspects forgets collected resources without a snapshot or a finalizer callback"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N63",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the registry stays bounded under churn nobody ever inspects forgets collected resources without a snapshot or a finalizer callback"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N64",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N65",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "garbage collection compatibility does not keep the root or its resources alive, and forgets them"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N66",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "garbage collection compatibility does not keep the root or its resources alive, and forgets them"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N67",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the registry stays bounded under churn nobody ever inspects forgets collected resources without a snapshot or a finalizer callback",
+   "garbage collection compatibility does not keep the root or its resources alive, and forgets them"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N68",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "counters and ids D2 keeps a pipeline id stable when a failed async compile is retried successfully"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N69",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event schema v2 says what a pipeline creation does and does not prove"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N70",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event schema v2 says what a pipeline creation does and does not prove"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N71",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count can drop the generated WGSL and keep only its length"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N72",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count can drop the generated WGSL and keep only its length"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N73",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "two independent consumers of one stream both consumers explain an async compile failure from the stream alone",
+   "failures before a pipeline exists D12 keeps a failed pipeline retrievable for late subscribers after the ring evicted its event"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N74",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "options and bounds keeps no WGSL of a failed pipeline either when captureSource is off"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N75",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3 reports a pipeline whose WGSL generation throws, and rethrows the very same error",
+   "failures before a pipeline exists D3 also covers the lazy path (first dispatch) with trigger \"lazy\"",
+   "failures before a pipeline exists D3b initAsync with a WGSL generation error throws synchronously (as it always did) and is reported",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 6
+ },
+ {
+  "id": "N76",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3 also covers the lazy path (first dispatch) with trigger \"lazy\"",
+   "failures before a pipeline exists D3b initAsync with a WGSL generation error throws synchronously (as it always did) and is reported",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 4
+ },
+ {
+  "id": "N77",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures gives a pipeline whose WGSL generation keeps failing one stable id"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N78",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures are only reported while recording does not report an async creation failure that settles after disable()"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N79",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures are only reported while recording does not report a WGSL generation failure to a sink captured before disable()"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N80",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3 reports a pipeline whose WGSL generation throws, and rethrows the very same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N81",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss D11 root.destroy() of an owned device is terminal: loss delivered once, then nothing",
+   "device errors and teardown keeps listening for the loss of a device the root owns",
+   "teardown of an owned device lets go of its subscribers once the terminal device loss was delivered"
+  ],
+  "n": 3
+ },
+ {
+  "id": "N82",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "device loss retention A-2 the retained device-lost event survives byte pressure from later failures",
+   "teardown and device loss T2 a root created on a device that was already lost still learns about the loss",
+   "device errors and teardown reports uncaptured errors and device loss",
+   "device events reports a device loss exactly once to every root on the device",
+   "text report formats textures, destruction, first line of device errors and device loss",
+   "diagnostics index records the device loss"
+  ],
+  "n": 8
+ },
+ {
+  "id": "N83",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device lets go of its subscribers once the terminal device loss was delivered"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N84",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss D11 root.destroy() of an owned device is terminal: loss delivered once, then nothing",
+   "device errors and teardown keeps listening for the loss of a device the root owns",
+   "teardown of an owned device cannot be re-enabled after the root is destroyed",
+   "teardown of an owned device lets go of its subscribers once the terminal device loss was delivered"
+  ],
+  "n": 4
+ },
+ {
+  "id": "N85",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device cannot be re-enabled after the root is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N86",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss D11 root.destroy() of an owned device is terminal: loss delivered once, then nothing",
+   "teardown of an owned device cannot be re-enabled after the root is destroyed"
+  ],
+  "n": 2
+ },
+ {
+  "id": "N87",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N88",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device stops listening for device errors as soon as the root is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N89",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device cannot be re-enabled after the root is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N90",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N91",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss T2 a root created on a device that was already lost still learns about the loss"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N92",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss T2 a root created on a device that was already lost still learns about the loss"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N93",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss T2 a root created on a device that was already lost still learns about the loss"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N94",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown and device loss T2 a root created on a device that was already lost still learns about the loss"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N96",
+  "result": "SURVIVED",
+  "status": "",
+  "failed": [],
+  "n": 0
+ },
+ {
+  "id": "N97",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "history is bounded by bytes as well as by count evicts the oldest events until the estimated payload fits, and accounts for every byte",
+   "options and bounds keeps about 4 MiB of history by default",
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 3
+ },
+ {
+  "id": "N98",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N99",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N100",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N101",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "N102",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event size estimate charges strings per UTF-16 unit, numbers 8, booleans and null 4, and objects and fields extra"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q01",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a draw that threw"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q02",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a dispatch that threw"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q03",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event content G9 reports a destruction after the GPU object was destroyed, not before"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report reports a texture as destroyed only after the GPU texture was destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q05",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "device loss retention A-2 the retained device-lost event survives byte pressure from later failures",
+   "failures before a pipeline exists D3 reports a pipeline whose WGSL generation throws, and rethrows the very same error",
+   "failures before a pipeline exists D3 also covers the lazy path (first dispatch) with trigger \"lazy\"",
+   "failures before a pipeline exists D3b initAsync with a WGSL generation error throws synchronously (as it always did) and is reported",
+   "failures before a pipeline exists retains at most 16 pipeline failures, newest kept",
+   "pipeline failures gives a pipeline whose WGSL generation keeps failing one stable id"
+  ],
+  "n": 6
+ },
+ {
+  "id": "Q06",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3 reports a pipeline whose WGSL generation throws, and rethrows the very same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q07",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3 reports a pipeline whose WGSL generation throws, and rethrows the very same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q08",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q09",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q10",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initSync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error",
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q11",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3b initAsync with a WGSL generation error throws synchronously (as it always did) and is reported"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q12",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (initAsync) and rethrows the same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q13",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "failures before a pipeline exists D3 also covers the lazy path (first dispatch) with trigger \"lazy\""
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q14",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures reports a render pipeline whose WGSL generation fails (lazy) and rethrows the same error"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q15",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "re-entrancy and subscriptions R1 a listener that touches the bind group being announced does not recurse"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q16",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "known blind spots bindGroup.unwrap(root) called directly bypasses the per-root cache and the hook",
+   "two independent consumers of one stream text report: WGSL size, diagnostics, errors and leftovers",
+   "two independent consumers of one stream diagnostics index: answers the use-case questions from the same events",
+   "two independent consumers of one stream snapshot formatting needs nothing but the public snapshot",
+   "events are immutable rejects mutation of events, nested arrays and shared history objects",
+   "event content D8 attributes a texture bound directly in a bind group to its tracked resource id"
+  ],
+  "n": 23
+ },
+ {
+  "id": "Q17",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "re-entrancy and subscriptions R1 a listener that touches the bind group being announced does not recurse",
+   "bind groups marks a bind group restored around an existing GPUBindGroup as adopted"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q18",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event content D10 (documented limitation) calls a group \"adopted\" when it already holds a GPUBindGroup, e.g. after a snapshot",
+   "bind groups marks a bind group restored around an existing GPUBindGroup as adopted"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q19",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "event content D10 (documented limitation) calls a group \"adopted\" when it already holds a GPUBindGroup, e.g. after a snapshot",
+   "events reports a lazy compile with WGSL, then materialization, bind group and diagnostics, in order",
+   "bind groups marks a bind group restored around an existing GPUBindGroup as adopted"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q20",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "instrumentation is opt-in rejects the old boolean form with an actionable message"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q21",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "teardown of an owned device reports root-destroyed before the device is destroyed"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q22",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "the layer never disturbs the application A6 consumers cannot reach or forge the hook methods"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q23",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a buffer write that the device rejected"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q24",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a buffer patch that the device rejected"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q25",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report reports no resource that the device failed to create"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q26",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report reports no resource that the device failed to create"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q27",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "hooks run after the effect they report does not count a submit that threw"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q28",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "CPU timing reports time spent in resolve when time passes while resolving",
+   "async CPU timing measures the wait for an async creation, successful or not",
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 3
+ },
+ {
+  "id": "Q29",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not",
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q30",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not",
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q31",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q32",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "CPU timing reports time spent in resolve when time passes while resolving",
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q33",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q34",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the WGSL generation of async creations too"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q35",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipelines names the layouts of a compiled and of a failed pipeline"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q36",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipelines names the layouts of a compiled and of a failed pipeline",
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 2
+ },
+ {
+  "id": "Q37",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q38",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q39",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "pipeline failures keeps layouts and requests diagnostics for async creations, compute and render"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q40",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not"
+  ],
+  "n": 1
+ },
+ {
+  "id": "Q41",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "async CPU timing measures the wait for an async creation, successful or not"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C01",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line",
+   "text report of failures shows only the summary line of an async creation error, and the size of the rejected WGSL"
+  ],
+  "n": 2
+ },
+ {
+  "id": "C02",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C03",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures truncates a long failure text to 300 characters ending in an ellipsis"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C04",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures truncates a long failure text to 300 characters ending in an ellipsis"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C05",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C06",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures shows only the summary line of an async creation error, and the size of the rejected WGSL"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C07",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots points out three live resources with one name, but not two"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C08",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots points out three live resources with one name, but not two"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C09",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C10",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of snapshots names the most recent retained failure, even when only one was retained"
+  ],
+  "n": 1
+ },
+ {
+  "id": "C11",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "text report of failures flattens the failing tree of a WGSL generation error into one line",
+   "text report of failures truncates a long failure text to 300 characters ending in an ellipsis"
+  ],
+  "n": 2
+ },
+ {
+  "id": "C12",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "JSONL reader compatibility policy rejects an unknown file format version instead of guessing",
+   "JSONL reader rejects a file format, event schema or event version it does not know"
+  ],
+  "n": 2
+ },
+ {
+  "id": "C13",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "JSONL reader compatibility policy rejects an event of an unknown version instead of guessing",
+   "JSONL reader rejects a file format, event schema or event version it does not know"
+  ],
+  "n": 2
+ },
+ {
+  "id": "C14",
+  "result": "KILLED",
+  "status": "",
+  "failed": [
+   "JSONL reader compatibility policy rejects an unknown event schema in the header instead of guessing",
+   "JSONL reader compatibility policy rejects the schema of the prototype instead of guessing",
+   "JSONL reader rejects a file format, event schema or event version it does not know"
+  ],
+  "n": 3
+ }
+]

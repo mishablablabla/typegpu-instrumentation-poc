@@ -117,6 +117,7 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
   #disposed = false;
   /** Set by `root.destroy()` of an owned device: only the device's `lost` notification may still be delivered. */
   #closing = false;
+  #rootDestroyedSeen = false;
   #listeners: readonly Listener[] = [];
 
   #seq = 0;
@@ -159,19 +160,10 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
     holder: InstrumentationHolder,
   ) {
     this.#holder = holder;
-    this.#historySize = checkedOption(
-      'historySize',
-      options.historySize,
-      DEFAULT_HISTORY_SIZE,
-      MAX_HISTORY_SIZE,
-    );
-    this.#historyMaxBytes = checkedOption(
-      'historyMaxBytes',
-      options.historyMaxBytes,
-      DEFAULT_HISTORY_MAX_BYTES,
-      Number.MAX_SAFE_INTEGER,
-    );
-    this.#captureSource = options.captureSource ?? true;
+    const checked = validateOptions(options);
+    this.#historySize = checked.historySize;
+    this.#historyMaxBytes = checked.historyMaxBytes;
+    this.#captureSource = checked.captureSource;
     this.api = createApi(this);
 
     // One shared, weakly-referencing listener per device; see deviceEvents.ts.
@@ -659,6 +651,11 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
    * ends. For a borrowed device nothing more will be observed, so the layer is disposed at once.
    */
   rootDestroyed(ownDevice: boolean): void {
+    // A listener of `root-destroyed` may call `root.destroy()` again; the event is emitted once per root.
+    if (this.#rootDestroyedSeen) {
+      return;
+    }
+    this.#rootDestroyedSeen = true;
     try {
       let liveBuffers = 0;
       let liveTextures = 0;
@@ -830,7 +827,11 @@ export class InstrumentationHub implements InstrumentationSink, DeviceEventSink 
       kept.length > 1 &&
       (failureCount > MAX_RETAINED_PIPELINE_FAILURES || total > this.#historyMaxBytes)
     ) {
-      const oldest = kept.findIndex((f) => f !== event);
+      // the single device-lost event is small and is the one fact a re-subscribing consumer needs: never evict it
+      const oldest = kept.findIndex((f) => f !== event && f.type !== 'device-lost');
+      if (oldest < 0) {
+        break;
+      }
       const [removed] = kept.splice(oldest, 1);
       if (removed?.type === 'pipeline-creation-failed') {
         failureCount--;
@@ -884,18 +885,40 @@ function createApi(hub: InstrumentationHub): TgpuInstrumentation {
   });
 }
 
+/** `String(value)` that cannot throw (null-prototype objects, throwing `toString`, revoked proxies). */
+function safeString(value: unknown): string {
+  try {
+    return String(value);
+  } catch {
+    try {
+      return Object.prototype.toString.call(value);
+    } catch {
+      return '[unprintable value]';
+    }
+  }
+}
+
 function describeThrown(error: unknown): { errorType: string; message: string } {
-  return {
-    errorType: (error as Error | undefined)?.constructor?.name ?? 'unknown',
-    message: String((error as Error | undefined)?.message ?? error),
-  };
+  try {
+    return {
+      errorType: (error as Error | undefined)?.constructor?.name ?? 'unknown',
+      message: safeString((error as Error | undefined)?.message ?? error),
+    };
+  } catch {
+    // a getter or proxy trap on the thrown value threw: the layer must not fail because of what the app threw
+    return { errorType: 'unknown', message: safeString(error) };
+  }
 }
 
 function describeError(error: unknown): string {
-  if (error instanceof Error) {
-    return `${error.name}: ${error.message}`;
+  try {
+    if (error instanceof Error) {
+      return `${error.name}: ${safeString(error.message)}`;
+    }
+  } catch {
+    // revoked proxy or throwing getter: fall through to the generic text
   }
-  return String(error);
+  return safeString(error);
 }
 
 function surfaceError(error: unknown): void {
@@ -908,6 +931,38 @@ function surfaceError(error: unknown): void {
   } catch {
     // The environment's own error reporting failed; the failure stays counted in the snapshot.
   }
+}
+
+/**
+ * Validates and normalises the options. Called by `createInstrumentation()` (so a mistake fails before
+ * `tgpu.init` has requested a device) and again when a hub is attached.
+ */
+export function validateOptions(options: unknown): {
+  historySize: number;
+  historyMaxBytes: number;
+  captureSource: boolean;
+} {
+  if (typeof options !== 'object' || options === null) {
+    throw new TypeError(
+      `unstable_instrumentation: options must be an object or undefined, got ${options === null ? 'null' : typeof options}`,
+    );
+  }
+  const { historySize, historyMaxBytes, captureSource } = options as TgpuInstrumentationOptions;
+  if (captureSource !== undefined && typeof captureSource !== 'boolean') {
+    throw new TypeError(
+      `unstable_instrumentation: captureSource must be a boolean, got ${typeof captureSource}`,
+    );
+  }
+  return {
+    historySize: checkedOption('historySize', historySize, DEFAULT_HISTORY_SIZE, MAX_HISTORY_SIZE),
+    historyMaxBytes: checkedOption(
+      'historyMaxBytes',
+      historyMaxBytes,
+      DEFAULT_HISTORY_MAX_BYTES,
+      Number.MAX_SAFE_INTEGER,
+    ),
+    captureSource: captureSource ?? true,
+  };
 }
 
 function checkedOption(

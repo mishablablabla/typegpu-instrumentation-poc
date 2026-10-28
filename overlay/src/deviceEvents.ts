@@ -75,7 +75,10 @@ function entryFor(device: GPUDevice): Entry {
     };
     entries.set(device, entry);
     // `lost` never rejects and its reactions cannot be removed: exactly one per device.
-    void device.lost?.then(makeLostHandler(entry));
+    const lost: unknown = device.lost;
+    if (typeof (lost as PromiseLike<GPUDeviceLostInfo> | undefined)?.then === 'function') {
+      void (lost as PromiseLike<GPUDeviceLostInfo>).then(makeLostHandler(entry));
+    }
   }
   return entry;
 }

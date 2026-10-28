@@ -1,0 +1,19 @@
+:host { display: block; margin-top: 1rem; }
+.code-frame { margin: 0; border: 1px solid var(--tg-code-border); background: var(--tg-code-bg); min-width: 0; }
+.code-title {
+  position: relative; padding: 0.4rem 1rem; background: var(--tg-code-tabbar);
+  border-bottom: 1px solid var(--tg-code-border); font-family: var(--tg-font-mono);
+  font-size: var(--tg-text-xs); color: var(--tg-text-muted);
+}
+.code-title::before { content: ''; position: absolute; inset: -1px auto auto 0; width: 100%; height: 1px; background: var(--tg-accent-high); opacity: 0.0; }
+.code-body { position: relative; }
+.code-scroll { overflow-x: auto; }
+.code-scroll:focus-visible { outline-offset: -3px; }
+.copy {
+  position: absolute; top: 0.5rem; right: 0.5rem; min-width: 2.5rem; padding: 0.2rem 0.5rem;
+  font: inherit; font-size: var(--tg-text-xs); line-height: 1.4; color: var(--tg-text);
+  background: var(--tg-code-tabbar); border: 1px solid var(--tg-code-border); border-radius: 0.2rem;
+  cursor: pointer; opacity: 0; transition: opacity 0.15s;
+}
+.code-frame:hover .copy, .copy:focus-visible { opacity: 0.9; }
+@media (hover: none) { .copy { opacity: 0.8; } }

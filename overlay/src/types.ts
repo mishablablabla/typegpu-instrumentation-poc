@@ -25,7 +25,10 @@ export type TgpuInstrumentationOptions = {
 
 type EventBase = {
   readonly v: 2;
-  /** Monotonic per root, starts at 1. A gap between consecutive `seq` values never happens; drops only truncate history. */
+  /**
+   * Monotonic per root, starts at 1. History never has a gap between consecutive `seq` values (drops only truncate it).
+   * A listener can miss the tail of a delivery pass when the 10 000-event storm cutoff trips; history still has those events.
+   */
   readonly seq: number;
   /**
    * `performance.now()` at emission. CPU clock, milliseconds, with the browser's timer granularity
@@ -89,7 +92,8 @@ export type TgpuPipelineTrigger = 'lazy' | 'initSync' | 'initAsync';
  * returned**, not a successful compilation:
  * - `validation: 'deferred'` (synchronous creation, triggers `lazy` and `initSync`): WebGPU does not report
  *   whether the pipeline is valid. An invalid pipeline still produces this event, followed by a
- *   `shader-diagnostics` event with errors and one or two `device-error` events (observed on a real device).
+ *   `shader-diagnostics` event with errors and, depending on the browser, zero to two `device-error` events (Chrome: two;
+ *   Safari: one for a compute pipeline, none for a render pipeline). Their order relative to the others is not fixed.
  * - `validation: 'passed'` (`initAsync`): the creation promise resolved, so the pipeline is valid.
  *   A rejected promise produces `pipeline-creation-failed` instead.
  * Emitted synchronously inside the creating call (sync) or when the promise settles (async).
@@ -109,8 +113,9 @@ export type TgpuPipelineCreated = EventBase & {
   /** CPU time spent in TypeGPU's WGSL generation. */
   readonly resolveMs: number;
   /**
-   * CPU time of `createComputePipeline`/`createRenderPipeline` (sync), or wall time until the
-   * `...Async` promise settled. It is neither GPU time nor pure shader-compilation time.
+   * CPU time from after the shader module was created to the end of the creation call (sync; the pipeline-layout
+   * construction in its arguments is inside), or wall time until the `...Async` promise settled. It is neither GPU time
+   * nor pure shader-compilation time, and `createShaderModule` itself is in neither `resolveMs` nor `createMs`.
    */
   readonly createMs: number;
   /** Observed: the exact source given to `device.createShaderModule`; `null` when `captureSource` is off. */
@@ -123,7 +128,9 @@ export type TgpuPipelineCreated = EventBase & {
 
 /**
  * Creating the pipeline failed, so no pipeline exists afterwards.
- * - `phase: 'resolve'`: TypeGPU could not generate the WGSL (a TGSL/resolution error, any trigger). `wgsl` is `null`.
+ * - `phase: 'resolve'`: something threw before the pipeline-creation call: WGSL generation (a TGSL/resolution error), but also
+ *   immediate-size validation, vertex/target connection and `createShaderModule`, because the hook wraps the whole
+ *   `resolveAndCreateShaderModule` step. Any trigger. `wgsl` is `null` even when the code had been generated.
  * - `phase: 'create'`: WebGPU rejected the async creation (`trigger: 'initAsync'`); the WGSL and, through
  *   `shader-diagnostics`, the compiler messages are what is left to debug with. A *synchronous* creation never
  *   rejects: its validation failures arrive as `device-error` and `shader-diagnostics` after `pipeline-created`.
@@ -297,7 +304,10 @@ export interface TgpuInstrumentation {
   enable(): void;
   /** Stops recording. Resources created meanwhile stay untracked. */
   disable(): void;
-  /** Listeners run synchronously in `seq` order and must not call back into TypeGPU. Returns the unsubscribe function. */
+  /**
+   * Listeners run synchronously in `seq` order. A listener may call back into TypeGPU: the events that causes are queued
+   * behind the current delivery, never delivered re-entrantly. Returns the unsubscribe function.
+   */
   subscribe(listener: (event: TgpuInstrumentationEvent) => void): () => void;
   /** At most `historySize` most recent events, oldest first. */
   history(): readonly TgpuInstrumentationEvent[];

@@ -1,5 +1,7 @@
 # POC design: opt-in instrumentation for TypeGPU
 
+> **History, superseded.** The design of the first prototype (boolean option, hub imported by `init.ts`). The current design, lifecycle and the alternatives evaluated are in [ARCHITECTURE-DECISION.md](ARCHITECTURE-DECISION.md); the current event schema is in [EVENT-CONTRACT.md](EVENT-CONTRACT.md).
+
 Baseline: upstream `software-mansion/TypeGPU` `7c853fa3` (`origin/main`), Node v24.21.0, pnpm 11.1.2, Vitest 4.1.11, Darwin arm64.
 Source references below are `packages/typegpu/src/…:line` at that commit. Everything not marked *(verified)* is a design decision or a hypothesis.
 

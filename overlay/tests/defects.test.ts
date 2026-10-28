@@ -449,7 +449,9 @@ describe('teardown and device loss', () => {
     const inst = root['~unstable'].instrumentation!;
     const events: { type: string }[] = [];
     inst.subscribe((e) => events.push(e));
-    root.unwrap(root.createBuffer(d.f32).$usage('uniform'));
+    // held strongly: a collected buffer would leave an empty registry for a different reason than teardown clearing it
+    const survivor = root.createBuffer(d.f32).$usage('uniform');
+    root.unwrap(survivor);
 
     root.destroy();
     root.unwrap(root.createBuffer(d.f32).$usage('uniform')); // after destroy: must not be reported
@@ -465,6 +467,7 @@ describe('teardown and device loss', () => {
     ]);
     expect(inst.getSnapshot().resources).toEqual([]);
     expect(inst.enabled).toBe(false);
+    expect(survivor).toBeDefined();
   });
 
   it('T2 a root created on a device that was already lost still learns about the loss', async ({

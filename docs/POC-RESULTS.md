@@ -1,5 +1,7 @@
 # POC results
 
+> **History, superseded.** The first prototype's results (Node mock device, first hub design that was bundled into every user's build and used per-hub device listeners). Numbers here (for example the Node timings and "+3.1 KB for everyone") are replaced by [PERFORMANCE.md](PERFORMANCE.md) and [PRODUCTION-READINESS.md](PRODUCTION-READINESS.md); the event names `pipeline-compiled` / `pipeline-compile-failed` no longer exist (see [EVENT-CONTRACT.md](EVENT-CONTRACT.md)).
+
 Baseline: upstream TypeGPU `7c853fa3` · Node v24.21.0 · pnpm 11.1.2 · Vitest 4.1.11 · macOS (Darwin arm64).
 Design and criteria: [POC-DESIGN.md](POC-DESIGN.md). Raw benchmark data: [../bench/results/](../bench/results/) (`SUMMARIES.md` has every run).
 

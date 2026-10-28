@@ -1,0 +1,63 @@
+<figure class="arch" aria-labelledby="arch-cap">
+  <div class="lane">
+    <div class="lane-label">1 · Application</div>
+    <div class="box existing">
+      <strong>Your TypeGPU application</strong>
+      <span>root.createBuffer · createBindGroup · createComputePipeline · dispatchWorkgroups · root.destroy</span>
+    </div>
+  </div>
+
+  <div class="arrow" aria-hidden="true"><span>calls TypeGPU as usual</span></div>
+
+  <div class="lane">
+    <div class="lane-label">2 · TypeGPU core <span class="note">always shipped</span></div>
+    <div class="box existing">
+      <strong>Hook sites <app-status status="verified" label="In the patch, not upstream" /></strong>
+      <span>12 sink methods at 19 call sites in 12 patched files (11 sources + <code>package.json</code>). Each is
+      <code>root[$internal].instrumentation?.method()</code>, placed <em>after</em> the effect it reports. The core imports the sink
+      contract as <em>types only</em>, so it contains no hub code.</span>
+    </div>
+  </div>
+
+  <div class="arrow" aria-hidden="true"><span>guarded sink calls; a fault in the layer disables the layer, not the app</span></div>
+  <div class="boundary optin">
+    <strong>Explicit opt-in</strong>
+    <code>import &#123; createInstrumentation &#125; from 'typegpu/unstable-instrumentation'</code>
+    <span>Not imported: the hub is absent from the bundle (measured in four bundlers). Imported but never passed to <code>tgpu.init</code>: +0 bytes.</span>
+  </div>
+
+  <div class="lane">
+    <div class="lane-label">3 · Hub <span class="note">only bundled if imported</span></div>
+    <div class="hub">
+      <div class="box existing"><strong>Weak registry</strong><span>live buffers, textures, bind groups, pipelines; held weakly</span></div>
+      <div class="box existing"><strong>History</strong><span>ring bounded by count and by estimated bytes</span></div>
+      <div class="box existing"><strong>Pinned failures</strong><span>last 16 creation failures + device loss, outside the ring</span></div>
+      <div class="box existing"><strong>Device listener</strong><span>one weak <code>uncapturederror</code> + <code>lost</code> reaction per device</span></div>
+    </div>
+  </div>
+
+  <div class="boundary contract">
+    <strong>Event contract v2: the integration boundary</strong>
+    <span><code>subscribe(fn)</code> · <code>history()</code> · <code>getSnapshot()</code> · <code>enable/disable/dispose</code>: plain, frozen, <code>structuredClone</code>-able data. No DOM, no framework, no UI.</span>
+  </div>
+
+  <div class="lane">
+    <div class="lane-label">4 · Adapters and consumers <span class="note">independent of each other</span></div>
+    <ul class="consumers">
+      @for (c of consumers; track c.name) {
+        <li class="box" [class.existing]="c.status === 'verified'" [class.future]="c.status === 'proposed'" [class.proto]="c.status === 'prototype'">
+          <strong>{{ c.name }}</strong>
+          <span>{{ c.detail }}</span>
+          <app-status [status]="c.status" [label]="c.label ?? ''" />
+        </li>
+      }
+    </ul>
+  </div>
+
+  <figcaption id="arch-cap">
+    Solid boxes exist and are tested; the badge on each consumer says how far it goes. A consumer needs only the contract: swapping
+    one for another changes nothing below the boundary. <strong>Separate and complementary:</strong> a device-level tap
+    (<code>experiments/device-tap</code>, prototype) would cover raw WebGPU calls the hooks cannot see, at about +4 µs per encoder; it
+    cannot reproduce TypeGPU's own semantics, so it is a possible second source, not a replacement.
+  </figcaption>
+</figure>

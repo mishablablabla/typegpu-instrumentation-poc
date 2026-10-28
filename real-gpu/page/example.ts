@@ -51,3 +51,38 @@ export async function runExample() {
   exported.dispose();
   return { provenance: prov, jsonl: exported.lines(), error };
 }
+
+/**
+ * Control run: the same scenario on a plain TypeGPU root, no instrumentation option, no reporter. It shows what the
+ * developer sees without the layer: what the scenario itself reports, plus (through the driver's CDP console
+ * capture, `browserConsole` in the output) what the browser prints.
+ */
+export async function runExampleControl() {
+  const prov = await provenance();
+  if (prov.pageClassification === 'unavailable') {
+    return { provenance: prov, report: [] as string[], error: null };
+  }
+  const root = await tgpu.init();
+  const report: string[] = [];
+  const originalLog = console.log;
+  console.log = (...parts: unknown[]) => {
+    report.push(`[scenario] ${parts.map(String).join(' ')}`);
+    originalLog(...parts);
+  };
+  let error: string | null = null;
+  try {
+    await example(root);
+    await root.device.queue.onSubmittedWorkDone();
+    await sleep(150);
+  } catch (caught) {
+    error = `${(caught as Error).name}: ${(caught as Error).message}`;
+  } finally {
+    console.log = originalLog;
+  }
+  report.push(
+    `[control] instrumentation option: not passed; scenario threw: ${error ?? 'nothing'}`,
+  );
+  root.destroy();
+  await sleep(100);
+  return { provenance: prov, report, error };
+}

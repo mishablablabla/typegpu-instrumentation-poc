@@ -5,8 +5,10 @@ source "$(dirname "$0")/env.sh"
 
 sync_dir() {
   [ -d "$1" ] || return 0
+  # same result as `rsync -a --delete`, without needing rsync (absent from Git Bash on Windows)
+  rm -rf "$2"
   mkdir -p "$2"
-  rsync -a --delete "$1/" "$2/"
+  cp -R "$1/." "$2/"
 }
 
 sync_dir "$ROOT/overlay/src" "$PKG/src/core/instrumentation"

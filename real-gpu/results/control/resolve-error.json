@@ -1,0 +1,62 @@
+{
+  "environment": {
+    "when": "2026-10-27T23:51:10.458Z",
+    "chrome": "Chrome/156.0.8078.49",
+    "headless": true,
+    "classification": "hardware-adapter",
+    "adapter": {
+      "vendor": "apple",
+      "architecture": "metal-3",
+      "isFallbackAdapter": false
+    },
+    "gpuProcess": "Google Inc. (Apple) ANGLE (Apple, ANGLE Metal Renderer: Apple M3 Pro, Version 26.3 (Build 25D125))"
+  },
+  "provenance": {
+    "pageClassification": "non-fallback",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "vendor": "apple",
+    "architecture": "metal-3",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": false,
+    "features": [
+      "bgra8unorm-storage",
+      "clip-distances",
+      "core-features-and-limits",
+      "depth-clip-control",
+      "depth32float-stencil8",
+      "dual-source-blending",
+      "float32-blendable",
+      "float32-filterable",
+      "indirect-first-instance",
+      "primitive-index",
+      "rg11b10ufloat-renderable",
+      "shader-f16",
+      "subgroup-size-control",
+      "subgroups",
+      "texture-component-swizzle",
+      "texture-compression-astc",
+      "texture-compression-astc-sliced-3d",
+      "texture-compression-bc",
+      "texture-compression-bc-sliced-3d",
+      "texture-compression-etc2",
+      "texture-compression-unaligned",
+      "texture-formats-tier1",
+      "texture-formats-tier2",
+      "timestamp-query"
+    ]
+  },
+  "report": [
+    "[scenario] dispatch threw ResolutionError",
+    "[control] instrumentation option: not passed; scenario threw: nothing"
+  ],
+  "error": null,
+  "browserConsole": [
+    {
+      "phase": "startup",
+      "source": "page-console",
+      "level": "log",
+      "text": "dispatch threw ResolutionError"
+    }
+  ]
+}
