@@ -13,12 +13,11 @@
 //         not-run   no WebGPU adapter in this browser on this runner (reported, never counted as a pass)
 //         error     the browser did not start or the harness failed
 // Exit code: 0 for pass and not-run, 1 for fail, 3 for error. "not-run" is visible in the summary table, not hidden.
-import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawn, spawnSync } from 'node:child_process';
+import { existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
-import { readdirSync, statSync } from 'node:fs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const args = process.argv.slice(2);
@@ -30,6 +29,7 @@ const cell = option('--cell');
 const kind = option('--kind');
 const exe = option('--exe');
 const prebuilt = resolve(option('--prebuilt') ?? '');
+const query = option('--query');
 if (!cell || !kind || !['chrome', 'firefox', 'safari'].includes(kind)) {
   console.error('usage: ci-cell.mjs --cell <id> --kind chrome|firefox|safari [--exe <path>] --prebuilt <dist> [--chrome-arg=...]');
   process.exit(3);
@@ -57,20 +57,35 @@ function digest(dir) {
 const outDir = join(here, 'results', 'ci');
 mkdirSync(outDir, { recursive: true });
 
+// Streams the child's output (a hung browser must be visible in the log) and kills the whole process tree on timeout:
+// on Windows an orphaned browser would otherwise keep the step alive until the job timeout.
 function runStep(name, command, commandArgs, outFile, timeoutMs) {
   console.log(`\n=== ${cell}: ${name}`);
-  const result = spawnSync(command, commandArgs, { encoding: 'utf8', timeout: timeoutMs, maxBuffer: 64 * 1024 * 1024 });
-  process.stdout.write(result.stdout ?? '');
-  process.stderr.write(result.stderr ?? '');
-  let json = null;
-  if (existsSync(outFile)) {
-    try {
-      json = JSON.parse(readFileSync(outFile, 'utf8'));
-    } catch {
-      json = null;
-    }
-  }
-  return { status: result.status, signal: result.signal, stderr: (result.stderr ?? '').trim().split('\n').slice(-3).join(' | '), json };
+  return new Promise((done) => {
+    const child = spawn(command, commandArgs, { stdio: 'inherit' });
+    let timedOut = false;
+    const timer = setTimeout(() => {
+      timedOut = true;
+      console.error(`=== ${cell}: ${name} exceeded ${timeoutMs / 1000} s, killing the process tree`);
+      if (process.platform === 'win32') spawnSync('taskkill', ['/pid', String(child.pid), '/T', '/F']);
+      else child.kill('SIGKILL');
+    }, timeoutMs);
+    child.on('error', (error) => {
+      console.error(`could not start ${command}: ${error.message}`);
+    });
+    child.on('exit', (status, signal) => {
+      clearTimeout(timer);
+      let json = null;
+      if (existsSync(outFile)) {
+        try {
+          json = JSON.parse(readFileSync(outFile, 'utf8'));
+        } catch {
+          json = null;
+        }
+      }
+      done({ status: timedOut ? 124 : status, signal, timedOut, json });
+    });
+  });
 }
 
 const summary = { cell, kind, os: process.platform, arch: process.arch, node: process.version, pageDigest: digest(), when: new Date().toISOString(), steps: {} };
@@ -78,14 +93,14 @@ const viabilityOut = join(outDir, `${cell}-viability.json`);
 const suiteOut = join(outDir, `${cell}-suite.json`);
 
 if (kind === 'chrome') {
-  const common = ['--prebuilt', prebuilt, '--allow-software', ...(exe ? ['--chrome', exe] : []), ...passthrough('--chrome-arg=')];
-  const viability = runStep('viability (130 checks)', 'node', [join(here, 'run.mjs'), ...common, '--call', 'window.runViability()', '--out', viabilityOut], viabilityOut, 240_000);
-  const suite = runStep('real-device suite (20 checks)', 'node', [join(here, 'run.mjs'), ...common, '--out', suiteOut], suiteOut, 240_000);
+  const common = ['--prebuilt', prebuilt, '--allow-software', ...(exe ? ['--chrome', exe] : []), ...passthrough('--chrome-arg='), ...(query ? ['--query', query] : [])];
+  const viability = await runStep('viability (130 checks)', 'node', [join(here, 'run.mjs'), ...common, '--call', 'window.runViability()', '--out', viabilityOut], viabilityOut, 200_000);
+  const suite = await runStep('real-device suite (20 checks)', 'node', [join(here, 'run.mjs'), ...common, '--out', suiteOut], suiteOut, 240_000);
   summary.steps.viability = describeViability(viability, viabilityOut);
   summary.steps.suite = describeSuite(suite);
 } else {
   const exeArgs = exe ? ['--exe', exe, ...(kind === 'firefox' ? ['--firefox'] : []), ...passthrough('--exe-arg=')] : [];
-  const viability = runStep('viability', 'node', [join(here, 'browser-run.mjs'), '--browser', kind === 'firefox' ? 'Firefox' : 'Safari', ...exeArgs, '--prebuilt', prebuilt, '--call', 'window.runViability()', '--out', viabilityOut, '--timeout', '150'], viabilityOut, 240_000);
+  const viability = await runStep('viability', 'node', [join(here, 'browser-run.mjs'), '--browser', kind === 'firefox' ? 'Firefox' : 'Safari', ...exeArgs, '--prebuilt', prebuilt, ...(query ? ['--query', query] : []), '--call', 'window.runViability()', '--out', viabilityOut, '--timeout', '150'], viabilityOut, 240_000);
   summary.steps.viability = describeViability(viability, viabilityOut);
 }
 
@@ -95,7 +110,7 @@ function countReport(report = []) {
 }
 
 function describeViability(step, file) {
-  const base = { exit: step.status, stderrTail: step.stderr };
+  const base = { exit: step.status, ...(step.timedOut ? { timedOut: true } : {}) };
   if (!step.json) return { ...base, status: step.status === 2 ? 'not-run' : 'error' };
   const env = step.json.environment ?? {};
   const prov = step.json.provenance ?? {};
@@ -109,13 +124,14 @@ function describeViability(step, file) {
     skipped: step.json.skipped ?? [],
     classification: env.classification ?? 'page-only',
     browser: env.chrome ?? prov.userAgent ?? env.userAgent ?? null,
+    adapterRequest: prov.adapterRequest ?? null,
     adapter: { vendor: prov.vendor ?? null, architecture: prov.architecture ?? null, isFallbackAdapter: prov.isFallbackAdapter ?? null },
     file: file.slice(resolve(here, '..').length + 1),
   };
 }
 
 function describeSuite(step) {
-  const base = { exit: step.status, stderrTail: step.stderr };
+  const base = { exit: step.status, ...(step.timedOut ? { timedOut: true } : {}) };
   if (!step.json) return { ...base, status: step.status === 2 ? 'not-run' : 'error' };
   const checks = step.json.checks ?? [];
   return {

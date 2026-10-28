@@ -106,7 +106,7 @@ const server = createServer((req, res) => {
     .end(readFileSync(file));
 });
 await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
-const url = `http://127.0.0.1:${server.address().port}/`;
+const url = `http://127.0.0.1:${server.address().port}/${option('--query') ?? ''}`;
 
 // --- launch Chrome with a throwaway profile ---
 const profile = mkdtempSync(join(tmpdir(), 'typegpu-instr-chrome-'));

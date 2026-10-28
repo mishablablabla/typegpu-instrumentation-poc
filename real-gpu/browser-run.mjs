@@ -7,7 +7,7 @@
 //   node real-gpu/browser-run.mjs --browser Safari --call 'window.runBench({...})' --page real-gpu-bench --dist <dist> --skip-build
 //
 // Options: --browser <macOS app name>  --exe <path to a browser binary> (instead of `open -a`; used on Windows/Linux and in CI)
-//          --exe-arg=<arg> (repeatable)  --firefox (throwaway profile with WebGPU enabled, headless unless --headed)
+//          --query '?forceFallback=1' (page URL query; see real-gpu/page/provenance.ts)  --exe-arg=<arg> (repeatable)  --firefox (throwaway profile with WebGPU enabled, headless unless --headed)
 //          --prebuilt <dist> (page built elsewhere: no checkout, no build)  --call <js>  --ready <js>  --out <file>  --tree/--page/--dist/--skip-build as run.mjs
 //          --timeout <seconds> (default 180)
 // There is only ONE source for "is this a real GPU": the page's own adapter information. Without the browser's
@@ -90,7 +90,7 @@ const server = createServer((req, res) => {
     .end(body);
 });
 await new Promise((ok) => server.listen(0, '127.0.0.1', ok));
-const url = `http://127.0.0.1:${server.address().port}/`;
+const url = `http://127.0.0.1:${server.address().port}/${option('--query') ?? ''}`;
 console.error(`Serving ${distDir} at ${url}; opening ${browser}`);
 const exe = option('--exe');
 let profile;

@@ -76,7 +76,7 @@ jobs:
     name: ${{ matrix.cell }}
     needs: build-page
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 12
     strategy:
       fail-fast: false
       matrix:
@@ -86,6 +86,11 @@ jobs:
             kind: chrome
             exe: /usr/bin/google-chrome
             args: --chrome-arg=--no-sandbox --chrome-arg=--enable-unsafe-webgpu --chrome-arg=--enable-features=Vulkan --chrome-arg=--use-angle=swiftshader --chrome-arg=--use-webgpu-adapter=swiftshader --chrome-arg=--enable-unsafe-swiftshader
+          - cell: chrome-linux-lavapipe
+            os: ubuntu-latest
+            kind: chrome
+            exe: /usr/bin/google-chrome
+            args: --chrome-arg=--no-sandbox --chrome-arg=--enable-unsafe-webgpu --chrome-arg=--enable-features=Vulkan --chrome-arg=--use-angle=vulkan --chrome-arg=--disable-vulkan-surface
           - cell: chrome-windows-default
             os: windows-latest
             kind: chrome
@@ -111,21 +116,28 @@ jobs:
             kind: chrome
             exe: /Applications/Google Chrome.app/Contents/MacOS/Google Chrome
             args: --chrome-arg=--enable-unsafe-webgpu --chrome-arg=--use-angle=swiftshader --chrome-arg=--use-webgpu-adapter=swiftshader --chrome-arg=--enable-unsafe-swiftshader
-          - cell: firefox-windows
+          - cell: firefox-windows-fallback
+            query: '?forceFallback=1'
             os: windows-latest
             kind: firefox
             exe: C:\Program Files\Mozilla Firefox\firefox.exe
-          - cell: firefox-linux
+          - cell: firefox-linux-fallback
+            query: '?forceFallback=1'
             os: ubuntu-latest
             kind: firefox
             exe: /usr/bin/firefox
-          - cell: firefox-macos
+          - cell: firefox-macos-fallback
+            query: '?forceFallback=1'
             os: macos-latest
             kind: firefox
             exe: /Applications/Firefox.app/Contents/MacOS/firefox
           - cell: safari-macos
             os: macos-latest
             kind: safari
+          - cell: safari-macos-fallback
+            os: macos-latest
+            kind: safari
+            query: '?forceFallback=1'
     defaults:
       run:
         shell: bash
@@ -139,6 +151,9 @@ jobs:
         with:
           name: page-dist
           path: page-dist
+      - name: Software Vulkan (lavapipe) for the Linux cells
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq mesa-vulkan-drivers libvulkan1 && vulkaninfo --summary 2>/dev/null | head -20 || true
       - name: Show the browser
         run: |
           if [ -n "${{ matrix.exe }}" ]; then
@@ -150,7 +165,9 @@ jobs:
         run: |
           EXE_OPT=()
           if [ -n "${{ matrix.exe }}" ]; then EXE_OPT=(--exe "${{ matrix.exe }}"); fi
-          node real-gpu/ci-cell.mjs --cell "${{ matrix.cell }}" --kind "${{ matrix.kind }}" "${EXE_OPT[@]}" --prebuilt page-dist ${{ matrix.args }}
+          QUERY_OPT=()
+          if [ -n "${{ matrix.query }}" ]; then QUERY_OPT=(--query "${{ matrix.query }}"); fi
+          node real-gpu/ci-cell.mjs --cell "${{ matrix.cell }}" --kind "${{ matrix.kind }}" "${EXE_OPT[@]}" "${QUERY_OPT[@]}" --prebuilt page-dist ${{ matrix.args }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
