@@ -33,8 +33,8 @@ export const STATUS_FACTS: readonly Fact[] = [
   },
   {
     label: 'Coverage',
-    value: 'One Mac: Chrome 156, Safari 26.3',
-    note: 'Apple M3 Pro, Metal. SwiftShader run is software, not real-GPU validation. No Windows, Linux, Firefox, discrete GPU.',
+    value: 'One Mac on hardware; software adapters elsewhere',
+    note: 'Hardware: Apple M3 Pro, Chrome 156 and Safari 26.3. CI runners (no GPU): Chrome and Edge on Linux, Windows and macOS, Firefox on Linux, all 128 or 130 of 130. Firefox on Windows and macOS and Safari on a runner got no adapter.',
     source: 'docs/PRODUCTION-READINESS.md',
   },
 ];
@@ -67,9 +67,9 @@ export const VERDICTS: readonly Verdict[] = [
   },
   {
     scope: 'Cross-platform compatibility',
-    verdict: 'Not established',
+    verdict: 'Partially established',
     tone: 'warn',
-    why: 'Chrome and Safari on one Mac only. Windows, Linux, Firefox, discrete GPUs, Node and React Native were not tested.',
+    why: 'Passes on software or virtualised adapters on Linux, Windows and macOS runners (Chrome, Edge, Firefox on Linux). No physical GPU outside one Mac; Firefox on Windows and macOS, Safari on a runner, Node and React Native not run or not tested.',
   },
 ];
 
@@ -276,7 +276,7 @@ export const LIMITATIONS: readonly { title: string; body: string }[] = [
   },
   {
     title: 'Breadth',
-    body: 'One machine. Chrome and Safari. No other OS, GPU vendor or browser. Timing was measured in Chrome only.',
+    body: 'Hardware: one Mac, Chrome and Safari. Other operating systems are covered by CI on software adapters only, with no physical GPU. Timing was measured in Chrome on one machine only.',
   },
   {
     title: 'Proposed integrations are not validated',
@@ -305,7 +305,7 @@ export const ROADMAP: readonly RoadmapStep[] = [
     title: 'Decide how the hooks are maintained and widen compatibility',
     items: [
       'Maintainers decide: keep the hooks in core, shrink them, or move payload building into the hub (estimated −100 to −150 B gzip).',
-      'Run the real-GPU suite on Windows, Linux, a discrete GPU and Firefox; the harness records the environment.',
+      'Run the real-GPU suite on physical Windows and Linux GPUs, a discrete GPU and Firefox or Safari with an adapter (a GPU runner); the harness records the environment.',
       'Decide the retry-flood and device-lost-while-disabled behaviour.',
     ],
   },

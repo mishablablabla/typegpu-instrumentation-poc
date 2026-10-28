@@ -95,6 +95,8 @@ scripts/check.sh                                       # mock tests, tsc, lint/f
 node real-gpu/run.mjs                                  # 20 real-device checks (Chrome, CDP)
 node real-gpu/run.mjs --call 'window.runViability()' --out v.json                       # 130 checks, 9 scenarios, Chrome
 node real-gpu/browser-run.mjs --browser Safari --call 'window.runViability()' --out v.json   # any browser via the OS `open` command
+node real-gpu/browser-run.mjs --exe <firefox> --firefox --call 'window.runViability()' --out v.json   # Firefox/any binary (CI uses this); add --query '?forceFallback=1' for a software adapter
+node real-gpu/ci-cell.mjs --cell local --kind chrome --prebuilt .work/real-gpu-dist   # one cell of the CI browser matrix (.github/workflows/browsers.yml)
 BLOCKS=24 node real-gpu/overhead.mjs && node real-gpu/overhead-stats.mjs real-gpu/results/overhead2-<stamp>.jsonl   # CPU overhead, paired bootstrap CIs
 package-test/run.sh                                    # packaging + bundle matrix (vite, esbuild, webpack, rollup), offline
 scripts/check-drift.sh                                 # does the patch still apply to upstream main?

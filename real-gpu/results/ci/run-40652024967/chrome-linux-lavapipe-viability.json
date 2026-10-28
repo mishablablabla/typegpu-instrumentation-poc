@@ -1,0 +1,2209 @@
+{
+  "environment": {
+    "when": "2026-10-28T07:45:35.861Z",
+    "chrome": "Chrome/156.0.8078.47",
+    "headless": true,
+    "classification": "software",
+    "adapter": {
+      "vendor": "google",
+      "architecture": "swiftshader",
+      "isFallbackAdapter": true
+    },
+    "gpuProcess": "Google Inc. (Mesa) ANGLE (Mesa, Vulkan 1.4.318 (llvmpipe (LLVM 20.1.2 256 bits) (0x00000000)), llvmpipe-25.2.8)"
+  },
+  "provenance": {
+    "pageClassification": "software",
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+    "adapterRequest": "default",
+    "vendor": "google",
+    "architecture": "swiftshader",
+    "device": "",
+    "description": "",
+    "isFallbackAdapter": true,
+    "features": [
+      "bgra8unorm-storage",
+      "chromium-experimental-sampling-resource-table",
+      "chromium-experimental-timestamp-query-inside-passes",
+      "clip-distances",
+      "core-features-and-limits",
+      "depth-clip-control",
+      "depth32float-stencil8",
+      "float32-blendable",
+      "float32-filterable",
+      "indirect-first-instance",
+      "rg11b10ufloat-renderable",
+      "subgroup-size-control",
+      "subgroups",
+      "texture-component-swizzle",
+      "texture-compression-astc",
+      "texture-compression-astc-sliced-3d",
+      "texture-compression-bc",
+      "texture-compression-bc-sliced-3d",
+      "texture-compression-etc2",
+      "texture-compression-unaligned",
+      "timestamp-query"
+    ]
+  },
+  "ok": true,
+  "report": [
+    "\n== resources: 21/21 checks",
+    "PASS  seq is contiguous from 1",
+    "PASS  t never decreases",
+    "PASS  no resource materialized twice",
+    "PASS  no resource destroyed twice",
+    "PASS  every destroy follows a materialize of the same resource, type and label",
+    "PASS  no pipeline reported twice",
+    "PASS  pipeline WGSL is non-empty and has a stage entry point",
+    "PASS  bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+    "PASS  a bind group used by a compiled pipeline shares its layout id",
+    "PASS  shader-diagnostics refer to an earlier compiled/failed pipeline",
+    "PASS  JSONL starts with the header",
+    "PASS  JSONL events are exactly the emitted events",
+    "PASS  JSONL has one snapshot record",
+    "PASS  console reporter printed exactly one line per event, in order",
+    "PASS  exact event sequence",
+    "PASS  buffer payload: label, size, usage flags",
+    "PASS  texture payload: label, format, size, mips, samples, dimension, usage flags",
+    "PASS  destroy events name the right resources, once each",
+    "PASS  root-destroyed lists exactly the survivor",
+    "PASS  snapshot before teardown lists only the survivor",
+    "PASS  writing to a destroyed buffer throws and emits nothing",
+    "\n== compute-bindgroups: 22/22 checks",
+    "PASS  seq is contiguous from 1",
+    "PASS  t never decreases",
+    "PASS  no resource materialized twice",
+    "PASS  no resource destroyed twice",
+    "PASS  every destroy follows a materialize of the same resource, type and label",
+    "PASS  no pipeline reported twice",
+    "PASS  pipeline WGSL is non-empty and has a stage entry point",
+    "PASS  bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+    "PASS  a bind group used by a compiled pipeline shares its layout id",
+    "PASS  shader-diagnostics refer to an earlier compiled/failed pipeline",
+    "PASS  JSONL starts with the header",
+    "PASS  JSONL events are exactly the emitted events",
+    "PASS  JSONL has one snapshot record",
+    "PASS  console reporter printed exactly one line per event, in order",
+    "PASS  exact event sequence",
+    "PASS  the GPU really ran every dispatch (x2 three times / twice)",
+    "PASS  one lazy compile for five dispatches over two handles",
+    "PASS  bind group 1 maps data->data1 and factor->factor",
+    "PASS  bind group 2 maps data->data2 and the SAME factor id",
+    "PASS  both groups share one layout id, equal to the pipeline layout",
+    "PASS  counters: 5 dispatches, 5 submits (read() submits are not counted by design)",
+    "PASS  snapshot: 3 buffers, 2 bind groups",
+    "\n== render: 18/18 checks",
+    "PASS  seq is contiguous from 1",
+    "PASS  t never decreases",
+    "PASS  no resource materialized twice",
+    "PASS  no resource destroyed twice",
+    "PASS  every destroy follows a materialize of the same resource, type and label",
+    "PASS  no pipeline reported twice",
+    "PASS  pipeline WGSL is non-empty and has a stage entry point",
+    "PASS  bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+    "PASS  a bind group used by a compiled pipeline shares its layout id",
+    "PASS  shader-diagnostics refer to an earlier compiled/failed pipeline",
+    "PASS  JSONL starts with the header",
+    "PASS  JSONL events are exactly the emitted events",
+    "PASS  JSONL has one snapshot record",
+    "PASS  console reporter printed exactly one line per event, in order",
+    "PASS  exact event sequence",
+    "PASS  the draw produced red pixels",
+    "PASS  render pipeline compiled once, lazily, with vertex and fragment stages",
+    "PASS  counters: 3 draws over two handles, 3 submits",
+    "\n== explicit-init: 18/18 checks",
+    "PASS  seq is contiguous from 1",
+    "PASS  t never decreases",
+    "PASS  no resource materialized twice",
+    "PASS  no resource destroyed twice",
+    "PASS  every destroy follows a materialize of the same resource, type and label",
+    "PASS  no pipeline reported twice",
+    "PASS  pipeline WGSL is non-empty and has a stage entry point",
+    "PASS  bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+    "PASS  a bind group used by a compiled pipeline shares its layout id",
+    "PASS  shader-diagnostics refer to an earlier compiled/failed pipeline",
+    "PASS  JSONL starts with the header",
+    "PASS  JSONL events are exactly the emitted events",
+    "PASS  JSONL has one snapshot record",
+    "PASS  console reporter printed exactly one line per event, in order",
+    "PASS  exactly two compiles, with the explicit triggers, in call order",
+    "PASS  dispatch/draw after explicit init did not compile again",
+    "PASS  counters: 1 dispatch, 1 draw",
+    "PASS  every compile got its diagnostics",
+    "\n== sync-failures: 18/18 checks",
+    "PASS  seq is contiguous from 1",
+    "PASS  t never decreases",
+    "PASS  no resource materialized twice",
+    "PASS  no resource destroyed twice",
+    "PASS  every destroy follows a materialize of the same resource, type and label",
+    "PASS  no pipeline reported twice",
+    "PASS  pipeline WGSL is non-empty and has a stage entry point",
+    "PASS  bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+    "PASS  a bind group used by a compiled pipeline shares its layout id",
+    "PASS  shader-diagnostics refer to an earlier compiled/failed pipeline",
+    "PASS  JSONL starts with the header",
+    "PASS  JSONL events are exactly the emitted events",
+    "PASS  JSONL has one snapshot record",
+    "PASS  console reporter printed exactly one line per event, in order",
+    "PASS  both invalid pipelines are reported as compiled (by design: sync creation cannot know) ...",
+    "PASS  ... and each has a compiler ERROR pointing at the offending generated line",
+    "PASS  no pipeline-creation-failed on the sync path",
+    "PASS  snapshot still lists both pipelines (they are \"live\" objects, whatever their validity)",
+    "\n== async-failures: 20/20 checks",
+    "PASS  seq is contiguous from 1",
+    "PASS  t never decreases",
+    "PASS  no resource materialized twice",
+    "PASS  no resource destroyed twice",
+    "PASS  every destroy follows a materialize of the same resource, type and label",
+    "PASS  no pipeline reported twice",
+    "PASS  pipeline WGSL is non-empty and has a stage entry point",
+    "PASS  bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+    "PASS  a bind group used by a compiled pipeline shares its layout id",
+    "PASS  shader-diagnostics refer to an earlier compiled/failed pipeline",
+    "PASS  JSONL starts with the header",
+    "PASS  JSONL events are exactly the emitted events",
+    "PASS  JSONL has one snapshot record",
+    "PASS  console reporter printed exactly one line per event, in order",
+    "PASS  both creations rejected with GPUPipelineError",
+    "PASS  one pipeline-creation-failed per failure, compute then render",
+    "PASS  no pipeline-created event for a failed async creation",
+    "PASS  each failure has compiler diagnostics with an error at the bad line",
+    "PASS  failed pipelines are not listed as live",
+    "PASS  device errors were also reported",
+    "\n== lifecycle: 9/9 checks",
+    "PASS  history stays at the bound (64) under 4000 events",
+    "PASS  droppedEvents accounts for every evicted event",
+    "PASS  subscriber A received every event",
+    "PASS  subscriber B stopped receiving after unsubscribing (exactly 100)",
+    "PASS  throwing subscriber C did not disturb A and every throw was counted",
+    "PASS  disabled: no listener calls, history untouched, enabled=false",
+    "PASS  enable() resumes with the next sequence number (nothing recorded while disabled)",
+    "PASS  after dispose(): the in-flight diagnostics and later resource activity produce no events",
+    "PASS  JSONL parity holds even while history is bounded (every event exported)",
+    "\n== abandoned-roots: 2/2 checks",
+    "PASS  abandoned roots are garbage-collected",
+    "PASS  abandoned instrumentation (hubs with their history) is garbage-collected too",
+    "\n== never-opted-in: 2/2 checks",
+    "PASS  without the option there is no instrumentation object at all",
+    "PASS  the workload still produces correct results"
+  ],
+  "skipped": [],
+  "findings": [
+    {
+      "scenario": "resources",
+      "check": "seq is contiguous from 1",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "t never decreases",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "no resource materialized twice",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "no resource destroyed twice",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "every destroy follows a materialize of the same resource, type and label",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "no pipeline reported twice",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "scenario": "resources",
+      "check": "pipeline WGSL is non-empty and has a stage entry point",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "a bind group used by a compiled pipeline shares its layout id",
+      "pass": true,
+      "detail": {
+        "groups": [],
+        "pipelines": []
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "shader-diagnostics refer to an earlier compiled/failed pipeline",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "JSONL starts with the header",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "JSONL events are exactly the emitted events",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "JSONL has one snapshot record",
+      "pass": true
+    },
+    {
+      "scenario": "resources",
+      "check": "console reporter printed exactly one line per event, in order",
+      "pass": true,
+      "detail": {
+        "lines": 7,
+        "events": 7
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "exact event sequence",
+      "pass": true,
+      "detail": {
+        "expected": [
+          "resource-materialized",
+          "resource-materialized",
+          "resource-materialized",
+          "resource-destroyed",
+          "resource-destroyed",
+          "root-destroyed",
+          "device-lost"
+        ],
+        "actual": [
+          "resource-materialized",
+          "resource-materialized",
+          "resource-materialized",
+          "resource-destroyed",
+          "resource-destroyed",
+          "root-destroyed",
+          "device-lost"
+        ]
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "buffer payload: label, size, usage flags",
+      "pass": true,
+      "detail": {
+        "type": "resource-materialized",
+        "resource": "buffer",
+        "id": 1,
+        "label": "buf",
+        "sizeBytes": 16,
+        "usage": 140,
+        "v": 2,
+        "seq": 1,
+        "t": 757.6549999999988
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "texture payload: label, format, size, mips, samples, dimension, usage flags",
+      "pass": true,
+      "detail": {
+        "type": "resource-materialized",
+        "resource": "texture",
+        "id": 2,
+        "label": "tex",
+        "format": "rgba8unorm",
+        "size": [
+          8,
+          8
+        ],
+        "mipLevelCount": 1,
+        "sampleCount": 1,
+        "dimension": "2d",
+        "usage": 23,
+        "v": 2,
+        "seq": 2,
+        "t": 774.614999999998
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "destroy events name the right resources, once each",
+      "pass": true,
+      "detail": [
+        {
+          "type": "resource-destroyed",
+          "resource": "buffer",
+          "id": 1,
+          "label": "buf",
+          "v": 2,
+          "seq": 4,
+          "t": 780.9599999999991
+        },
+        {
+          "type": "resource-destroyed",
+          "resource": "texture",
+          "id": 2,
+          "label": "tex",
+          "v": 2,
+          "seq": 5,
+          "t": 781.0849999999991
+        }
+      ]
+    },
+    {
+      "scenario": "resources",
+      "check": "root-destroyed lists exactly the survivor",
+      "pass": true,
+      "detail": {
+        "type": "root-destroyed",
+        "ownDevice": true,
+        "liveBuffers": 1,
+        "liveTextures": 0,
+        "v": 2,
+        "seq": 6,
+        "t": 983.6199999999953
+      }
+    },
+    {
+      "scenario": "resources",
+      "check": "snapshot before teardown lists only the survivor",
+      "pass": true,
+      "detail": [
+        {
+          "id": 3,
+          "resource": "buffer",
+          "label": "keep",
+          "sizeBytes": 4,
+          "usage": 76,
+          "writes": 0,
+          "bytesWritten": 0
+        }
+      ]
+    },
+    {
+      "scenario": "resources",
+      "check": "writing to a destroyed buffer throws and emits nothing",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "seq is contiguous from 1",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "t never decreases",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "no resource materialized twice",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "no resource destroyed twice",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "every destroy follows a materialize of the same resource, type and label",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "no pipeline reported twice",
+      "pass": true,
+      "detail": [
+        2
+      ]
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "pipeline WGSL is non-empty and has a stage entry point",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "a bind group used by a compiled pipeline shares its layout id",
+      "pass": true,
+      "detail": {
+        "groups": [
+          1,
+          1
+        ],
+        "pipelines": [
+          1
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "shader-diagnostics refer to an earlier compiled/failed pipeline",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "JSONL starts with the header",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "JSONL events are exactly the emitted events",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "JSONL has one snapshot record",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "console reporter printed exactly one line per event, in order",
+      "pass": true,
+      "detail": {
+        "lines": 9,
+        "events": 9
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "exact event sequence",
+      "pass": true,
+      "detail": {
+        "expected": [
+          "pipeline-created",
+          "resource-materialized",
+          "resource-materialized",
+          "bind-group-created",
+          "resource-materialized",
+          "bind-group-created",
+          "shader-diagnostics",
+          "root-destroyed",
+          "device-lost"
+        ],
+        "actual": [
+          "pipeline-created",
+          "resource-materialized",
+          "resource-materialized",
+          "bind-group-created",
+          "resource-materialized",
+          "bind-group-created",
+          "shader-diagnostics",
+          "root-destroyed",
+          "device-lost"
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "the GPU really ran every dispatch (x2 three times / twice)",
+      "pass": true,
+      "detail": {
+        "data1": [
+          8,
+          16,
+          24,
+          32,
+          40,
+          48,
+          56,
+          64
+        ],
+        "data2": [
+          4,
+          8,
+          12,
+          16,
+          20,
+          24,
+          28,
+          32
+        ]
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "one lazy compile for five dispatches over two handles",
+      "pass": true,
+      "detail": {
+        "type": "pipeline-created",
+        "id": 2,
+        "pipeline": "compute",
+        "label": "scale",
+        "trigger": "lazy",
+        "validation": "deferred",
+        "resolveMs": 6.709999999999127,
+        "createMs": 0.23500000000058208,
+        "wgslLength": 241,
+        "layoutIds": [
+          1
+        ],
+        "layoutLabels": [
+          "layout"
+        ],
+        "v": 2,
+        "seq": 1,
+        "t": 1054.5049999999974
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "bind group 1 maps data->data1 and factor->factor",
+      "pass": true,
+      "detail": [
+        {
+          "name": "data",
+          "kind": "buffer",
+          "resourceId": 3
+        },
+        {
+          "name": "factor",
+          "kind": "buffer",
+          "resourceId": 4
+        }
+      ]
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "bind group 2 maps data->data2 and the SAME factor id",
+      "pass": true,
+      "detail": [
+        {
+          "name": "data",
+          "kind": "buffer",
+          "resourceId": 6
+        },
+        {
+          "name": "factor",
+          "kind": "buffer",
+          "resourceId": 4
+        }
+      ]
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "both groups share one layout id, equal to the pipeline layout",
+      "pass": true
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "counters: 5 dispatches, 5 submits (read() submits are not counted by design)",
+      "pass": true,
+      "detail": {
+        "pipeline": {
+          "id": 2,
+          "pipeline": "compute",
+          "label": "scale",
+          "trigger": "lazy",
+          "resolveMs": 6.709999999999127,
+          "createMs": 0.23500000000058208,
+          "wgslLength": 241,
+          "layoutIds": [
+            1
+          ],
+          "dispatches": 5,
+          "draws": 0
+        },
+        "counters": {
+          "submits": 5,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 3048,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        }
+      }
+    },
+    {
+      "scenario": "compute-bindgroups",
+      "check": "snapshot: 3 buffers, 2 bind groups",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "seq is contiguous from 1",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "t never decreases",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "no resource materialized twice",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "no resource destroyed twice",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "every destroy follows a materialize of the same resource, type and label",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "no pipeline reported twice",
+      "pass": true,
+      "detail": [
+        1
+      ]
+    },
+    {
+      "scenario": "render",
+      "check": "pipeline WGSL is non-empty and has a stage entry point",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "a bind group used by a compiled pipeline shares its layout id",
+      "pass": true,
+      "detail": {
+        "groups": [],
+        "pipelines": []
+      }
+    },
+    {
+      "scenario": "render",
+      "check": "shader-diagnostics refer to an earlier compiled/failed pipeline",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "JSONL starts with the header",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "JSONL events are exactly the emitted events",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "JSONL has one snapshot record",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "console reporter printed exactly one line per event, in order",
+      "pass": true,
+      "detail": {
+        "lines": 5,
+        "events": 5
+      }
+    },
+    {
+      "scenario": "render",
+      "check": "exact event sequence",
+      "pass": true,
+      "detail": {
+        "expected": [
+          "pipeline-created",
+          "resource-materialized",
+          "shader-diagnostics",
+          "root-destroyed",
+          "device-lost"
+        ],
+        "actual": [
+          "pipeline-created",
+          "resource-materialized",
+          "shader-diagnostics",
+          "root-destroyed",
+          "device-lost"
+        ]
+      }
+    },
+    {
+      "scenario": "render",
+      "check": "the draw produced red pixels",
+      "pass": true,
+      "detail": [
+        255,
+        0,
+        0,
+        255
+      ]
+    },
+    {
+      "scenario": "render",
+      "check": "render pipeline compiled once, lazily, with vertex and fragment stages",
+      "pass": true
+    },
+    {
+      "scenario": "render",
+      "check": "counters: 3 draws over two handles, 3 submits",
+      "pass": true,
+      "detail": {
+        "draws": 3,
+        "submits": 3
+      }
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "seq is contiguous from 1",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "t never decreases",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "no resource materialized twice",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "no resource destroyed twice",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "every destroy follows a materialize of the same resource, type and label",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "no pipeline reported twice",
+      "pass": true,
+      "detail": [
+        1,
+        2
+      ]
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "pipeline WGSL is non-empty and has a stage entry point",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "a bind group used by a compiled pipeline shares its layout id",
+      "pass": true,
+      "detail": {
+        "groups": [],
+        "pipelines": []
+      }
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "shader-diagnostics refer to an earlier compiled/failed pipeline",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "JSONL starts with the header",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "JSONL events are exactly the emitted events",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "JSONL has one snapshot record",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "console reporter printed exactly one line per event, in order",
+      "pass": true,
+      "detail": {
+        "lines": 7,
+        "events": 7
+      }
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "exactly two compiles, with the explicit triggers, in call order",
+      "pass": true,
+      "detail": [
+        [
+          "compute",
+          "initSync"
+        ],
+        [
+          "render",
+          "initAsync"
+        ]
+      ]
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "dispatch/draw after explicit init did not compile again",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "counters: 1 dispatch, 1 draw",
+      "pass": true
+    },
+    {
+      "scenario": "explicit-init",
+      "check": "every compile got its diagnostics",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "seq is contiguous from 1",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "t never decreases",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "no resource materialized twice",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "no resource destroyed twice",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "every destroy follows a materialize of the same resource, type and label",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "no pipeline reported twice",
+      "pass": true,
+      "detail": [
+        1,
+        2
+      ]
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "pipeline WGSL is non-empty and has a stage entry point",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "a bind group used by a compiled pipeline shares its layout id",
+      "pass": true,
+      "detail": {
+        "groups": [],
+        "pipelines": []
+      }
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "shader-diagnostics refer to an earlier compiled/failed pipeline",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "JSONL starts with the header",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "JSONL events are exactly the emitted events",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "JSONL has one snapshot record",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "console reporter printed exactly one line per event, in order",
+      "pass": true,
+      "detail": {
+        "lines": 10,
+        "events": 10
+      }
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "both invalid pipelines are reported as compiled (by design: sync creation cannot know) ...",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "... and each has a compiler ERROR pointing at the offending generated line",
+      "pass": true,
+      "detail": [
+        [
+          {
+            "type": "error",
+            "message": "unresolved call target 'definitelyUndeclared'",
+            "lineNum": 1,
+            "linePos": 58
+          }
+        ],
+        [
+          {
+            "type": "error",
+            "message": "unresolved value 'definitelyUndeclared'",
+            "lineNum": 11,
+            "linePos": 63
+          }
+        ]
+      ]
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "no pipeline-creation-failed on the sync path",
+      "pass": true
+    },
+    {
+      "scenario": "sync-failures",
+      "check": "snapshot still lists both pipelines (they are \"live\" objects, whatever their validity)",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "seq is contiguous from 1",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "t never decreases",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "no resource materialized twice",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "no resource destroyed twice",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "every destroy follows a materialize of the same resource, type and label",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "no pipeline reported twice",
+      "pass": true,
+      "detail": [
+        1,
+        2
+      ]
+    },
+    {
+      "scenario": "async-failures",
+      "check": "pipeline WGSL is non-empty and has a stage entry point",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "bind group entries refer to resources materialized EARLIER (or are explicitly unknown)",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "a bind group used by a compiled pipeline shares its layout id",
+      "pass": true,
+      "detail": {
+        "groups": [],
+        "pipelines": []
+      }
+    },
+    {
+      "scenario": "async-failures",
+      "check": "shader-diagnostics refer to an earlier compiled/failed pipeline",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "JSONL starts with the header",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "JSONL events are exactly the emitted events",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "JSONL has one snapshot record",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "console reporter printed exactly one line per event, in order",
+      "pass": true,
+      "detail": {
+        "lines": 8,
+        "events": 8
+      }
+    },
+    {
+      "scenario": "async-failures",
+      "check": "both creations rejected with GPUPipelineError",
+      "pass": true,
+      "detail": [
+        "GPUPipelineError",
+        "GPUPipelineError"
+      ]
+    },
+    {
+      "scenario": "async-failures",
+      "check": "one pipeline-creation-failed per failure, compute then render",
+      "pass": true,
+      "detail": [
+        {
+          "type": "pipeline-creation-failed",
+          "id": 1,
+          "pipeline": "compute",
+          "label": "asyncCompute",
+          "trigger": "initAsync",
+          "phase": "create",
+          "resolveMs": 0.2699999999967986,
+          "createMs": 4.180000000000291,
+          "wgslLength": 85,
+          "layoutIds": [],
+          "layoutLabels": [],
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"asyncCompute - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"asyncCompute - Shader\"], entryPoint: [undefined]).\n",
+          "v": 2,
+          "seq": 2,
+          "t": 2722.784999999996
+        },
+        {
+          "type": "pipeline-creation-failed",
+          "id": 2,
+          "pipeline": "render",
+          "label": "asyncRender",
+          "trigger": "initAsync",
+          "phase": "create",
+          "resolveMs": 0.805000000000291,
+          "createMs": 0.43000000000029104,
+          "wgslLength": 361,
+          "layoutIds": [],
+          "layoutLabels": [],
+          "errorType": "GPUPipelineError",
+          "message": "[Invalid ShaderModule \"asyncRender - Shader\"] is invalid due to a previous error.\n - While validating vertex stage ([Invalid ShaderModule \"asyncRender - Shader\"], entryPoint: [undefined]).\n - While validating vertex state.\n",
+          "v": 2,
+          "seq": 5,
+          "t": 2724.6399999999994
+        }
+      ]
+    },
+    {
+      "scenario": "async-failures",
+      "check": "no pipeline-created event for a failed async creation",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "each failure has compiler diagnostics with an error at the bad line",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "failed pipelines are not listed as live",
+      "pass": true
+    },
+    {
+      "scenario": "async-failures",
+      "check": "device errors were also reported",
+      "pass": true
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "history stays at the bound (64) under 4000 events",
+      "pass": true,
+      "detail": {
+        "history": 64,
+        "snapshot": {
+          "submits": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 3936,
+          "droppedBytes": 948576,
+          "historyBytes": 15424,
+          "listenerErrors": 4000,
+          "lastListenerError": "Error: consumer bug",
+          "internalErrors": 0,
+          "lastInternalError": null
+        }
+      }
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "droppedEvents accounts for every evicted event",
+      "pass": true,
+      "detail": {
+        "submits": 0,
+        "collectedWithoutDestroy": 0,
+        "droppedEvents": 3936,
+        "droppedBytes": 948576,
+        "historyBytes": 15424,
+        "listenerErrors": 4000,
+        "lastListenerError": "Error: consumer bug",
+        "internalErrors": 0,
+        "lastInternalError": null
+      }
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "subscriber A received every event",
+      "pass": true,
+      "detail": 4002
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "subscriber B stopped receiving after unsubscribing (exactly 100)",
+      "pass": true,
+      "detail": 100
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "throwing subscriber C did not disturb A and every throw was counted",
+      "pass": true,
+      "detail": {
+        "c": 4002,
+        "listenerErrors": 4000
+      }
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "disabled: no listener calls, history untouched, enabled=false",
+      "pass": true,
+      "detail": {
+        "listenerCalls": 0,
+        "historyUnchanged": true,
+        "enabled": false,
+        "snapshotEnabled": false
+      }
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "enable() resumes with the next sequence number (nothing recorded while disabled)",
+      "pass": true,
+      "detail": {
+        "firstSeqAfterEnable": 4001,
+        "seqBeforeDisable": 4000
+      }
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "after dispose(): the in-flight diagnostics and later resource activity produce no events",
+      "pass": true,
+      "detail": {
+        "listenerCallsAfterDispose": 1,
+        "enabled": false
+      }
+    },
+    {
+      "scenario": "lifecycle",
+      "check": "JSONL parity holds even while history is bounded (every event exported)",
+      "pass": true
+    },
+    {
+      "scenario": "abandoned-roots",
+      "check": "abandoned roots are garbage-collected",
+      "pass": true,
+      "detail": {
+        "aliveRoots": 0
+      }
+    },
+    {
+      "scenario": "abandoned-roots",
+      "check": "abandoned instrumentation (hubs with their history) is garbage-collected too",
+      "pass": true,
+      "detail": {
+        "created": 30,
+        "aliveHubs": 0
+      }
+    },
+    {
+      "scenario": "never-opted-in",
+      "check": "without the option there is no instrumentation object at all",
+      "pass": true
+    },
+    {
+      "scenario": "never-opted-in",
+      "check": "the workload still produces correct results",
+      "pass": true,
+      "detail": [
+        2,
+        4,
+        6,
+        8,
+        10,
+        12,
+        14,
+        16
+      ]
+    }
+  ],
+  "scenarios": [
+    {
+      "name": "resources"
+    },
+    {
+      "name": "compute-bindgroups"
+    },
+    {
+      "name": "render"
+    },
+    {
+      "name": "explicit-init"
+    },
+    {
+      "name": "sync-failures"
+    },
+    {
+      "name": "async-failures"
+    },
+    {
+      "name": "lifecycle"
+    },
+    {
+      "name": "abandoned-roots"
+    },
+    {
+      "name": "never-opted-in"
+    }
+  ],
+  "evidence": {
+    "resources": {
+      "consoleLines": [
+        "[001] buffer buf#1 materialized (16 B)",
+        "[002] texture tex#2 materialized (rgba8unorm 8x8)",
+        "[003] buffer keep#3 materialized (4 B)",
+        "[004] buffer buf#1 destroyed",
+        "[005] texture tex#2 destroyed",
+        "[006] root destroyed (own device: true), still alive: 1 buffers, 0 textures",
+        "[007] DEVICE LOST (destroyed): Device was destroyed."
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"sizeBytes\":16,\"usage\":140,\"v\":2,\"seq\":1,\"t\":757.6549999999988}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":2,\"label\":\"tex\",\"format\":\"rgba8unorm\",\"size\":[8,8],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":23,\"v\":2,\"seq\":2,\"t\":774.614999999998}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"keep\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":3,\"t\":775.0149999999994}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"v\":2,\"seq\":4,\"t\":780.9599999999991}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"texture\",\"id\":2,\"label\":\"tex\",\"v\":2,\"seq\":5,\"t\":781.0849999999991}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":983.5149999999994,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"buffer\",\"label\":\"keep\",\"sizeBytes\":4,\"usage\":76,\"writes\":0,\"bytesWritten\":0}],\"bindGroups\":[],\"pipelines\":[],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":1390,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":1,\"liveTextures\":0,\"v\":2,\"seq\":6,\"t\":983.6199999999953}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"Device was destroyed.\",\"v\":2,\"seq\":7,\"t\":988.4349999999977}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 983.4749999999985,
+        "enabled": true,
+        "resources": [
+          {
+            "id": 3,
+            "resource": "buffer",
+            "label": "keep",
+            "sizeBytes": 4,
+            "usage": 76,
+            "writes": 0,
+            "bytesWritten": 0
+          }
+        ],
+        "bindGroups": [],
+        "pipelines": [],
+        "counters": {
+          "submits": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 1390,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {
+        "writeAfterDestroyThrew": true
+      },
+      "eventCount": 7
+    },
+    "compute-bindgroups": {
+      "consoleLines": [
+        "[001] compute pipeline scale#2 created [lazy] resolve 6.71 ms (CPU), create 0.24 ms (CPU), 241 chars of WGSL",
+        "[002] buffer data1#3 materialized (32 B)",
+        "[003] buffer factor#4 materialized (4 B)",
+        "[004] bind group #5 of layout layout#1 (created) { data=#3, factor=#4 }",
+        "[005] buffer data2#6 materialized (32 B)",
+        "[006] bind group #7 of layout layout#1 (created) { data=#6, factor=#4 }",
+        "[007] pipeline #2 shader: no compiler messages",
+        "[008] root destroyed (own device: true), still alive: 3 buffers, 0 textures",
+        "[009] DEVICE LOST (destroyed): Device was destroyed."
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"compute\",\"label\":\"scale\",\"trigger\":\"lazy\",\"validation\":\"deferred\",\"resolveMs\":6.709999999999127,\"createMs\":0.23500000000058208,\"wgsl\":\"@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\\n\\n@group(0) @binding(1) var<uniform> factor: f32;\\n\\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\\n  data[gid.x] = (data[gid.x] * factor);\\n}\",\"wgslLength\":241,\"layoutIds\":[1],\"layoutLabels\":[\"layout\"],\"v\":2,\"seq\":1,\"t\":1054.5049999999974}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"data1\",\"sizeBytes\":32,\"usage\":140,\"v\":2,\"seq\":2,\"t\":1055.2799999999988}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":4,\"label\":\"factor\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":3,\"t\":1055.510000000002}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"bind-group-created\",\"id\":5,\"label\":\"layout\",\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":3},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}],\"v\":2,\"seq\":4,\"t\":1055.7799999999988}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":6,\"label\":\"data2\",\"sizeBytes\":32,\"usage\":140,\"v\":2,\"seq\":5,\"t\":1056.229999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"bind-group-created\",\"id\":7,\"label\":\"layout\",\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":6},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}],\"v\":2,\"seq\":6,\"t\":1056.3099999999977}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[],\"v\":2,\"seq\":7,\"t\":1237.614999999998}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":7,\"snapshot\":{\"v\":2,\"t\":1450.1599999999962,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"buffer\",\"label\":\"data1\",\"sizeBytes\":32,\"usage\":140,\"writes\":0,\"bytesWritten\":0},{\"id\":4,\"resource\":\"buffer\",\"label\":\"factor\",\"sizeBytes\":4,\"usage\":76,\"writes\":0,\"bytesWritten\":0},{\"id\":6,\"resource\":\"buffer\",\"label\":\"data2\",\"sizeBytes\":32,\"usage\":140,\"writes\":0,\"bytesWritten\":0}],\"bindGroups\":[{\"id\":5,\"label\":null,\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":3},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]},{\"id\":7,\"label\":null,\"layoutId\":1,\"origin\":\"created\",\"entries\":[{\"name\":\"data\",\"kind\":\"buffer\",\"resourceId\":6},{\"name\":\"factor\",\"kind\":\"buffer\",\"resourceId\":4}]}],\"pipelines\":[{\"id\":2,\"pipeline\":\"compute\",\"label\":\"scale\",\"trigger\":\"lazy\",\"resolveMs\":6.709999999999127,\"createMs\":0.23500000000058208,\"wgsl\":\"@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\\n\\n@group(0) @binding(1) var<uniform> factor: f32;\\n\\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\\n  data[gid.x] = (data[gid.x] * factor);\\n}\",\"wgslLength\":241,\"layoutIds\":[1],\"dispatches\":5,\"draws\":0}],\"counters\":{\"submits\":5,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":3048,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":3,\"liveTextures\":0,\"v\":2,\"seq\":8,\"t\":1450.2149999999965}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"Device was destroyed.\",\"v\":2,\"seq\":9,\"t\":1450.6749999999956}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 1450.104999999996,
+        "enabled": true,
+        "resources": [
+          {
+            "id": 3,
+            "resource": "buffer",
+            "label": "data1",
+            "sizeBytes": 32,
+            "usage": 140,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 4,
+            "resource": "buffer",
+            "label": "factor",
+            "sizeBytes": 4,
+            "usage": 76,
+            "writes": 0,
+            "bytesWritten": 0
+          },
+          {
+            "id": 6,
+            "resource": "buffer",
+            "label": "data2",
+            "sizeBytes": 32,
+            "usage": 140,
+            "writes": 0,
+            "bytesWritten": 0
+          }
+        ],
+        "bindGroups": [
+          {
+            "id": 5,
+            "label": null,
+            "layoutId": 1,
+            "origin": "created",
+            "entries": [
+              {
+                "name": "data",
+                "kind": "buffer",
+                "resourceId": 3
+              },
+              {
+                "name": "factor",
+                "kind": "buffer",
+                "resourceId": 4
+              }
+            ]
+          },
+          {
+            "id": 7,
+            "label": null,
+            "layoutId": 1,
+            "origin": "created",
+            "entries": [
+              {
+                "name": "data",
+                "kind": "buffer",
+                "resourceId": 6
+              },
+              {
+                "name": "factor",
+                "kind": "buffer",
+                "resourceId": 4
+              }
+            ]
+          }
+        ],
+        "pipelines": [
+          {
+            "id": 2,
+            "pipeline": "compute",
+            "label": "scale",
+            "trigger": "lazy",
+            "resolveMs": 6.709999999999127,
+            "createMs": 0.23500000000058208,
+            "wgsl": "@group(0) @binding(0) var<storage, read_write> data: array<f32, 8>;\n\n@group(0) @binding(1) var<uniform> factor: f32;\n\n@compute @workgroup_size(8) fn scale(@builtin(global_invocation_id) gid: vec3u) {\n  data[gid.x] = (data[gid.x] * factor);\n}",
+            "wgslLength": 241,
+            "layoutIds": [
+              1
+            ],
+            "dispatches": 5,
+            "draws": 0
+          }
+        ],
+        "counters": {
+          "submits": 5,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 3048,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {
+        "data1": [
+          8,
+          16,
+          24,
+          32,
+          40,
+          48,
+          56,
+          64
+        ],
+        "data2": [
+          4,
+          8,
+          12,
+          16,
+          20,
+          24,
+          28,
+          32
+        ]
+      },
+      "eventCount": 9
+    },
+    "render": {
+      "consoleLines": [
+        "[001] render pipeline triangle#1 created [lazy] resolve 9.24 ms (CPU), create 0.06 ms (CPU), 356 chars of WGSL",
+        "[002] texture target#2 materialized (rgba8unorm 8x8)",
+        "[003] pipeline #1 shader: no compiler messages",
+        "[004] root destroyed (own device: true), still alive: 0 buffers, 1 textures",
+        "[005] DEVICE LOST (destroyed): Device was destroyed."
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"render\",\"label\":\"triangle\",\"trigger\":\"lazy\",\"validation\":\"deferred\",\"resolveMs\":9.235000000000582,\"createMs\":0.059999999997671694,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"layoutLabels\":[],\"v\":2,\"seq\":1,\"t\":1516.5950000000012}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":2,\"label\":\"target\",\"format\":\"rgba8unorm\",\"size\":[8,8],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":19,\"v\":2,\"seq\":2,\"t\":1516.8450000000012}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[],\"v\":2,\"seq\":3,\"t\":1532.2249999999985}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":3,\"snapshot\":{\"v\":2,\"t\":1959.4850000000006,\"enabled\":true,\"resources\":[{\"id\":2,\"resource\":\"texture\",\"label\":\"target\",\"sizeBytes\":null,\"usage\":19,\"writes\":null,\"bytesWritten\":null}],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"render\",\"label\":\"triangle\",\"trigger\":\"lazy\",\"resolveMs\":9.235000000000582,\"createMs\":0.059999999997671694,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"dispatches\":0,\"draws\":3}],\"counters\":{\"submits\":3,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":1788,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":1,\"v\":2,\"seq\":4,\"t\":1959.5449999999983}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"Device was destroyed.\",\"v\":2,\"seq\":5,\"t\":1960.104999999996}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 1959.449999999997,
+        "enabled": true,
+        "resources": [
+          {
+            "id": 2,
+            "resource": "texture",
+            "label": "target",
+            "sizeBytes": null,
+            "usage": 19,
+            "writes": null,
+            "bytesWritten": null
+          }
+        ],
+        "bindGroups": [],
+        "pipelines": [
+          {
+            "id": 1,
+            "pipeline": "render",
+            "label": "triangle",
+            "trigger": "lazy",
+            "resolveMs": 9.235000000000582,
+            "createMs": 0.059999999997671694,
+            "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn fragmentRed() -> @location(0) vec4f {\n  return vec4f(1, 0, 0, 1);\n}",
+            "wgslLength": 356,
+            "layoutIds": [],
+            "dispatches": 0,
+            "draws": 3
+          }
+        ],
+        "counters": {
+          "submits": 3,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 1788,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {
+        "pixel": [
+          255,
+          0,
+          0,
+          255
+        ]
+      },
+      "eventCount": 5
+    },
+    "explicit-init": {
+      "consoleLines": [
+        "[001] compute pipeline explicitSync#1 created [initSync] resolve 0.99 ms (CPU), create 0.03 ms (CPU), 40 chars of WGSL",
+        "[002] pipeline #1 shader: no compiler messages",
+        "[003] render pipeline explicitAsync#2 compiled [initAsync] resolve 1.06 ms (CPU), create 11.33 ms (CPU), 356 chars of WGSL",
+        "[004] texture t#3 materialized (rgba8unorm 4x4)",
+        "[005] pipeline #2 shader: no compiler messages",
+        "[006] root destroyed (own device: true), still alive: 0 buffers, 1 textures",
+        "[007] DEVICE LOST (destroyed): Device was destroyed."
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"explicitSync\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.9900000000052387,\"createMs\":0.029999999998835847,\"wgsl\":\"@compute @workgroup_size(1) fn noop() {}\",\"wgslLength\":40,\"layoutIds\":[],\"layoutLabels\":[],\"v\":2,\"seq\":1,\"t\":2023.0499999999956}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[],\"v\":2,\"seq\":2,\"t\":2030.1199999999953}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"render\",\"label\":\"explicitAsync\",\"trigger\":\"initAsync\",\"validation\":\"passed\",\"resolveMs\":1.0649999999950523,\"createMs\":11.334999999999127,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"layoutLabels\":[],\"v\":2,\"seq\":3,\"t\":2035.6800000000003}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"texture\",\"id\":3,\"label\":\"t\",\"format\":\"rgba8unorm\",\"size\":[4,4],\"mipLevelCount\":1,\"sampleCount\":1,\"dimension\":\"2d\",\"usage\":19,\"v\":2,\"seq\":4,\"t\":2036.0149999999994}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[],\"v\":2,\"seq\":5,\"t\":2036.1800000000003}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":5,\"snapshot\":{\"v\":2,\"t\":2248.199999999997,\"enabled\":true,\"resources\":[{\"id\":3,\"resource\":\"texture\",\"label\":\"t\",\"sizeBytes\":null,\"usage\":19,\"writes\":null,\"bytesWritten\":null}],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"compute\",\"label\":\"explicitSync\",\"trigger\":\"initSync\",\"resolveMs\":0.9900000000052387,\"createMs\":0.029999999998835847,\"wgsl\":\"@compute @workgroup_size(1) fn noop() {}\",\"wgslLength\":40,\"layoutIds\":[],\"dispatches\":1,\"draws\":0},{\"id\":2,\"pipeline\":\"render\",\"label\":\"explicitAsync\",\"trigger\":\"initAsync\",\"resolveMs\":1.0649999999950523,\"createMs\":11.334999999999127,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn fragmentRed() -> @location(0) vec4f {\\n  return vec4f(1, 0, 0, 1);\\n}\",\"wgslLength\":356,\"layoutIds\":[],\"dispatches\":0,\"draws\":1}],\"counters\":{\"submits\":2,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":2540,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":1,\"v\":2,\"seq\":6,\"t\":2248.239999999998}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"Device was destroyed.\",\"v\":2,\"seq\":7,\"t\":2248.8199999999997}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 2248.1900000000023,
+        "enabled": true,
+        "resources": [
+          {
+            "id": 3,
+            "resource": "texture",
+            "label": "t",
+            "sizeBytes": null,
+            "usage": 19,
+            "writes": null,
+            "bytesWritten": null
+          }
+        ],
+        "bindGroups": [],
+        "pipelines": [
+          {
+            "id": 1,
+            "pipeline": "compute",
+            "label": "explicitSync",
+            "trigger": "initSync",
+            "resolveMs": 0.9900000000052387,
+            "createMs": 0.029999999998835847,
+            "wgsl": "@compute @workgroup_size(1) fn noop() {}",
+            "wgslLength": 40,
+            "layoutIds": [],
+            "dispatches": 1,
+            "draws": 0
+          },
+          {
+            "id": 2,
+            "pipeline": "render",
+            "label": "explicitAsync",
+            "trigger": "initAsync",
+            "resolveMs": 1.0649999999950523,
+            "createMs": 11.334999999999127,
+            "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn fragmentRed() -> @location(0) vec4f {\n  return vec4f(1, 0, 0, 1);\n}",
+            "wgslLength": 356,
+            "layoutIds": [],
+            "dispatches": 0,
+            "draws": 1
+          }
+        ],
+        "counters": {
+          "submits": 2,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 2540,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {},
+      "eventCount": 7
+    },
+    "sync-failures": {
+      "consoleLines": [
+        "[001] compute pipeline brokenCompute#1 created [initSync] resolve 0.50 ms (CPU), create 0.03 ms (CPU), 85 chars of WGSL",
+        "[002] DEVICE ERROR GPUValidationError: Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'",
+        "[003] pipeline #1 shader: error at WGSL 1:58: unresolved call target 'definitelyUndeclared'",
+        "[004] DEVICE ERROR GPUValidationError: [Invalid ShaderModule \"brokenCompute - Shader\"] is invalid due to a previous error.",
+        "[005] render pipeline brokenRender#2 created [initSync] resolve 1.11 ms (CPU), create 0.03 ms (CPU), 361 chars of WGSL",
+        "[006] DEVICE ERROR GPUValidationError: Error while parsing WGSL: :11:63 error: unresolved value 'definitelyUndeclared'",
+        "[007] DEVICE ERROR GPUValidationError: [Invalid ShaderModule \"brokenRender - Shader\"] is invalid due to a previous error.",
+        "[008] pipeline #2 shader: error at WGSL 11:63: unresolved value 'definitelyUndeclared'",
+        "[009] root destroyed (own device: true), still alive: 0 buffers, 0 textures",
+        "[010] DEVICE LOST (destroyed): Device was destroyed."
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-created\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"brokenCompute\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":0.5,\"createMs\":0.029999999998835847,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[],\"v\":2,\"seq\":1,\"t\":2311.279999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'\\n@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\\n                                                         ^^^^^^^^^^^^^^^^^^^^\\n\\n\\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \\\"\\\"brokenCompute - Shader\\\"\\\"]).\\n\",\"v\":2,\"seq\":2,\"t\":2350.654999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved call target 'definitelyUndeclared'\",\"lineNum\":1,\"linePos\":58}],\"v\":2,\"seq\":3,\"t\":2350.854999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"[Invalid ShaderModule \\\"brokenCompute - Shader\\\"] is invalid due to a previous error.\\n - While validating compute stage ([Invalid ShaderModule \\\"brokenCompute - Shader\\\"], entryPoint: [undefined]).\\n - While calling [Device].CreateComputePipeline([ComputePipelineDescriptor \\\"\\\"brokenCompute\\\"\\\"]).\\n\",\"v\":2,\"seq\":4,\"t\":2351.074999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-created\",\"id\":2,\"pipeline\":\"render\",\"label\":\"brokenRender\",\"trigger\":\"initSync\",\"validation\":\"deferred\",\"resolveMs\":1.110000000000582,\"createMs\":0.02500000000145519,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[],\"v\":2,\"seq\":5,\"t\":2452.284999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"Error while parsing WGSL: :11:63 error: unresolved value 'definitelyUndeclared'\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\\n                                                              ^^^^^^^^^^^^^^^^^^^^\\n\\n\\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \\\"\\\"brokenRender - Shader\\\"\\\"]).\\n\",\"v\":2,\"seq\":6,\"t\":2454.635000000002}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"[Invalid ShaderModule \\\"brokenRender - Shader\\\"] is invalid due to a previous error.\\n - While validating vertex stage ([Invalid ShaderModule \\\"brokenRender - Shader\\\"], entryPoint: [undefined]).\\n - While validating vertex state.\\n - While calling [Device].CreateRenderPipeline([RenderPipelineDescriptor \\\"\\\"brokenRender\\\"\\\"]).\\n\",\"v\":2,\"seq\":7,\"t\":2454.8300000000017}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved value 'definitelyUndeclared'\",\"lineNum\":11,\"linePos\":63}],\"v\":2,\"seq\":8,\"t\":2454.9850000000006}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":8,\"snapshot\":{\"v\":2,\"t\":2655.095000000001,\"enabled\":true,\"resources\":[],\"bindGroups\":[],\"pipelines\":[{\"id\":1,\"pipeline\":\"compute\",\"label\":\"brokenCompute\",\"trigger\":\"initSync\",\"resolveMs\":0.5,\"createMs\":0.029999999998835847,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"dispatches\":0,\"draws\":0},{\"id\":2,\"pipeline\":\"render\",\"label\":\"brokenRender\",\"trigger\":\"initSync\",\"resolveMs\":1.110000000000582,\"createMs\":0.02500000000145519,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"dispatches\":0,\"draws\":0}],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":6114,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":0,\"v\":2,\"seq\":9,\"t\":2655.1500000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"Device was destroyed.\",\"v\":2,\"seq\":10,\"t\":2656.0650000000023}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 2655.0699999999997,
+        "enabled": true,
+        "resources": [],
+        "bindGroups": [],
+        "pipelines": [
+          {
+            "id": 1,
+            "pipeline": "compute",
+            "label": "brokenCompute",
+            "trigger": "initSync",
+            "resolveMs": 0.5,
+            "createMs": 0.029999999998835847,
+            "wgsl": "@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }",
+            "wgslLength": 85,
+            "layoutIds": [],
+            "dispatches": 0,
+            "draws": 0
+          },
+          {
+            "id": 2,
+            "pipeline": "render",
+            "label": "brokenRender",
+            "trigger": "initSync",
+            "resolveMs": 1.110000000000582,
+            "createMs": 0.02500000000145519,
+            "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }",
+            "wgslLength": 361,
+            "layoutIds": [],
+            "dispatches": 0,
+            "draws": 0
+          }
+        ],
+        "counters": {
+          "submits": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 6114,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {
+        "deviceErrorNamesIdentifier": true,
+        "deviceErrorCount": 4
+      },
+      "eventCount": 10
+    },
+    "async-failures": {
+      "consoleLines": [
+        "[001] DEVICE ERROR GPUValidationError: Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'",
+        "[002] compute pipeline asyncCompute#1 creation FAILED [initAsync, create] GPUPipelineError: [Invalid ShaderModule \"asyncCompute - Shader\"] is invalid due to a previous error. (85 chars of WGSL)",
+        "[003] pipeline #1 shader: error at WGSL 1:58: unresolved call target 'definitelyUndeclared'",
+        "[004] DEVICE ERROR GPUValidationError: Error while parsing WGSL: :11:63 error: unresolved value 'definitelyUndeclared'",
+        "[005] render pipeline asyncRender#2 creation FAILED [initAsync, create] GPUPipelineError: [Invalid ShaderModule \"asyncRender - Shader\"] is invalid due to a previous error. (361 chars of WGSL)",
+        "[006] pipeline #2 shader: error at WGSL 11:63: unresolved value 'definitelyUndeclared'",
+        "[007] root destroyed (own device: true), still alive: 0 buffers, 0 textures",
+        "[008] DEVICE LOST (destroyed): Device was destroyed."
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'\\n@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\\n                                                         ^^^^^^^^^^^^^^^^^^^^\\n\\n\\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \\\"\\\"asyncCompute - Shader\\\"\\\"]).\\n\",\"v\":2,\"seq\":1,\"t\":2722.409999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-creation-failed\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"asyncCompute\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":0.2699999999967986,\"createMs\":4.180000000000291,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"[Invalid ShaderModule \\\"asyncCompute - Shader\\\"] is invalid due to a previous error.\\n - While validating compute stage ([Invalid ShaderModule \\\"asyncCompute - Shader\\\"], entryPoint: [undefined]).\\n\",\"v\":2,\"seq\":2,\"t\":2722.784999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":1,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved call target 'definitelyUndeclared'\",\"lineNum\":1,\"linePos\":58}],\"v\":2,\"seq\":3,\"t\":2724.2750000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-error\",\"errorType\":\"GPUValidationError\",\"message\":\"Error while parsing WGSL: :11:63 error: unresolved value 'definitelyUndeclared'\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\\n                                                              ^^^^^^^^^^^^^^^^^^^^\\n\\n\\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \\\"\\\"asyncRender - Shader\\\"\\\"]).\\n\",\"v\":2,\"seq\":4,\"t\":2724.5250000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"pipeline-creation-failed\",\"id\":2,\"pipeline\":\"render\",\"label\":\"asyncRender\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":0.805000000000291,\"createMs\":0.43000000000029104,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"[Invalid ShaderModule \\\"asyncRender - Shader\\\"] is invalid due to a previous error.\\n - While validating vertex stage ([Invalid ShaderModule \\\"asyncRender - Shader\\\"], entryPoint: [undefined]).\\n - While validating vertex state.\\n\",\"v\":2,\"seq\":5,\"t\":2724.6399999999994}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"shader-diagnostics\",\"pipelineId\":2,\"messages\":[{\"type\":\"error\",\"message\":\"unresolved value 'definitelyUndeclared'\",\"lineNum\":11,\"linePos\":63}],\"v\":2,\"seq\":6,\"t\":2724.875}}",
+        "{\"record\":\"snapshot\",\"afterSeq\":6,\"snapshot\":{\"v\":2,\"t\":2925.0049999999974,\"enabled\":true,\"resources\":[],\"bindGroups\":[],\"pipelines\":[],\"counters\":{\"submits\":0,\"collectedWithoutDestroy\":0,\"droppedEvents\":0,\"droppedBytes\":0,\"historyBytes\":5484,\"listenerErrors\":0,\"lastListenerError\":null,\"internalErrors\":0,\"lastInternalError\":null},\"retainedFailures\":[{\"type\":\"pipeline-creation-failed\",\"id\":1,\"pipeline\":\"compute\",\"label\":\"asyncCompute\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":0.2699999999967986,\"createMs\":4.180000000000291,\"wgsl\":\"@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\",\"wgslLength\":85,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"[Invalid ShaderModule \\\"asyncCompute - Shader\\\"] is invalid due to a previous error.\\n - While validating compute stage ([Invalid ShaderModule \\\"asyncCompute - Shader\\\"], entryPoint: [undefined]).\\n\",\"v\":2,\"seq\":2,\"t\":2722.784999999996},{\"type\":\"pipeline-creation-failed\",\"id\":2,\"pipeline\":\"render\",\"label\":\"asyncRender\",\"trigger\":\"initAsync\",\"phase\":\"create\",\"resolveMs\":0.805000000000291,\"createMs\":0.43000000000029104,\"wgsl\":\"struct vertexFull_Output {\\n  @builtin(position) pos: vec4f,\\n}\\n\\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\\n}\\n\\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\",\"wgslLength\":361,\"layoutIds\":[],\"layoutLabels\":[],\"errorType\":\"GPUPipelineError\",\"message\":\"[Invalid ShaderModule \\\"asyncRender - Shader\\\"] is invalid due to a previous error.\\n - While validating vertex stage ([Invalid ShaderModule \\\"asyncRender - Shader\\\"], entryPoint: [undefined]).\\n - While validating vertex state.\\n\",\"v\":2,\"seq\":5,\"t\":2724.6399999999994}],\"unavailable\":[\"gpuExecutionTime\",\"gpuMemoryUsage\",\"wrappedResources\",\"internalResources\",\"rawWebGPUCalls\",\"workgroupCounts\",\"perDispatchBindings\",\"textureMemory\",\"helperSubmissions\",\"restoredPipelines\",\"samplers\",\"textureViews\",\"renderBundles\",\"bindGroupLayouts\"]}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"root-destroyed\",\"ownDevice\":true,\"liveBuffers\":0,\"liveTextures\":0,\"v\":2,\"seq\":7,\"t\":2925.0650000000023}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"device-lost\",\"reason\":\"destroyed\",\"message\":\"Device was destroyed.\",\"v\":2,\"seq\":8,\"t\":2925.5899999999965}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 2924.989999999998,
+        "enabled": true,
+        "resources": [],
+        "bindGroups": [],
+        "pipelines": [],
+        "counters": {
+          "submits": 0,
+          "collectedWithoutDestroy": 0,
+          "droppedEvents": 0,
+          "droppedBytes": 0,
+          "historyBytes": 5484,
+          "listenerErrors": 0,
+          "lastListenerError": null,
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [
+          {
+            "type": "pipeline-creation-failed",
+            "id": 1,
+            "pipeline": "compute",
+            "label": "asyncCompute",
+            "trigger": "initAsync",
+            "phase": "create",
+            "resolveMs": 0.2699999999967986,
+            "createMs": 4.180000000000291,
+            "wgsl": "@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }",
+            "wgslLength": 85,
+            "layoutIds": [],
+            "layoutLabels": [],
+            "errorType": "GPUPipelineError",
+            "message": "[Invalid ShaderModule \"asyncCompute - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"asyncCompute - Shader\"], entryPoint: [undefined]).\n",
+            "v": 2,
+            "seq": 2,
+            "t": 2722.784999999996
+          },
+          {
+            "type": "pipeline-creation-failed",
+            "id": 2,
+            "pipeline": "render",
+            "label": "asyncRender",
+            "trigger": "initAsync",
+            "phase": "create",
+            "resolveMs": 0.805000000000291,
+            "createMs": 0.43000000000029104,
+            "wgsl": "struct vertexFull_Output {\n  @builtin(position) pos: vec4f,\n}\n\n@vertex fn vertexFull(@builtin(vertex_index) idx: u32) -> vertexFull_Output {\n  let x = ((f32((idx & 1u)) * 4f) - 1f);\n  let y = ((f32((idx >> 1u)) * 4f) - 1f);\n  return vertexFull_Output(vec4f(x, y, 0f, 1f));\n}\n\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }",
+            "wgslLength": 361,
+            "layoutIds": [],
+            "layoutLabels": [],
+            "errorType": "GPUPipelineError",
+            "message": "[Invalid ShaderModule \"asyncRender - Shader\"] is invalid due to a previous error.\n - While validating vertex stage ([Invalid ShaderModule \"asyncRender - Shader\"], entryPoint: [undefined]).\n - While validating vertex state.\n",
+            "v": 2,
+            "seq": 5,
+            "t": 2724.6399999999994
+          }
+        ],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {
+        "rejections": [
+          "GPUPipelineError",
+          "GPUPipelineError"
+        ]
+      },
+      "eventCount": 8
+    },
+    "lifecycle": {
+      "consoleLines": [
+        "[001] buffer buf#1 materialized (4 B)",
+        "[002] buffer buf#1 destroyed",
+        "[003] buffer buf#2 materialized (4 B)",
+        "[004] buffer buf#2 destroyed",
+        "[005] buffer buf#3 materialized (4 B)",
+        "[006] buffer buf#3 destroyed",
+        "[007] buffer buf#4 materialized (4 B)",
+        "[008] buffer buf#4 destroyed",
+        "[009] buffer buf#5 materialized (4 B)",
+        "[010] buffer buf#5 destroyed",
+        "[011] buffer buf#6 materialized (4 B)",
+        "[012] buffer buf#6 destroyed",
+        "[013] buffer buf#7 materialized (4 B)",
+        "[014] buffer buf#7 destroyed",
+        "[015] buffer buf#8 materialized (4 B)",
+        "[016] buffer buf#8 destroyed",
+        "[017] buffer buf#9 materialized (4 B)",
+        "[018] buffer buf#9 destroyed",
+        "[019] buffer buf#10 materialized (4 B)",
+        "[020] buffer buf#10 destroyed",
+        "[021] buffer buf#11 materialized (4 B)",
+        "[022] buffer buf#11 destroyed",
+        "[023] buffer buf#12 materialized (4 B)",
+        "[024] buffer buf#12 destroyed",
+        "[025] buffer buf#13 materialized (4 B)",
+        "[026] buffer buf#13 destroyed",
+        "[027] buffer buf#14 materialized (4 B)",
+        "[028] buffer buf#14 destroyed",
+        "[029] buffer buf#15 materialized (4 B)",
+        "[030] buffer buf#15 destroyed",
+        "[031] buffer buf#16 materialized (4 B)",
+        "[032] buffer buf#16 destroyed",
+        "[033] buffer buf#17 materialized (4 B)",
+        "[034] buffer buf#17 destroyed",
+        "[035] buffer buf#18 materialized (4 B)",
+        "[036] buffer buf#18 destroyed",
+        "[037] buffer buf#19 materialized (4 B)",
+        "[038] buffer buf#19 destroyed",
+        "[039] buffer buf#20 materialized (4 B)",
+        "[040] buffer buf#20 destroyed",
+        "[041] buffer buf#21 materialized (4 B)",
+        "[042] buffer buf#21 destroyed",
+        "[043] buffer buf#22 materialized (4 B)",
+        "[044] buffer buf#22 destroyed",
+        "[045] buffer buf#23 materialized (4 B)",
+        "[046] buffer buf#23 destroyed",
+        "[047] buffer buf#24 materialized (4 B)",
+        "[048] buffer buf#24 destroyed",
+        "[049] buffer buf#25 materialized (4 B)",
+        "[050] buffer buf#25 destroyed",
+        "[051] buffer buf#26 materialized (4 B)",
+        "[052] buffer buf#26 destroyed",
+        "[053] buffer buf#27 materialized (4 B)",
+        "[054] buffer buf#27 destroyed",
+        "[055] buffer buf#28 materialized (4 B)",
+        "[056] buffer buf#28 destroyed",
+        "[057] buffer buf#29 materialized (4 B)",
+        "[058] buffer buf#29 destroyed",
+        "[059] buffer buf#30 materialized (4 B)",
+        "[060] buffer buf#30 destroyed",
+        "[061] buffer buf#31 materialized (4 B)",
+        "[062] buffer buf#31 destroyed",
+        "[063] buffer buf#32 materialized (4 B)",
+        "[064] buffer buf#32 destroyed",
+        "[065] buffer buf#33 materialized (4 B)",
+        "[066] buffer buf#33 destroyed",
+        "[067] buffer buf#34 materialized (4 B)",
+        "[068] buffer buf#34 destroyed",
+        "[069] buffer buf#35 materialized (4 B)",
+        "[070] buffer buf#35 destroyed",
+        "[071] buffer buf#36 materialized (4 B)",
+        "[072] buffer buf#36 destroyed",
+        "[073] buffer buf#37 materialized (4 B)",
+        "[074] buffer buf#37 destroyed",
+        "[075] buffer buf#38 materialized (4 B)",
+        "[076] buffer buf#38 destroyed",
+        "[077] buffer buf#39 materialized (4 B)",
+        "[078] buffer buf#39 destroyed",
+        "[079] buffer buf#40 materialized (4 B)",
+        "[080] buffer buf#40 destroyed"
+      ],
+      "jsonl": [
+        "{\"record\":\"header\",\"format\":\"typegpu-instrumentation-jsonl\",\"version\":1,\"eventSchema\":2}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":1,\"t\":2987.345000000001}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":1,\"label\":\"buf\",\"v\":2,\"seq\":2,\"t\":3006.7949999999983}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":2,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":3,\"t\":3007.0250000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":2,\"label\":\"buf\",\"v\":2,\"seq\":4,\"t\":3007.0650000000023}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":3,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":5,\"t\":3007.1199999999953}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":3,\"label\":\"buf\",\"v\":2,\"seq\":6,\"t\":3007.154999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":4,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":7,\"t\":3007.220000000001}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":4,\"label\":\"buf\",\"v\":2,\"seq\":8,\"t\":3007.2549999999974}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":5,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":9,\"t\":3007.3050000000003}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":5,\"label\":\"buf\",\"v\":2,\"seq\":10,\"t\":3007.364999999998}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":6,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":11,\"t\":3007.4199999999983}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":6,\"label\":\"buf\",\"v\":2,\"seq\":12,\"t\":3007.4449999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":7,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":13,\"t\":3007.479999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":7,\"label\":\"buf\",\"v\":2,\"seq\":14,\"t\":3007.519999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":8,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":15,\"t\":3007.5599999999977}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":8,\"label\":\"buf\",\"v\":2,\"seq\":16,\"t\":3007.595000000001}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":9,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":17,\"t\":3007.6299999999974}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":9,\"label\":\"buf\",\"v\":2,\"seq\":18,\"t\":3007.6699999999983}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":10,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":19,\"t\":3007.729999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":10,\"label\":\"buf\",\"v\":2,\"seq\":20,\"t\":3007.760000000002}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":11,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":21,\"t\":3007.790000000001}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":11,\"label\":\"buf\",\"v\":2,\"seq\":22,\"t\":3007.8050000000003}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":12,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":23,\"t\":3007.834999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":12,\"label\":\"buf\",\"v\":2,\"seq\":24,\"t\":3007.8499999999985}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":13,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":25,\"t\":3007.8799999999974}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":13,\"label\":\"buf\",\"v\":2,\"seq\":26,\"t\":3007.9000000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":14,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":27,\"t\":3007.9550000000017}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":14,\"label\":\"buf\",\"v\":2,\"seq\":28,\"t\":3007.9850000000006}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":15,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":29,\"t\":3008.019999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":15,\"label\":\"buf\",\"v\":2,\"seq\":30,\"t\":3008.0449999999983}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":16,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":31,\"t\":3008.0800000000017}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":16,\"label\":\"buf\",\"v\":2,\"seq\":32,\"t\":3008.1100000000006}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":17,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":33,\"t\":3008.135000000002}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":17,\"label\":\"buf\",\"v\":2,\"seq\":34,\"t\":3008.154999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":18,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":35,\"t\":3008.1800000000003}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":18,\"label\":\"buf\",\"v\":2,\"seq\":36,\"t\":3008.199999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":19,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":37,\"t\":3008.2249999999985}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":19,\"label\":\"buf\",\"v\":2,\"seq\":38,\"t\":3008.2350000000006}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":20,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":39,\"t\":3008.25}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":20,\"label\":\"buf\",\"v\":2,\"seq\":40,\"t\":3008.2649999999994}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":21,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":41,\"t\":3008.2750000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":21,\"label\":\"buf\",\"v\":2,\"seq\":42,\"t\":3008.284999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":22,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":43,\"t\":3008.2999999999956}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":22,\"label\":\"buf\",\"v\":2,\"seq\":44,\"t\":3008.3099999999977}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":23,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":45,\"t\":3008.324999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":23,\"label\":\"buf\",\"v\":2,\"seq\":46,\"t\":3008.334999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":24,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":47,\"t\":3008.3499999999985}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":24,\"label\":\"buf\",\"v\":2,\"seq\":48,\"t\":3008.354999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":25,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":49,\"t\":3008.375}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":25,\"label\":\"buf\",\"v\":2,\"seq\":50,\"t\":3008.385000000002}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":26,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":51,\"t\":3008.4000000000015}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":26,\"label\":\"buf\",\"v\":2,\"seq\":52,\"t\":3008.409999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":27,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":53,\"t\":3008.4249999999956}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":27,\"label\":\"buf\",\"v\":2,\"seq\":54,\"t\":3008.4349999999977}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":28,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":55,\"t\":3008.449999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":28,\"label\":\"buf\",\"v\":2,\"seq\":56,\"t\":3008.459999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":29,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":57,\"t\":3008.4749999999985}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":29,\"label\":\"buf\",\"v\":2,\"seq\":58,\"t\":3008.479999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":30,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":59,\"t\":3008.4949999999953}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":30,\"label\":\"buf\",\"v\":2,\"seq\":60,\"t\":3008.5049999999974}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":31,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":61,\"t\":3008.519999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":31,\"label\":\"buf\",\"v\":2,\"seq\":62,\"t\":3008.534999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":32,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":63,\"t\":3008.5650000000023}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":32,\"label\":\"buf\",\"v\":2,\"seq\":64,\"t\":3008.5800000000017}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":33,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":65,\"t\":3008.595000000001}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":33,\"label\":\"buf\",\"v\":2,\"seq\":66,\"t\":3008.6900000000023}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":34,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":67,\"t\":3008.7350000000006}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":34,\"label\":\"buf\",\"v\":2,\"seq\":68,\"t\":3008.75}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":35,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":69,\"t\":3008.7649999999994}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":35,\"label\":\"buf\",\"v\":2,\"seq\":70,\"t\":3008.779999999999}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":36,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":71,\"t\":3008.8050000000003}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":36,\"label\":\"buf\",\"v\":2,\"seq\":72,\"t\":3008.8300000000017}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":37,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":73,\"t\":3008.854999999996}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":37,\"label\":\"buf\",\"v\":2,\"seq\":74,\"t\":3008.8799999999974}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":38,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":75,\"t\":3008.949999999997}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":38,\"label\":\"buf\",\"v\":2,\"seq\":76,\"t\":3008.970000000001}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":39,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":77,\"t\":3008.9949999999953}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-destroyed\",\"resource\":\"buffer\",\"id\":39,\"label\":\"buf\",\"v\":2,\"seq\":78,\"t\":3009}}",
+        "{\"record\":\"event\",\"event\":{\"type\":\"resource-materialized\",\"resource\":\"buffer\",\"id\":40,\"label\":\"buf\",\"sizeBytes\":4,\"usage\":76,\"v\":2,\"seq\":79,\"t\":3009.019999999997}}"
+      ],
+      "snapshot": {
+        "v": 2,
+        "t": 3496.029999999999,
+        "enabled": false,
+        "resources": [],
+        "bindGroups": [],
+        "pipelines": [],
+        "counters": {
+          "submits": 0,
+          "collectedWithoutDestroy": 1,
+          "droppedEvents": 3938,
+          "droppedBytes": 949058,
+          "historyBytes": 15752,
+          "listenerErrors": 4002,
+          "lastListenerError": "Error: consumer bug",
+          "internalErrors": 0,
+          "lastInternalError": null
+        },
+        "retainedFailures": [],
+        "unavailable": [
+          "gpuExecutionTime",
+          "gpuMemoryUsage",
+          "wrappedResources",
+          "internalResources",
+          "rawWebGPUCalls",
+          "workgroupCounts",
+          "perDispatchBindings",
+          "textureMemory",
+          "helperSubmissions",
+          "restoredPipelines",
+          "samplers",
+          "textureViews",
+          "renderBundles",
+          "bindGroupLayouts"
+        ]
+      },
+      "notes": {
+        "afterLoop": {
+          "history": 64,
+          "snapshot": {
+            "submits": 0,
+            "collectedWithoutDestroy": 0,
+            "droppedEvents": 3936,
+            "droppedBytes": 948576,
+            "historyBytes": 15424,
+            "listenerErrors": 4000,
+            "lastListenerError": "Error: consumer bug",
+            "internalErrors": 0,
+            "lastInternalError": null
+          }
+        },
+        "disabled": {
+          "listenerCalls": 0,
+          "historyUnchanged": true,
+          "enabled": false,
+          "snapshotEnabled": false
+        },
+        "resume": {
+          "firstSeqAfterEnable": 4001,
+          "seqBeforeDisable": 4000
+        },
+        "disposed": {
+          "listenerCallsAfterDispose": 1,
+          "enabled": false
+        }
+      },
+      "eventCount": 4002
+    },
+    "abandoned-roots": {
+      "roots": 30,
+      "aliveRoots": 0,
+      "aliveHubs": 0
+    }
+  },
+  "browserConsole": [
+    {
+      "phase": "startup",
+      "source": "browser-log",
+      "level": "warning",
+      "text": "Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\n                                                         ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenCompute - Shader\"\"]).\n"
+    },
+    {
+      "phase": "startup",
+      "source": "browser-log",
+      "level": "warning",
+      "text": "[Invalid ShaderModule \"brokenCompute - Shader\"] is invalid due to a previous error.\n - While validating compute stage ([Invalid ShaderModule \"brokenCompute - Shader\"], entryPoint: [undefined]).\n - While calling [Device].CreateComputePipeline([ComputePipelineDescriptor \"\"brokenCompute\"\"]).\n"
+    },
+    {
+      "phase": "startup",
+      "source": "browser-log",
+      "level": "warning",
+      "text": "Error while parsing WGSL: :11:63 error: unresolved value 'definitelyUndeclared'\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\n                                                              ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"brokenRender - Shader\"\"]).\n"
+    },
+    {
+      "phase": "startup",
+      "source": "browser-log",
+      "level": "warning",
+      "text": "[Invalid ShaderModule \"brokenRender - Shader\"] is invalid due to a previous error.\n - While validating vertex stage ([Invalid ShaderModule \"brokenRender - Shader\"], entryPoint: [undefined]).\n - While validating vertex state.\n - While calling [Device].CreateRenderPipeline([RenderPipelineDescriptor \"\"brokenRender\"\"]).\n"
+    },
+    {
+      "phase": "startup",
+      "source": "browser-log",
+      "level": "warning",
+      "text": "Error while parsing WGSL: :1:58 error: unresolved call target 'definitelyUndeclared'\n@compute @workgroup_size(1) fn brokenCompute() { let x = definitelyUndeclared(1.0); }\n                                                         ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"asyncCompute - Shader\"\"]).\n"
+    },
+    {
+      "phase": "startup",
+      "source": "browser-log",
+      "level": "warning",
+      "text": "Error while parsing WGSL: :11:63 error: unresolved value 'definitelyUndeclared'\n@fragment fn brokenFragment() -> @location(0)  vec4f { return definitelyUndeclared; }\n                                                              ^^^^^^^^^^^^^^^^^^^^\n\n\n - While calling [Device].CreateShaderModule([ShaderModuleDescriptor \"\"asyncRender - Shader\"\"]).\n"
+    }
+  ]
+}

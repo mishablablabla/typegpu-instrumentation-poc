@@ -1,0 +1,30 @@
+{
+  "cell": "firefox-linux-fallback",
+  "kind": "firefox",
+  "os": "linux",
+  "arch": "x64",
+  "node": "v24.21.0",
+  "pageDigest": "a356fa0379e488929e848e375d051daec84d92c14488e98df8227bd7340f7492",
+  "when": "2026-10-28T07:45:23.879Z",
+  "steps": {
+    "viability": {
+      "exit": 0,
+      "status": "pass",
+      "passed": 128,
+      "failed": 0,
+      "skipped": [
+        "abandoned-roots: gc() is not exposed (Chrome is started with --js-flags=--expose-gc)"
+      ],
+      "classification": "page-only",
+      "browser": "Mozilla/5.0 (X11; Linux x86_64; rv:157.0) Gecko/20100101 Firefox/157.0",
+      "adapterRequest": "default (forceFallback shim active, not needed)",
+      "adapter": {
+        "vendor": "",
+        "architecture": "",
+        "isFallbackAdapter": true
+      },
+      "file": "real-gpu/results/ci/firefox-linux-fallback-viability.json"
+    }
+  },
+  "status": "pass"
+}

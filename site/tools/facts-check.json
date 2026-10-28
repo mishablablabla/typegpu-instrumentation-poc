@@ -1,5 +1,5 @@
 {
-  "docs/PRODUCTION-READINESS.md": ["219", "130 / 130", "3 174", "Conditionally ready", "Not ready", "Not suitable", "Not established", "0.7–0.83", "+3.7–4.2 KB gzip"],
+  "docs/PRODUCTION-READINESS.md": ["219", "130 / 130", "3 174", "Conditionally ready", "Not ready", "Not suitable", "Partially established", "0.7–0.83", "+3.7–4.2 KB gzip"],
   "docs/PERFORMANCE.md": ["+5.5 ns", "+3.7 to +4.2 KB gzip", "0.7–0.8 KB", "0.4–0.6 µs", "±1.4 %"],
   "docs/EVENT-CONTRACT.md": ["Known deviations found by audit", "retainedFailures"],
   "docs/ECOSYSTEM-RESEARCH.md": ["## Recommendation", "Runtime Inspector MCP"],
