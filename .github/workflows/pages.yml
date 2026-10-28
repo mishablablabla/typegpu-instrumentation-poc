@@ -1,0 +1,52 @@
+name: Usage page (GitHub Pages)
+
+# Builds the Angular usage page in site/ and publishes it to GitHub Pages:
+# https://mishablablabla.github.io/typegpu-instrumentation-poc/
+# One-time setup in the repository: Settings > Pages > Source: "GitHub Actions". The github-pages environment only
+# accepts deployments from the branches allowed in Settings > Environments > github-pages.
+on:
+  push:
+    branches: [main, production-readiness]
+    paths: ['site/**', 'overlay/src/**', 'patches/**', 'examples/**', 'real-gpu/results/scenarios/**', 'package-test/consumer/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check the page against the implementation and build it
+        working-directory: site
+        run: |
+          npm ci
+          npm run check
+          npx ng build --configuration production --base-href "/${GITHUB_REPOSITORY#*/}/"
+          # a project site has no server-side routing: a deep link to /instrumentation falls back to 404.html
+          cp dist/site/browser/index.html dist/site/browser/404.html
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/dist/site/browser
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
